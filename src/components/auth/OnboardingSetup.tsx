@@ -75,7 +75,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   id="companyName"
                   value={formData.companyName}
                   onChange={(e) => handleInputChange('companyName', e.target.value)}
-                  placeholder="Jordan Equity Partners"
+                  placeholder="Enter your company name"
                   className="mt-1"
                 />
               </div>
@@ -84,7 +84,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                 <Label htmlFor="role">Role</Label>
                 <Select onValueChange={(value) => handleInputChange('role', value)}>
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="GP" />
+                    <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gp">GP</SelectItem>
@@ -111,28 +111,30 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   id="propertyName"
                   value={formData.propertyName}
                   onChange={(e) => handleInputChange('propertyName', e.target.value)}
-                  placeholder="Greenview Apts"
+                  placeholder="Enter property name"
                   className="mt-1"
                 />
               </div>
               
               <div>
-                <Label htmlFor="units">Units</Label>
+                <Label htmlFor="units">Number of Units</Label>
                 <Input
                   id="units"
+                  type="number"
                   value={formData.units}
                   onChange={(e) => handleInputChange('units', e.target.value)}
-                  placeholder="100"
+                  placeholder="e.g. 100"
                   className="mt-1"
                 />
               </div>
               
               <div>
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Property Address</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="Enter property address"
                   className="mt-1"
                 />
               </div>
@@ -154,7 +156,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="jordan@example.co"
+                  placeholder="Enter your email address"
                   className="mt-1"
                   required
                 />
@@ -167,7 +169,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   type="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="••••••••••"
+                  placeholder="Create a secure password"
                   className="mt-1"
                   required
                 />
@@ -180,7 +182,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="••••••••••"
+                  placeholder="Confirm your password"
                   className="mt-1"
                   required
                 />
@@ -235,7 +237,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             onClick={handleSubmit}
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
           >
-            Get Started
+            Continue to Payment
           </Button>
         </div>
       </div>

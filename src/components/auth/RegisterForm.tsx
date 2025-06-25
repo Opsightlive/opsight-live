@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import OnboardingSetup from './OnboardingSetup';
+import PaymentSetup from './PaymentSetup';
 
 interface RegisterFormProps {
   onLoginClick: () => void;
@@ -18,7 +19,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentStep, setCurrentStep] = useState('register'); // 'register', 'onboarding', 'payment'
   const { isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,18 +36,27 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       return;
     }
     
-    // Show onboarding instead of calling register
-    setShowOnboarding(true);
+    // Move to onboarding step
+    setCurrentStep('onboarding');
   };
 
   const handleOnboardingComplete = () => {
-    // This will trigger the auth context to show the main app
-    setShowOnboarding(false);
-    // Here we can call the actual register function if needed
+    // Move to payment step
+    setCurrentStep('payment');
   };
 
-  if (showOnboarding) {
+  const handlePaymentComplete = () => {
+    // This will trigger the auth context to show the main app
+    setCurrentStep('register');
+    // Here we would call the actual register function
+  };
+
+  if (currentStep === 'onboarding') {
     return <OnboardingSetup onComplete={handleOnboardingComplete} />;
+  }
+
+  if (currentStep === 'payment') {
+    return <PaymentSetup onComplete={handlePaymentComplete} />;
   }
 
   return (
@@ -144,7 +154,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? 'Creating Account...' : 'Continue'}
             </Button>
           </form>
 
