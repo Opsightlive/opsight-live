@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Building, Home, Mail, Database } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface OnboardingSetupProps {
   onComplete: () => void;
 }
 
 const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     companyName: '',
     role: '',
@@ -24,9 +25,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
     dataSource: 'connect-pm'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete();
+    
+    // Register the user with the auth context
+    if (formData.email && formData.password) {
+      const success = await register(formData.email, formData.password);
+      if (success) {
+        onComplete();
+      }
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -148,6 +156,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="jordan@example.co"
                   className="mt-1"
+                  required
                 />
               </div>
               
@@ -160,6 +169,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="••••••••••"
                   className="mt-1"
+                  required
                 />
               </div>
               
@@ -172,6 +182,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   placeholder="••••••••••"
                   className="mt-1"
+                  required
                 />
               </div>
             </div>

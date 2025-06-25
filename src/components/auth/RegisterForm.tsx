@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const { register, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,17 +35,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       return;
     }
     
-    const success = await register(email, password);
-    if (success) {
-      setShowOnboarding(true);
-    } else {
-      setError('Registration failed. Please try again.');
-    }
+    // Show onboarding instead of calling register
+    setShowOnboarding(true);
   };
 
   const handleOnboardingComplete = () => {
     // This will trigger the auth context to show the main app
     setShowOnboarding(false);
+    // Here we can call the actual register function if needed
   };
 
   if (showOnboarding) {
@@ -55,6 +53,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <div className="mb-6">
+            <div className="w-20 h-20 mx-auto">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
           <h1 className="text-4xl font-bold text-white mb-2">OPSIGHT</h1>
           <p className="text-gray-400">Asset Performance OS</p>
         </div>
