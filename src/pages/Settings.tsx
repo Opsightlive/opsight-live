@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,46 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { CheckCircle, AlertTriangle, CreditCard, Calendar, Bell, TrendingDown, Users, DollarSign } from 'lucide-react';
+import { CheckCircle, AlertTriangle, CreditCard, Calendar, Bell, TrendingDown, Users, DollarSign, Moon, Sun } from 'lucide-react';
 import UserManagement from '@/components/users/UserManagement';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
   const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const { toast } = useToast();
+
+  // Check for saved dark mode preference on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setDarkMode(isDark);
+    
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+
+    toast({
+      title: "Theme Updated",
+      description: `Switched to ${newDarkMode ? 'dark' : 'light'} mode.`
+    });
+  };
+
   const [syncedData, setSyncedData] = useState({
     rentRoll: true,
     generalLedger: true,
@@ -53,22 +88,68 @@ const Settings = () => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Settings</h1>
       
-      <Card className="bg-white border-2 border-blue-200 rounded-lg">
+      <Card className="bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-blue-700 rounded-lg">
         <CardContent className="p-6">
           <Tabs defaultValue="integrations" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="integrations" className="text-lg font-medium">Integrations</TabsTrigger>
+              <TabsTrigger value="appearance" className="text-lg font-medium">Appearance</TabsTrigger>
               <TabsTrigger value="performance" className="text-lg font-medium">Performance Triggers</TabsTrigger>
               <TabsTrigger value="alerts" className="text-lg font-medium">Alert Preferences</TabsTrigger>
               <TabsTrigger value="subscription" className="text-lg font-medium">Subscription</TabsTrigger>
               <TabsTrigger value="access" className="text-lg font-medium">Access</TabsTrigger>
             </TabsList>
 
+            <TabsContent value="appearance" className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">APPEARANCE</h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8">Customize the look and feel of your dashboard.</p>
+                
+                <Card className="p-6">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        {darkMode ? (
+                          <Moon className="h-6 w-6 text-blue-600" />
+                        ) : (
+                          <Sun className="h-6 w-6 text-yellow-600" />
+                        )}
+                        <div>
+                          <span className="text-lg font-medium">Dark Mode</span>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Switch between light and dark themes
+                          </p>
+                        </div>
+                      </div>
+                      <Switch 
+                        checked={darkMode}
+                        onCheckedChange={toggleDarkMode}
+                      />
+                    </div>
+
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                      <h4 className="font-medium mb-2">Theme Preview</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white dark:bg-gray-800 p-3 rounded border dark:border-gray-600">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">Sample Card</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">This is how content will appear</div>
+                        </div>
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700">
+                          <div className="text-sm font-medium text-blue-900 dark:text-blue-200">Accent Card</div>
+                          <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">Highlighted content example</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </TabsContent>
+
             <TabsContent value="integrations" className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">INTEGRATIONS</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">INTEGRATIONS</h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
@@ -136,14 +217,13 @@ const Settings = () => {
 
             <TabsContent value="performance" className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">PERFORMANCE TRIGGERS</h2>
-                <p className="text-gray-600 mb-8">Set automated triggers to monitor key performance metrics and receive alerts when thresholds are exceeded.</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">PERFORMANCE TRIGGERS</h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8">Set automated triggers to monitor key performance metrics and receive alerts when thresholds are exceeded.</p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Financial Metrics</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Financial Metrics</h3>
                     
-                    {/* Rent Collection Rate */}
                     <Card className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -178,7 +258,6 @@ const Settings = () => {
                       </div>
                     </Card>
 
-                    {/* Average Rent Performance */}
                     <Card className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -215,9 +294,8 @@ const Settings = () => {
                   </div>
 
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Operational Metrics</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Operational Metrics</h3>
                     
-                    {/* Occupancy Rate */}
                     <Card className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -252,7 +330,6 @@ const Settings = () => {
                       </div>
                     </Card>
 
-                    {/* Maintenance Backlog */}
                     <Card className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
@@ -298,12 +375,12 @@ const Settings = () => {
 
             <TabsContent value="alerts" className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">ALERT PREFERENCES</h2>
-                <p className="text-gray-600 mb-8">Customize how and when you receive alerts and notifications.</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">ALERT PREFERENCES</h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8">Customize how and when you receive alerts and notifications.</p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Notification Channels</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Notification Channels</h3>
                     
                     <Card className="p-6">
                       <div className="space-y-4">
@@ -312,7 +389,7 @@ const Settings = () => {
                             <Bell className="h-5 w-5 text-blue-600" />
                             <div>
                               <span className="font-medium">Email Notifications</span>
-                              <p className="text-sm text-gray-500">Receive alerts via email</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">Receive alerts via email</p>
                             </div>
                           </div>
                           <Switch 
@@ -326,7 +403,7 @@ const Settings = () => {
                             <Bell className="h-5 w-5 text-green-600" />
                             <div>
                               <span className="font-medium">SMS Notifications</span>
-                              <p className="text-sm text-gray-500">Receive critical alerts via SMS</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">Receive critical alerts via SMS</p>
                             </div>
                           </div>
                           <Switch 
@@ -340,7 +417,7 @@ const Settings = () => {
                             <Bell className="h-5 w-5 text-purple-600" />
                             <div>
                               <span className="font-medium">In-App Notifications</span>
-                              <p className="text-sm text-gray-500">Show notifications in the dashboard</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">Show notifications in the dashboard</p>
                             </div>
                           </div>
                           <Switch 
@@ -368,7 +445,7 @@ const Settings = () => {
                   </div>
 
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Report Preferences</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Report Preferences</h3>
                     
                     <Card className="p-6">
                       <div className="space-y-4">
@@ -454,13 +531,13 @@ const Settings = () => {
 
             <TabsContent value="subscription" className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">SUBSCRIPTION</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">SUBSCRIPTION</h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-gray-900">Current Plan</h3>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">Current Plan</h3>
                         <Badge className="bg-blue-100 text-blue-800">Active</Badge>
                       </div>
                       
@@ -497,15 +574,15 @@ const Settings = () => {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h3>
+                    <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Payment Method</h3>
                       
                       <div className="space-y-4">
-                        <div className="flex items-center space-x-3 p-3 bg-white border rounded-lg">
+                        <div className="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 border rounded-lg">
                           <CreditCard className="w-8 h-8 text-gray-600" />
                           <div className="flex-1">
                             <div className="font-medium">•••• •••• •••• 4242</div>
-                            <div className="text-sm text-gray-500">Expires 12/25</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Expires 12/25</div>
                           </div>
                           <Badge variant="outline">Default</Badge>
                         </div>
@@ -516,9 +593,9 @@ const Settings = () => {
                       </div>
                     </div>
 
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <h4 className="font-medium text-yellow-800 mb-2">Billing Information</h4>
-                      <p className="text-sm text-yellow-700">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                      <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Billing Information</h4>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-300">
                         Your subscription will automatically renew on July 25, 2025. 
                         You can cancel anytime from this page.
                       </p>

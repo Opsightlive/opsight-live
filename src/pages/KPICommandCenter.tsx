@@ -1,183 +1,193 @@
-
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, TrendingUp, TrendingDown, DollarSign, Users, FileText, Send, CheckCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { TrendingUp, TrendingDown, AlertTriangle, Building2, DollarSign, Users, Calendar, Send } from 'lucide-react';
+import SendToPMModal from '@/components/modals/SendToPMModal';
 
 const KPICommandCenter = () => {
-  const [activeTab, setActiveTab] = useState('leasing');
+  const [selectedProperty, setSelectedProperty] = useState('all');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
+  const [sendToPMModal, setSendToPMModal] = useState<{isOpen: boolean, kpiData?: any}>({isOpen: false});
 
-  const kpiData = {
-    leasing: [
-      { name: 'Physical Occupancy', value: '87%', target: '90%', status: 'warning', trend: 'down' },
-      { name: 'Economic Occupancy', value: '85%', target: '88%', status: 'critical', trend: 'down' },
-      { name: 'Average Days to Lease', value: '28 days', target: '21 days', status: 'warning', trend: 'up' },
-      { name: 'Leasing Velocity', value: '12 units/month', target: '15 units/month', status: 'warning', trend: 'down' }
-    ],
-    collections: [
-      { name: 'Collection Rate', value: '94%', target: '96%', status: 'warning', trend: 'down' },
-      { name: 'Delinquency Rate', value: '6%', target: '4%', status: 'critical', trend: 'up' },
-      { name: 'Average Collection Time', value: '8 days', target: '5 days', status: 'warning', trend: 'up' },
-      { name: 'NSF Rate', value: '3%', target: '2%', status: 'warning', trend: 'up' }
-    ],
-    financials: [
-      { name: 'NOI Margin', value: '68%', target: '72%', status: 'warning', trend: 'down' },
-      { name: 'Operating Expense Ratio', value: '32%', target: '28%', status: 'critical', trend: 'up' },
-      { name: 'Revenue per Unit', value: '$1,850', target: '$1,950', status: 'warning', trend: 'down' },
-      { name: 'Maintenance Cost per Unit', value: '$180', target: '$150', status: 'warning', trend: 'up' }
-    ],
-    engagement: [
-      { name: 'PM Response Time', value: '4.2 hrs', target: '2 hrs', status: 'critical', trend: 'up' },
-      { name: 'Work Order Completion', value: '78%', target: '85%', status: 'warning', trend: 'down' },
-      { name: 'Report Submission Rate', value: '85%', target: '100%', status: 'warning', trend: 'stable' },
-      { name: 'Escalation Rate', value: '15%', target: '8%', status: 'critical', trend: 'up' }
-    ]
+  const handleSendToPM = (kpiData: any) => {
+    setSendToPMModal({ isOpen: true, kpiData });
   };
 
-  const redFlagSummary = [
-    { property: 'Sunset Gardens', flags: 3, severity: 'critical', lastUpdate: '2 hours ago' },
-    { property: 'Park Vista', flags: 2, severity: 'warning', lastUpdate: '1 day ago' },
-    { property: 'Metro Heights', flags: 1, severity: 'warning', lastUpdate: '3 hours ago' }
+  const properties = [
+    {
+      name: "Oak Ridge Complex",
+      kpis: [
+        { metric: "Physical Occupancy", value: "94.5%", target: "95%", status: "warning", trend: "down", change: "-1.2%" },
+        { metric: "Economic Occupancy", value: "91.8%", target: "93%", status: "critical", trend: "down", change: "-2.1%" },
+        { metric: "Collections Rate", value: "96.7%", target: "95%", status: "good", trend: "up", change: "+0.8%" },
+        { metric: "Average Rent", value: "$1,847", target: "$1,800", status: "good", trend: "up", change: "+2.6%" }
+      ]
+    },
+    {
+      name: "Cedar Point Villas",
+      kpis: [
+        { metric: "Physical Occupancy", value: "89.1%", target: "90%", status: "warning", trend: "down", change: "-0.9%" },
+        { metric: "Economic Occupancy", value: "86.3%", target: "87%", status: "warning", trend: "down", change: "-1.7%" },
+        { metric: "Collections Rate", value: "94.2%", target: "95%", status: "warning", trend: "down", change: "-0.8%" },
+        { metric: "Average Rent", value: "$1,654", target: "$1,600", status: "good", trend: "up", change: "+3.4%" }
+      ]
+    }
   ];
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
+    switch(status) {
+      case 'good': return 'bg-green-100 text-green-800 border-green-200';
       case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-green-100 text-green-800 border-green-200';
+      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getTrendIcon = (trend: string) => {
-    if (trend === 'up') return <TrendingUp className="h-4 w-4 text-red-500" />;
-    if (trend === 'down') return <TrendingDown className="h-4 w-4 text-green-500" />;
-    return <div className="h-4 w-4" />;
+    return trend === 'up' ? <TrendingUp className="h-4 w-4 text-green-600" /> : <TrendingDown className="h-4 w-4 text-red-600" />;
   };
 
-  const renderKPICards = (kpis: any[]) => {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi, index) => (
-          <Card key={index} className="opsight-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-black">{kpi.name}</CardTitle>
+  return (
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-black mb-2">KPI Command Center</h1>
+        <p className="text-gray-600">Monitor key performance indicators across all properties</p>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white border border-gray-200 p-4 mb-6">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium text-black">Property:</label>
+            <Select value={selectedProperty} onValueChange={setSelectedProperty}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Properties</SelectItem>
+                <SelectItem value="oak-ridge">Oak Ridge Complex</SelectItem>
+                <SelectItem value="cedar-point">Cedar Point Villas</SelectItem>
+                <SelectItem value="meridian">Meridian Apartments</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium text-black">Timeframe:</label>
+            <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">7 days</SelectItem>
+                <SelectItem value="30d">30 days</SelectItem>
+                <SelectItem value="90d">90 days</SelectItem>
+                <SelectItem value="1y">1 year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* Property KPI Cards */}
+      <div className="space-y-8">
+        {properties.map((property) => (
+          <Card key={property.name} className="border-2 border-gray-200">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Building2 className="h-5 w-5 text-blue-600" />
+                <span>{property.name}</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl font-bold text-black">{kpi.value}</span>
-                {getTrendIcon(kpi.trend)}
-              </div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-gray-600">Target: {kpi.target}</span>
-                <Badge className={`${getStatusColor(kpi.status)} text-xs`}>
-                  {kpi.status.toUpperCase()}
-                </Badge>
-              </div>
-              <div className="flex space-x-2">
-                <Button size="sm" variant="outline" className="text-xs">
-                  View Trend
-                </Button>
-                <Button size="sm" className="opsight-button text-xs">
-                  Resolve
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {property.kpis.map((kpi, index) => (
+                  <div key={index} className={`p-4 border-2 rounded-lg ${getStatusColor(kpi.status)}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-sm">{kpi.metric}</h3>
+                        <div className="text-2xl font-bold mt-1">{kpi.value}</div>
+                        <div className="text-sm text-gray-600">Target: {kpi.target}</div>
+                      </div>
+                      <div className="flex flex-col items-end space-y-1">
+                        {getTrendIcon(kpi.trend)}
+                        <span className={`text-xs font-medium ${kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                          {kpi.change}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4">
+                      <Badge className={`text-xs ${kpi.status === 'good' ? 'bg-green-600' : kpi.status === 'warning' ? 'bg-yellow-600' : 'bg-red-600'} text-white`}>
+                        {kpi.status.toUpperCase()}
+                      </Badge>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleSendToPM({
+                          metric: kpi.metric,
+                          property: property.name,
+                          value: kpi.value,
+                          target: kpi.target
+                        })}
+                        className="text-xs h-7"
+                      >
+                        <Send className="h-3 w-3 mr-1" />
+                        Send to PM
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-    );
-  };
 
-  return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-black">KPI Command Center</h1>
-        <div className="flex space-x-2">
-          <Button variant="outline" className="text-black">
-            <FileText className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-          <Button className="opsight-button">
-            <Send className="h-4 w-4 mr-2" />
-            Send to PM
-          </Button>
-        </div>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="leasing">Leasing</TabsTrigger>
-          <TabsTrigger value="collections">Collections</TabsTrigger>
-          <TabsTrigger value="financials">Financials</TabsTrigger>
-          <TabsTrigger value="engagement">PM Engagement</TabsTrigger>
-          <TabsTrigger value="summary">Red Flag Summary</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="leasing" className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <Users className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-black">Leasing Performance</h2>
+      {/* Portfolio Summary */}
+      <Card className="mt-8 border-2 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-xl">Portfolio Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-green-600">$94.2K</div>
+              <div className="text-sm text-gray-600">Monthly Revenue</div>
+              <div className="text-xs text-green-600 mt-1">+5.8% vs last month</div>
+            </div>
+            
+            <div className="text-center">
+              <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-blue-600">91.8%</div>
+              <div className="text-sm text-gray-600">Avg Occupancy</div>
+              <div className="text-xs text-yellow-600 mt-1">-1.5% vs target</div>
+            </div>
+            
+            <div className="text-center">
+              <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-purple-600">95.5%</div>
+              <div className="text-sm text-gray-600">Avg Collections</div>
+              <div className="text-xs text-green-600 mt-1">+0.5% vs target</div>
+            </div>
+            
+            <div className="text-center">
+              <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-orange-600">23</div>
+              <div className="text-sm text-gray-600">Avg Days to Lease</div>
+              <div className="text-xs text-red-600 mt-1">+3 days vs target</div>
+            </div>
           </div>
-          {renderKPICards(kpiData.leasing)}
-        </TabsContent>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="collections" className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <DollarSign className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-black">Collections Performance</h2>
-          </div>
-          {renderKPICards(kpiData.collections)}
-        </TabsContent>
-
-        <TabsContent value="financials" className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-black">Financial Performance</h2>
-          </div>
-          {renderKPICards(kpiData.financials)}
-        </TabsContent>
-
-        <TabsContent value="engagement" className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <CheckCircle className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-black">PM Engagement Metrics</h2>
-          </div>
-          {renderKPICards(kpiData.engagement)}
-        </TabsContent>
-
-        <TabsContent value="summary" className="space-y-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-            <h2 className="text-lg font-semibold text-black">Red Flag Summary</h2>
-          </div>
-          
-          <div className="grid gap-4">
-            {redFlagSummary.map((item, index) => (
-              <Card key={index} className="opsight-card">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-black">{item.property}</h3>
-                      <p className="text-sm text-gray-600">Last update: {item.lastUpdate}</p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Badge className={`${getStatusColor(item.severity)}`}>
-                        {item.flags} Active Flags
-                      </Badge>
-                      <Button size="sm" className="opsight-button">
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+      <SendToPMModal 
+        isOpen={sendToPMModal.isOpen}
+        onClose={() => setSendToPMModal({isOpen: false})}
+        kpiData={sendToPMModal.kpiData}
+      />
     </div>
   );
 };

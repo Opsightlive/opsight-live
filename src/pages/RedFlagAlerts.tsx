@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar } from 'lucide-react';
 import AIAdvisor from '../components/ai/AIAdvisor';
+import SendToPMModal from '../components/modals/SendToPMModal';
 
 const RedFlagAlerts = () => {
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedAlert, setExpandedAlert] = useState<number | null>(null);
+  const [sendToPMModal, setSendToPMModal] = useState<{isOpen: boolean, alertData?: any}>({isOpen: false});
 
   const alerts = [
     {
@@ -90,9 +92,20 @@ const RedFlagAlerts = () => {
     }
   ];
 
+  const handleSendToPM = (alert: any) => {
+    setSendToPMModal({ 
+      isOpen: true, 
+      alertData: {
+        metric: alert.metric,
+        property: alert.property,
+        value: alert.value,
+        severity: alert.severity
+      }
+    });
+  };
+
   const handleResolveAlert = (alertId: number, resolution: string) => {
     console.log(`Alert ${alertId} resolved with: ${resolution}`);
-    // Here you would typically update the alert status in your backend
   };
 
   const getSeverityColor = (severity: string) => {
@@ -211,7 +224,10 @@ const RedFlagAlerts = () => {
                 </div>
 
                 <div className="flex space-x-2 mb-4">
-                  <button className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700 flex items-center justify-center">
+                  <button 
+                    onClick={() => handleSendToPM(alert)}
+                    className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700 flex items-center justify-center"
+                  >
                     <Send className="h-4 w-4 mr-1" />
                     Send to PM
                   </button>
@@ -291,6 +307,12 @@ const RedFlagAlerts = () => {
           ))}
         </div>
       </div>
+
+      <SendToPMModal 
+        isOpen={sendToPMModal.isOpen}
+        onClose={() => setSendToPMModal({isOpen: false})}
+        alertData={sendToPMModal.alertData}
+      />
     </div>
   );
 };
