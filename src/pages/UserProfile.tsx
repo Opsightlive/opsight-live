@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ const UserProfile = () => {
             <div className="space-y-6">
               <div className="flex items-center space-x-6">
                 <Avatar className="h-32 w-32">
+                  <AvatarImage src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" />
                   <AvatarFallback className="text-2xl">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 
