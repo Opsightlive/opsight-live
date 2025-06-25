@@ -34,10 +34,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         <div className="text-center mb-8">
           <div className="mb-6">
             <div className="w-24 h-24 mx-auto relative">
+              {/* Outer ring with gradient */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 shadow-2xl"></div>
+              {/* Middle ring with darker blue gradient */}
               <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800"></div>
+              {/* Inner circle - dark center */}
               <div className="absolute inset-4 rounded-full bg-gray-900"></div>
+              {/* Top highlight overlay */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-300/30 via-blue-400/20 to-transparent"></div>
+              {/* Dark line effect in top right */}
+              <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gradient-to-br from-blue-900/80 via-blue-800/60 to-transparent"></div>
+              {/* Additional shading lines */}
+              <div className="absolute top-1 right-4 w-4 h-8 rounded-full bg-gradient-to-b from-blue-900/60 to-transparent transform rotate-45"></div>
+              <div className="absolute top-3 right-1 w-8 h-4 rounded-full bg-gradient-to-r from-blue-900/50 to-transparent transform rotate-12"></div>
             </div>
           </div>
           <h1 className="text-5xl font-bold text-white mb-3">OPSIGHT</h1>
