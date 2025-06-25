@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import AIReader from "./pages/AIReader";
 import Settings from "./pages/Settings";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
+import UserManagement from "./components/users/UserManagement";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +31,7 @@ const App = () => (
                 <Route path="/kpi-center" element={<KPICommandCenter />} />
                 <Route path="/red-flags" element={<RedFlagAlerts />} />
                 <Route path="/ai-reader" element={<AIReader />} />
+                <Route path="/users" element={<UserManagement />} />
                 {/* Placeholder routes for remaining modules */}
                 <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="/lp-dashboard" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Dashboard</h1><p className="text-gray-600">Coming Soon</p></div>} />
