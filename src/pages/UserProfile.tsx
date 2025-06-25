@@ -17,6 +17,12 @@ const UserProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
+  const handleTwoFactorChange = (checked: boolean | "indeterminate") => {
+    if (typeof checked === 'boolean') {
+      setTwoFactorEnabled(checked);
+    }
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">User Profile Settings</h1>
@@ -107,7 +113,7 @@ const UserProfile = () => {
                   <div className="flex items-center space-x-2 pt-4">
                     <Checkbox 
                       checked={twoFactorEnabled}
-                      onCheckedChange={setTwoFactorEnabled}
+                      onCheckedChange={handleTwoFactorChange}
                     />
                     <label className="text-lg font-medium">Enable 2FA</label>
                   </div>

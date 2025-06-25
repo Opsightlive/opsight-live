@@ -11,6 +11,8 @@ import PortfolioOverview from "./pages/PortfolioOverview";
 import KPICommandCenter from "./pages/KPICommandCenter";
 import RedFlagAlerts from "./pages/RedFlagAlerts";
 import AIReader from "./pages/AIReader";
+import Settings from "./pages/Settings";
+import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
