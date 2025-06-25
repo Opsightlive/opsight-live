@@ -8,11 +8,12 @@ interface User {
   company?: string;
   phone?: string;
   role?: string;
+  userType?: 'client' | 'company'; // Add user type
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, isCompanyLogin?: boolean) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
@@ -33,20 +34,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, isCompanyLogin = false): Promise<boolean> => {
     setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Mock authentication - in real app, this would be an API call
     if (email && password) {
-      const mockUser = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        company: 'Demo Company',
-        role: 'Asset Manager'
-      };
+      let mockUser: User;
+      
+      if (isCompanyLogin) {
+        // Company login - check for specific company credentials
+        if (email === 'admin@opsight.com' || email.includes('@opsight.com')) {
+          mockUser = {
+            id: 'company_1',
+            email,
+            name: 'OPSIGHT Admin',
+            company: 'OPSIGHT',
+            role: 'Company Admin',
+            userType: 'company'
+          };
+        } else {
+          setIsLoading(false);
+          return false;
+        }
+      } else {
+        // Regular client login
+        mockUser = {
+          id: '1',
+          email,
+          name: email.split('@')[0],
+          company: 'Demo Company',
+          role: 'Asset Manager',
+          userType: 'client'
+        };
+      }
+      
       setUser(mockUser);
       localStorage.setItem('opsight_user', JSON.stringify(mockUser));
       setIsLoading(false);
@@ -66,7 +89,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const mockUser = {
         id: '2',
         email,
-        name: email.split('@')[0]
+        name: email.split('@')[0],
+        userType: 'client' as const
       };
       setUser(mockUser);
       localStorage.setItem('opsight_user', JSON.stringify(mockUser));

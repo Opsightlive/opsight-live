@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Building2 } from 'lucide-react';
 
 interface LoginFormProps {
   onRegisterClick: () => void;
@@ -14,6 +15,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isCompanyLogin, setIsCompanyLogin] = useState(false);
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
 
@@ -21,9 +23,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
     e.preventDefault();
     setError('');
     
-    const success = await login(email, password);
+    const success = await login(email, password, isCompanyLogin);
     if (!success) {
-      setError('Invalid email or password');
+      if (isCompanyLogin) {
+        setError('Invalid company credentials. Use @opsight.com email.');
+      } else {
+        setError('Invalid email or password');
+      }
     }
   };
 
@@ -52,6 +58,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
             <p className="text-gray-600 mt-2">Sign in to your account</p>
           </div>
 
+          {/* Company Login Toggle */}
+          <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-700">Client Login</span>
+            <Switch 
+              checked={isCompanyLogin}
+              onCheckedChange={setIsCompanyLogin}
+            />
+            <span className="text-sm font-medium text-gray-700">Company Login</span>
+            <Building2 className="h-4 w-4 text-blue-600" />
+          </div>
+
+          {isCompanyLogin && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Company Access:</strong> Use your @opsight.com email address
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-gray-700">Email Address</Label>
@@ -63,7 +88,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
-                  placeholder="Enter your email"
+                  placeholder={isCompanyLogin ? "admin@opsight.com" : "Enter your email"}
                   required
                 />
               </div>
@@ -101,21 +126,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? 'Signing In...' : `Sign In${isCompanyLogin ? ' (Company)' : ''}`}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Don't have an account?{' '}
-              <button
-                onClick={onRegisterClick}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Register here
-              </button>
-            </p>
-          </div>
+          {!isCompanyLogin && (
+            <div className="mt-6 text-center">
+              <p className="text-gray-600">
+                Don't have an account?{' '}
+                <button
+                  onClick={onRegisterClick}
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Register here
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,8 +19,20 @@ import HelpCenter from "./pages/HelpCenter";
 import GettingStartedGuide from "./pages/help/GettingStartedGuide";
 import UserManagementGuide from "./pages/help/UserManagementGuide";
 import CompanyDashboard from "./pages/CompanyDashboard";
+import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
+
+// Protected Route Component for Company Access
+const CompanyProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  
+  if (!user || user.userType !== 'company') {
+    return <NotFound />;
+  }
+  
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -36,7 +49,11 @@ const App = () => (
                 <Route path="/red-flags" element={<RedFlagAlerts />} />
                 <Route path="/ai-reader" element={<AIReader />} />
                 <Route path="/users" element={<UserManagement />} />
-                <Route path="/company-dashboard" element={<CompanyDashboard />} />
+                <Route path="/company-dashboard" element={
+                  <CompanyProtectedRoute>
+                    <CompanyDashboard />
+                  </CompanyProtectedRoute>
+                } />
                 {/* Placeholder routes for remaining modules */}
                 <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="/lp-dashboard" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Dashboard</h1><p className="text-gray-600">Coming Soon</p></div>} />
