@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import Settings from "./pages/Settings";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./components/users/UserManagement";
+import HelpCenter from "./pages/HelpCenter";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +50,7 @@ const App = () => (
                 <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/user-profile" element={<UserProfile />} />
-                <Route path="/help" element={<div className="p-6"><h1 className="text-2xl font-bold">Help Center</h1><p className="text-gray-600">Coming Soon</p></div>} />
+                <Route path="/help" element={<HelpCenter />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
