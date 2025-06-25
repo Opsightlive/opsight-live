@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,16 +33,15 @@ const UserProfile = () => {
             <div className="space-y-6">
               <div className="flex items-center space-x-6">
                 <Avatar className="h-32 w-32">
-                  <AvatarImage src="/lovable-uploads/397c940b-b808-40a6-bc06-a8dc80a7bdbb.png" />
                   <AvatarFallback className="text-2xl">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Jordan Carter</h2>
-                    <p className="text-xl text-gray-600">Fulldan Carter</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+                    <p className="text-xl text-gray-600">{user?.company || 'Company'}</p>
                     <div className="flex items-center space-x-2 mt-2">
-                      <p className="text-lg text-gray-600">jordan@opsight.io</p>
+                      <p className="text-lg text-gray-600">{user?.email}</p>
                       <Button variant="link" className="text-blue-600 p-0 h-auto text-lg">Edit</Button>
                     </div>
                   </div>
