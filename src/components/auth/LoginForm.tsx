@@ -30,18 +30,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Logo and Title Section - Outside the white box */}
         <div className="text-center mb-8">
-          <div className="mb-4">
+          <div className="mb-6">
             <img 
               src="/lovable-uploads/9edc7ad5-5173-495d-9d7c-86beb88ab558.png" 
               alt="OPSIGHT Logo" 
-              className="w-20 h-20 mx-auto"
+              className="w-24 h-24 mx-auto"
             />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">OPSIGHT</h1>
-          <p className="text-gray-400">Asset Performance OS</p>
+          <h1 className="text-5xl font-bold text-white mb-3">OPSIGHT</h1>
+          <p className="text-xl text-gray-300">Asset Performance OS</p>
         </div>
 
+        {/* White Login Box */}
         <div className="bg-white rounded-lg p-8 shadow-xl">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
