@@ -26,7 +26,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
     const success = await login(email, password, isCompanyLogin);
     if (!success) {
       if (isCompanyLogin) {
-        setError('Invalid company credentials. Use @opsight.com email.');
+        setError('Invalid company credentials. Use opsightlive@gmail.com');
       } else {
         setError('Invalid email or password');
       }
@@ -72,7 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
           {isCompanyLogin && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Company Access:</strong> Use your @opsight.com email address
+                <strong>Company Access:</strong> Use opsightlive@gmail.com
               </p>
             </div>
           )}
@@ -88,7 +88,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
-                  placeholder={isCompanyLogin ? "admin@opsight.com" : "Enter your email"}
+                  placeholder={isCompanyLogin ? "opsightlive@gmail.com" : "Enter your email"}
                   required
                 />
               </div>

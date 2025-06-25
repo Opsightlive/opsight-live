@@ -44,8 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let mockUser: User;
       
       if (isCompanyLogin) {
-        // Company login - check for specific company credentials
-        if (email === 'admin@opsight.com' || email.includes('@opsight.com')) {
+        // Company login - check for specific company email
+        if (email === 'opsightlive@gmail.com') {
           mockUser = {
             id: 'company_1',
             email,
