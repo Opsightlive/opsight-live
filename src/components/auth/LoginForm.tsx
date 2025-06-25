@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +30,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <div className="mb-4">
+            <img 
+              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=100&h=100&fit=crop&crop=center" 
+              alt="Logo" 
+              className="w-20 h-20 mx-auto rounded-full"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-white mb-2">OPSIGHT</h1>
           <p className="text-gray-400">Asset Performance OS</p>
         </div>
