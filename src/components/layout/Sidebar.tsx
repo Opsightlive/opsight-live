@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   BarChart3, 
   AlertTriangle, 
@@ -19,17 +19,23 @@ import {
   Mail,
   MessageSquare,
   Database,
-  Target
+  Target,
+  Crown
 } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
   const menuItems = [
     { 
       category: "CORE MODULES",
       items: [
-        { name: "Portfolio Overview", path: "/", icon: Building2 },
+        // Show Company Dashboard for company users, Portfolio Overview for clients
+        ...(user?.userType === 'company' 
+          ? [{ name: "Company Dashboard", path: "/company-dashboard", icon: Crown }]
+          : [{ name: "Portfolio Overview", path: "/", icon: Building2 }]
+        ),
         { name: "KPI Command Center", path: "/kpi-center", icon: BarChart3 },
         { name: "Red Flag Alerts", path: "/red-flags", icon: AlertTriangle },
         { name: "AI Reader", path: "/ai-reader", icon: Upload },
@@ -71,7 +77,9 @@ const Sidebar = () => {
     <div className="bg-white border-r border-gray-200 w-64 min-h-screen overflow-y-auto">
       <div className="p-6 border-b border-gray-200">
         <h1 className="text-2xl font-bold text-black">OPSIGHT</h1>
-        <p className="text-sm text-gray-600 mt-1">Asset Performance OS</p>
+        <p className="text-sm text-gray-600 mt-1">
+          {user?.userType === 'company' ? 'Executive Dashboard' : 'Asset Performance OS'}
+        </p>
       </div>
       
       <nav className="p-4">
