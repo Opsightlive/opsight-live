@@ -34,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         <div className="text-center mb-8">
           <div className="mb-6">
             <img 
-              src="/lovable-uploads/9edc7ad5-5173-495d-9d7c-86beb88ab558.png" 
+              src="/lovable-uploads/397c940b-b808-40a6-bc06-a8dc80a7bdbb.png" 
               alt="OPSIGHT Logo" 
               className="w-24 h-24 mx-auto"
             />
