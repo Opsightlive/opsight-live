@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, CreditCard } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PaymentSetupProps {
   onComplete: () => void;
@@ -10,6 +11,8 @@ interface PaymentSetupProps {
 
 const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
   const [selectedPlan, setSelectedPlan] = useState('professional');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { register } = useAuth();
 
   const plans = [
     {
@@ -55,12 +58,14 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
     }
   ];
 
-  const handlePayment = () => {
-    // In a real app, this would integrate with Stripe or another payment processor
-    // For now, we'll simulate a successful payment
-    setTimeout(() => {
-      onComplete();
-    }, 2000);
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    // Simulate payment processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Complete the registration process
+    setIsProcessing(false);
+    onComplete();
   };
 
   return (
@@ -140,10 +145,11 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
         <div className="text-center">
           <Button 
             onClick={handlePayment}
+            disabled={isProcessing}
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
           >
             <CreditCard className="w-5 h-5 mr-2" />
-            Continue to Payment
+            {isProcessing ? 'Processing...' : 'Continue to Payment'}
           </Button>
           <p className="text-gray-500 mt-4 text-sm">
             Secure payment powered by Stripe • Cancel anytime

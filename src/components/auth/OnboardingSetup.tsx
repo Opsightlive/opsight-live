@@ -28,13 +28,32 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Register the user with the auth context
-    if (formData.email && formData.password) {
-      const success = await register(formData.email, formData.password);
-      if (success) {
-        onComplete();
-      }
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match');
+      return;
     }
+    
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+    
+    // Store the registration data for use after payment
+    localStorage.setItem('pendingRegistration', JSON.stringify({
+      email: formData.email,
+      password: formData.password,
+      userData: {
+        companyName: formData.companyName,
+        role: formData.role,
+        propertyName: formData.propertyName,
+        units: formData.units,
+        address: formData.address,
+        dataSource: formData.dataSource
+      }
+    }));
+    
+    // Move to payment step
+    onComplete();
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -77,12 +96,13 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('companyName', e.target.value)}
                   placeholder="Enter your company name"
                   className="mt-1"
+                  required
                 />
               </div>
               
               <div>
                 <Label htmlFor="role">Role</Label>
-                <Select onValueChange={(value) => handleInputChange('role', value)}>
+                <Select onValueChange={(value) => handleInputChange('role', value)} required>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
@@ -113,6 +133,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('propertyName', e.target.value)}
                   placeholder="Enter property name"
                   className="mt-1"
+                  required
                 />
               </div>
               
@@ -125,6 +146,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('units', e.target.value)}
                   placeholder="e.g. 100"
                   className="mt-1"
+                  required
                 />
               </div>
               
@@ -136,6 +158,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   placeholder="Enter property address"
                   className="mt-1"
+                  required
                 />
               </div>
             </div>
@@ -172,6 +195,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   placeholder="Create a secure password"
                   className="mt-1"
                   required
+                  minLength={6}
                 />
               </div>
               
@@ -185,6 +209,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   placeholder="Confirm your password"
                   className="mt-1"
                   required
+                  minLength={6}
                 />
               </div>
             </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
   MessageCircle, 
@@ -39,6 +39,7 @@ const HelpCenter = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const popularTopics = [
     { icon: FileText, title: 'Getting Started Guide', desc: 'Learn the basics of OpSight', path: '/help/getting-started' },
@@ -63,11 +64,14 @@ const HelpCenter = () => {
 
   const handleTopicClick = (topic: any) => {
     console.log('Topic clicked:', topic.title);
-    toast({
-      title: "Help Article",
-      description: `Opening "${topic.title}" help article...`,
-    });
-    // In a real app, this would navigate to the help article
+    if (topic.path === '/help/getting-started' || topic.path === '/help/user-management') {
+      navigate(topic.path);
+    } else {
+      toast({
+        title: "Help Article",
+        description: `"${topic.title}" article is coming soon...`,
+      });
+    }
   };
 
   const handleTicketSubmit = async (e: React.FormEvent) => {

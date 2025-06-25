@@ -20,7 +20,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState('register'); // 'register', 'onboarding', 'payment'
-  const { isLoading } = useAuth();
+  const { register, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +45,37 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     setCurrentStep('payment');
   };
 
-  const handlePaymentComplete = () => {
-    // This will trigger the auth context to show the main app
-    setCurrentStep('register');
-    // Here we would call the actual register function
+  const handlePaymentComplete = async () => {
+    // Get the registration data from localStorage
+    const pendingRegistration = localStorage.getItem('pendingRegistration');
+    
+    if (pendingRegistration) {
+      const { email, password } = JSON.parse(pendingRegistration);
+      
+      try {
+        // Actually register the user
+        const success = await register(email, password);
+        
+        if (success) {
+          // Clean up the pending registration data
+          localStorage.removeItem('pendingRegistration');
+          // The AuthContext will handle showing the main app
+        } else {
+          setError('Registration failed. Please try again.');
+          setCurrentStep('register');
+        }
+      } catch (err) {
+        setError('Registration failed. Please try again.');
+        setCurrentStep('register');
+      }
+    } else {
+      // Fallback to the form data if localStorage is empty
+      const success = await register(email, password);
+      if (!success) {
+        setError('Registration failed. Please try again.');
+        setCurrentStep('register');
+      }
+    }
   };
 
   if (currentStep === 'onboarding') {
@@ -111,6 +138,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
                   className="pl-10 pr-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
                   placeholder="Create a password"
                   required
+                  minLength={6}
                 />
                 <button
                   type="button"
@@ -134,6 +162,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
                   className="pl-10 pr-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
                   placeholder="Confirm your password"
                   required
+                  minLength={6}
                 />
                 <button
                   type="button"

@@ -16,6 +16,8 @@ import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./components/users/UserManagement";
 import HelpCenter from "./pages/HelpCenter";
+import GettingStartedGuide from "./pages/help/GettingStartedGuide";
+import UserManagementGuide from "./pages/help/UserManagementGuide";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/user-profile" element={<UserProfile />} />
                 <Route path="/help" element={<HelpCenter />} />
+                <Route path="/help/getting-started" element={<GettingStartedGuide />} />
+                <Route path="/help/user-management" element={<UserManagementGuide />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
