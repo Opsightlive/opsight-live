@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,26 +33,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         <div className="text-center mb-8">
           <div className="mb-6">
             <div className="w-24 h-24 mx-auto relative">
-              {/* Outer ring with bright cyan-blue gradient */}
+              {/* Outer bright cyan ring */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-300 via-cyan-400 to-blue-500 shadow-2xl"></div>
               
-              {/* Middle ring with deeper blue tones */}
-              <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700"></div>
+              {/* Inner darker blue ring */}
+              <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800"></div>
               
-              {/* Inner dark center */}
+              {/* Dark center */}
               <div className="absolute inset-4 rounded-full bg-gray-900"></div>
               
-              {/* Top-right dark shadow/line area - main feature from reference */}
-              <div className="absolute top-1 right-1 w-8 h-8 rounded-full bg-gradient-to-br from-gray-800/90 via-blue-900/80 to-blue-800/60"></div>
+              {/* Main dark shadow area in top-right - this is the key feature from reference */}
+              <div className="absolute top-0 right-0 w-12 h-12 rounded-full bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 opacity-90"></div>
               
-              {/* Additional top-right shading for depth */}
-              <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gradient-to-br from-gray-900/70 via-blue-900/50 to-transparent"></div>
+              {/* Secondary dark shading for depth */}
+              <div className="absolute top-1 right-1 w-10 h-10 rounded-full bg-gradient-to-br from-black/80 via-gray-900/70 to-blue-900/60"></div>
               
-              {/* Subtle highlight on top-left */}
-              <div className="absolute top-1 left-1 w-6 h-6 rounded-full bg-gradient-to-br from-cyan-200/40 via-cyan-300/30 to-transparent"></div>
-              
-              {/* Inner rim highlight */}
-              <div className="absolute inset-3 rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-transparent"></div>
+              {/* Smaller concentrated dark spot */}
+              <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-gradient-to-br from-black/90 via-gray-900/80 to-transparent"></div>
             </div>
           </div>
           <h1 className="text-5xl font-bold text-white mb-3">OPSIGHT</h1>
