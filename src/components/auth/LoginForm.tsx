@@ -1,9 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock, Building2 } from 'lucide-react';
 
@@ -16,15 +17,60 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isCompanyLogin, setIsCompanyLogin] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
+
+  // Load remembered credentials on component mount
+  useEffect(() => {
+    const rememberedClientEmail = localStorage.getItem('opsight_remember_client_email');
+    const rememberedCompanyEmail = localStorage.getItem('opsight_remember_company_email');
+    
+    if (isCompanyLogin && rememberedCompanyEmail) {
+      setEmail(rememberedCompanyEmail);
+      setRememberMe(true);
+    } else if (!isCompanyLogin && rememberedClientEmail) {
+      setEmail(rememberedClientEmail);
+      setRememberMe(true);
+    }
+  }, [isCompanyLogin]);
+
+  // Clear email when switching between login types if not remembered
+  useEffect(() => {
+    const rememberedClientEmail = localStorage.getItem('opsight_remember_client_email');
+    const rememberedCompanyEmail = localStorage.getItem('opsight_remember_company_email');
+    
+    if (isCompanyLogin) {
+      setEmail(rememberedCompanyEmail || '');
+      setRememberMe(!!rememberedCompanyEmail);
+    } else {
+      setEmail(rememberedClientEmail || '');
+      setRememberMe(!!rememberedClientEmail);
+    }
+  }, [isCompanyLogin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
     const success = await login(email, password, isCompanyLogin);
-    if (!success) {
+    if (success) {
+      // Handle remember me functionality
+      if (rememberMe) {
+        if (isCompanyLogin) {
+          localStorage.setItem('opsight_remember_company_email', email);
+        } else {
+          localStorage.setItem('opsight_remember_client_email', email);
+        }
+      } else {
+        // Clear remembered email if remember me is unchecked
+        if (isCompanyLogin) {
+          localStorage.removeItem('opsight_remember_company_email');
+        } else {
+          localStorage.removeItem('opsight_remember_client_email');
+        }
+      }
+    } else {
       if (isCompanyLogin) {
         setError('Invalid company credentials. Use opsightlive@gmail.com');
       } else {
@@ -88,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
-                  placeholder={isCompanyLogin ? "opsightlive@gmail.com" : "Enter your email"}
+                  placeholder={isCompanyLogin ? "Company email address" : "Enter your email"}
                   required
                 />
               </div>
@@ -115,6 +161,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+            </div>
+
+            {/* Remember Me Checkbox */}
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="remember" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <Label htmlFor="remember" className="text-sm text-gray-700 cursor-pointer">
+                Remember me
+              </Label>
             </div>
 
             {error && (
