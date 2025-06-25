@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,11 +32,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         {/* Logo and Title Section - Outside the white box */}
         <div className="text-center mb-8">
           <div className="mb-6">
-            <img 
-              src="/lovable-uploads/ec57def0-b7fa-4e5d-b2ad-70a4b7714701.png" 
-              alt="OPSIGHT Logo" 
-              className="w-24 h-24 mx-auto"
-            />
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-white text-4xl font-bold">O</span>
+            </div>
           </div>
           <h1 className="text-5xl font-bold text-white mb-3">OPSIGHT</h1>
           <p className="text-xl text-gray-300">Asset Performance OS</p>
