@@ -32,24 +32,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         {/* Logo and Title Section - Outside the white box */}
         <div className="text-center mb-8">
           <div className="mb-6">
-            <div className="w-24 h-24 mx-auto relative">
-              {/* Outer bright cyan ring */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-300 via-cyan-400 to-blue-500 shadow-2xl"></div>
-              
-              {/* Inner darker blue ring */}
-              <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800"></div>
-              
-              {/* Dark center */}
-              <div className="absolute inset-4 rounded-full bg-gray-900"></div>
-              
-              {/* Main dark shadow area in top-right - this is the key feature from reference */}
-              <div className="absolute top-0 right-0 w-12 h-12 rounded-full bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 opacity-90"></div>
-              
-              {/* Secondary dark shading for depth */}
-              <div className="absolute top-1 right-1 w-10 h-10 rounded-full bg-gradient-to-br from-black/80 via-gray-900/70 to-blue-900/60"></div>
-              
-              {/* Smaller concentrated dark spot */}
-              <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-gradient-to-br from-black/90 via-gray-900/80 to-transparent"></div>
+            <div className="w-24 h-24 mx-auto">
+              <img 
+                src="/lovable-uploads/ec57def0-b7fa-4e5d-b2ad-70a4b7714701.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
           <h1 className="text-5xl font-bold text-white mb-3">OPSIGHT</h1>
