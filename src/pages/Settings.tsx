@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, CreditCard, Calendar } from 'lucide-react';
+import UserManagement from '@/components/users/UserManagement';
 
 const Settings = () => {
   const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
@@ -129,7 +129,6 @@ const Settings = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">SUBSCRIPTION</h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Current Plan */}
                   <div className="space-y-6">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -169,7 +168,6 @@ const Settings = () => {
                     </div>
                   </div>
 
-                  {/* Payment Method */}
                   <div className="space-y-6">
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h3>
@@ -206,13 +204,7 @@ const Settings = () => {
             </TabsContent>
 
             <TabsContent value="access" className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">ACCESS</h2>
-                <p className="text-gray-600">Manage user access and permissions.</p>
-                <div className="mt-4 p-8 bg-gray-50 rounded-lg">
-                  <p className="text-gray-500">Access settings coming soon...</p>
-                </div>
-              </div>
+              <UserManagement />
             </TabsContent>
           </Tabs>
         </CardContent>
