@@ -1,14 +1,15 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, Users, TrendingUp, DollarSign, AlertTriangle, CheckCircle, Clock, Activity, Settings, Target, PieChart, BarChart3, Crown, Globe, Briefcase, Shield, Zap, Award, Rocket, Brain } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Building2, Users, TrendingUp, DollarSign, AlertTriangle, CheckCircle, Clock, Activity, Settings, Target, PieChart, BarChart3, Crown, Globe, Briefcase, Shield, Zap, Award, Rocket, Brain, CreditCard, Phone, Mail, Search } from 'lucide-react';
 
 const CompanyDashboard = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
+  const [paymentFilter, setPaymentFilter] = useState('all');
 
   // CEO/Founder Financial Metrics
   const financialMetrics = {
@@ -155,6 +156,139 @@ const CompanyDashboard = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  const clientPayments = [
+    {
+      id: 1,
+      clientName: 'Blackstone Group',
+      company: 'Blackstone Real Estate',
+      totalValue: 2400000,
+      paidAmount: 2400000,
+      outstandingAmount: 0,
+      paymentStatus: 'paid',
+      lastPayment: '2024-12-20',
+      nextDue: null,
+      riskLevel: 'low',
+      creditScore: 950,
+      relationship: 'platinum',
+      email: 'partnerships@blackstone.com',
+      phone: '+1-212-583-5000',
+      contractType: 'Enterprise Annual'
+    },
+    {
+      id: 2,
+      clientName: 'Vanguard Real Estate',
+      company: 'Vanguard Group',
+      totalValue: 1800000,
+      paidAmount: 900000,
+      outstandingAmount: 900000,
+      paymentStatus: 'partial',
+      lastPayment: '2024-11-15',
+      nextDue: '2024-12-31',
+      riskLevel: 'low',
+      creditScore: 920,
+      relationship: 'gold',
+      email: 'realestate@vanguard.com',
+      phone: '+1-610-669-1000',
+      contractType: 'Enterprise Bi-Annual'
+    },
+    {
+      id: 3,
+      clientName: 'Apollo Global Management',
+      company: 'Apollo Real Estate',
+      totalValue: 3200000,
+      paidAmount: 0,
+      outstandingAmount: 3200000,
+      paymentStatus: 'overdue',
+      lastPayment: null,
+      nextDue: '2024-12-15',
+      riskLevel: 'medium',
+      creditScore: 880,
+      relationship: 'platinum',
+      email: 'contracts@apollo.com',
+      phone: '+1-212-515-3200',
+      contractType: 'Enterprise Multi-Year'
+    },
+    {
+      id: 4,
+      clientName: 'Brookfield Asset Management',
+      company: 'Brookfield Properties',
+      totalValue: 1500000,
+      paidAmount: 1500000,
+      outstandingAmount: 0,
+      paymentStatus: 'paid',
+      lastPayment: '2024-12-18',
+      nextDue: '2025-03-18',
+      riskLevel: 'low',
+      creditScore: 940,
+      relationship: 'gold',
+      email: 'ops@brookfield.com',
+      phone: '+1-212-brookfield',
+      contractType: 'Premium Annual'
+    },
+    {
+      id: 5,
+      clientName: 'KKR Real Estate',
+      company: 'Kohlberg Kravis Roberts',
+      totalValue: 2800000,
+      paidAmount: 1400000,
+      outstandingAmount: 1400000,
+      paymentStatus: 'pending',
+      lastPayment: '2024-12-01',
+      nextDue: '2025-01-15',
+      riskLevel: 'low',
+      creditScore: 910,
+      relationship: 'platinum',
+      email: 'realestate@kkr.com',
+      phone: '+1-212-750-8300',
+      contractType: 'Enterprise Custom'
+    }
+  ];
+
+  const paymentSummary = {
+    totalRevenue: clientPayments.reduce((sum, client) => sum + client.totalValue, 0),
+    totalPaid: clientPayments.reduce((sum, client) => sum + client.paidAmount, 0),
+    totalOutstanding: clientPayments.reduce((sum, client) => sum + client.outstandingAmount, 0),
+    overdueAmount: clientPayments.filter(c => c.paymentStatus === 'overdue').reduce((sum, client) => sum + client.outstandingAmount, 0),
+    clientCount: clientPayments.length,
+    paidClientsCount: clientPayments.filter(c => c.paymentStatus === 'paid').length
+  };
+
+  const getPaymentStatusColor = (status: string) => {
+    switch(status) {
+      case 'paid': return 'bg-green-100 text-green-800 border-green-200';
+      case 'partial': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'pending': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getRiskColor = (risk: string) => {
+    switch(risk) {
+      case 'low': return 'text-green-600';
+      case 'medium': return 'text-yellow-600';
+      case 'high': return 'text-red-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const getRelationshipBadge = (relationship: string) => {
+    switch(relationship) {
+      case 'platinum': return 'bg-purple-100 text-purple-800';
+      case 'gold': return 'bg-yellow-100 text-yellow-800';
+      case 'silver': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-blue-100 text-blue-800';
+    }
+  };
+
+  const filteredPayments = clientPayments.filter(client => {
+    if (paymentFilter === 'all') return true;
+    if (paymentFilter === 'paid') return client.paymentStatus === 'paid';
+    if (paymentFilter === 'outstanding') return client.outstandingAmount > 0;
+    if (paymentFilter === 'overdue') return client.paymentStatus === 'overdue';
+    return true;
+  });
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -385,6 +519,156 @@ const CompanyDashboard = () => {
                 </div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Client Payment Intelligence Section */}
+      <div className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CreditCard className="h-5 w-5 text-green-600" />
+                <span>Enterprise Client Payment Intelligence</span>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Clients</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="outstanding">Outstanding</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Payment Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                    <p className="text-2xl font-bold text-green-600">{formatCurrency(paymentSummary.totalRevenue)}</p>
+                  </div>
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{paymentSummary.clientCount} enterprise clients</p>
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Collected</p>
+                    <p className="text-2xl font-bold text-blue-600">{formatCurrency(paymentSummary.totalPaid)}</p>
+                  </div>
+                  <CheckCircle className="h-6 w-6 text-blue-600" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{paymentSummary.paidClientsCount} clients paid</p>
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Outstanding</p>
+                    <p className="text-2xl font-bold text-orange-600">{formatCurrency(paymentSummary.totalOutstanding)}</p>
+                  </div>
+                  <Clock className="h-6 w-6 text-orange-600" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Pending collection</p>
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Overdue</p>
+                    <p className="text-2xl font-bold text-red-600">{formatCurrency(paymentSummary.overdueAmount)}</p>
+                  </div>
+                  <AlertTriangle className="h-6 w-6 text-red-600" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Requires attention</p>
+              </div>
+            </div>
+
+            {/* Client Payment Table */}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Client & Company</TableHead>
+                    <TableHead>Contract Value</TableHead>
+                    <TableHead>Payment Status</TableHead>
+                    <TableHead>Outstanding</TableHead>
+                    <TableHead>Risk Level</TableHead>
+                    <TableHead>Relationship</TableHead>
+                    <TableHead>Next Due</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPayments.map((client) => (
+                    <TableRow key={client.id} className="hover:bg-gray-50">
+                      <TableCell>
+                        <div>
+                          <div className="font-medium text-sm">{client.clientName}</div>
+                          <div className="text-xs text-gray-500">{client.company}</div>
+                          <div className="text-xs text-gray-400">{client.contractType}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-bold">{formatCurrency(client.totalValue)}</div>
+                          <div className="text-xs text-green-600">Paid: {formatCurrency(client.paidAmount)}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`text-xs ${getPaymentStatusColor(client.paymentStatus)}`}>
+                          {client.paymentStatus.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">
+                          {client.outstandingAmount > 0 ? formatCurrency(client.outstandingAmount) : 'None'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className={`font-medium ${getRiskColor(client.riskLevel)}`}>
+                          {client.riskLevel.toUpperCase()}
+                        </div>
+                        <div className="text-xs text-gray-500">Score: {client.creditScore}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`text-xs ${getRelationshipBadge(client.relationship)}`}>
+                          {client.relationship.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-xs">
+                          {client.nextDue ? new Date(client.nextDue).toLocaleDateString() : 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                            <Mail className="h-3 w-3 mr-1" />
+                            Email
+                          </Button>
+                          <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                            <Phone className="h-3 w-3 mr-1" />
+                            Call
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
