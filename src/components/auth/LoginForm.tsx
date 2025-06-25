@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +35,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
           <div className="mb-6">
             <div className="w-24 h-24 mx-auto">
               <img 
-                src="/lovable-uploads/ec57def0-b7fa-4e5d-b2ad-70a4b7714701.png" 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
                 alt="OPSIGHT Logo" 
                 className="w-full h-full object-contain"
               />
