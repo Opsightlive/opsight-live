@@ -43,7 +43,8 @@ const App = () => (
                 <Route path="/delivery-logs" element={<div className="p-6"><h1 className="text-2xl font-bold">Alert Delivery Logs</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="/data-vault" element={<div className="p-6"><h1 className="text-2xl font-bold">Data Vault</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/settings" element={<div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p className="text-gray-600">Coming Soon</p></div>} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/user-profile" element={<UserProfile />} />
                 <Route path="/help" element={<div className="p-6"><h1 className="text-2xl font-bold">Help Center</h1><p className="text-gray-600">Coming Soon</p></div>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
