@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
 import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar } from 'lucide-react';
+import AIAdvisor from '../components/ai/AIAdvisor';
 
 const RedFlagAlerts = () => {
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [expandedAlert, setExpandedAlert] = useState<number | null>(null);
 
   const alerts = [
     {
@@ -89,6 +90,11 @@ const RedFlagAlerts = () => {
     }
   ];
 
+  const handleResolveAlert = (alertId: number, resolution: string) => {
+    console.log(`Alert ${alertId} resolved with: ${resolution}`);
+    // Here you would typically update the alert status in your backend
+  };
+
   const getSeverityColor = (severity: string) => {
     switch(severity) {
       case 'critical': return 'bg-red-100 text-red-800 border-red-200';
@@ -170,49 +176,66 @@ const RedFlagAlerts = () => {
         <h2 className="text-lg font-semibold text-black mb-4">Active Red Flags ({filteredAlerts.length})</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredAlerts.map((alert) => (
-            <div key={alert.id} className={`border-2 p-6 ${getSeverityColor(alert.severity)}`}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${getSeverityBadge(alert.severity)}`}>
-                    {alert.severity.toUpperCase()}
-                  </span>
+            <div key={alert.id} className="space-y-4">
+              <div className={`border-2 p-6 ${getSeverityColor(alert.severity)}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
+                    <span className={`px-2 py-1 text-xs font-medium rounded ${getSeverityBadge(alert.severity)}`}>
+                      {alert.severity.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Clock className="h-4 w-4 mr-1" />
+                    {alert.daysActive} days active
+                  </div>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-1" />
-                  {alert.daysActive} days active
-                </div>
-              </div>
 
-              <h3 className="text-lg font-semibold text-black mb-2">{alert.metric}</h3>
-              <p className="text-sm text-gray-600 mb-1">{alert.property}</p>
-              <p className="text-sm text-gray-700 mb-4">{alert.description}</p>
+                <h3 className="text-lg font-semibold text-black mb-2">{alert.metric}</h3>
+                <p className="text-sm text-gray-600 mb-1">{alert.property}</p>
+                <p className="text-sm text-gray-700 mb-4">{alert.description}</p>
 
-              <div className="bg-white p-3 mb-4 border border-gray-200">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Current Value:</span>
-                  <span className="font-medium text-black">{alert.value}</span>
+                <div className="bg-white p-3 mb-4 border border-gray-200">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Current Value:</span>
+                    <span className="font-medium text-black">{alert.value}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Threshold:</span>
+                    <span className="font-medium text-black">{alert.threshold}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Assigned PM:</span>
+                    <span className="font-medium text-black">{alert.assignedPM}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Threshold:</span>
-                  <span className="font-medium text-black">{alert.threshold}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Assigned PM:</span>
-                  <span className="font-medium text-black">{alert.assignedPM}</span>
-                </div>
-              </div>
 
-              <div className="flex space-x-2">
-                <button className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700 flex items-center justify-center">
-                  <Send className="h-4 w-4 mr-1" />
-                  Send to PM
+                <div className="flex space-x-2 mb-4">
+                  <button className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700 flex items-center justify-center">
+                    <Send className="h-4 w-4 mr-1" />
+                    Send to PM
+                  </button>
+                  <button className="flex-1 bg-green-600 text-white py-2 px-4 text-sm font-medium hover:bg-green-700 flex items-center justify-center">
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Resolve
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setExpandedAlert(expandedAlert === alert.id ? null : alert.id)}
+                  className="w-full bg-indigo-600 text-white py-2 px-4 text-sm font-medium hover:bg-indigo-700 rounded"
+                >
+                  {expandedAlert === alert.id ? 'Hide AI Advisor' : 'Get AI Advice & Resolution'}
                 </button>
-                <button className="flex-1 bg-green-600 text-white py-2 px-4 text-sm font-medium hover:bg-green-700 flex items-center justify-center">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  Resolve
-                </button>
               </div>
+
+              {/* AI Advisor Component */}
+              {expandedAlert === alert.id && (
+                <AIAdvisor 
+                  alert={alert} 
+                  onResolve={(resolution) => handleResolveAlert(alert.id, resolution)}
+                />
+              )}
             </div>
           ))}
         </div>
