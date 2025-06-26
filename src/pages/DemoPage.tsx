@@ -29,7 +29,7 @@ const DemoPage = () => {
 
   const handleBookingComplete = (date: Date, time: string) => {
     console.log('Demo booked for:', date, time, 'Contact:', formData);
-    // Here you would typically send this data to your backend
+    // The email service now handles sending the data
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -252,7 +252,10 @@ const DemoPage = () => {
               </p>
             </div>
             
-            <CalendarBooking onBookingComplete={handleBookingComplete} />
+            <CalendarBooking 
+              onBookingComplete={handleBookingComplete}
+              contactData={formData}
+            />
             
             <div className="text-center mt-8">
               <Button 

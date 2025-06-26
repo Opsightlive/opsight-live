@@ -3,18 +3,30 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Clock, Calendar as CalendarIcon, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { emailService } from '@/services/emailService';
+import { useToast } from '@/hooks/use-toast';
 
 interface CalendarBookingProps {
   onBookingComplete: (date: Date, time: string) => void;
+  contactData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    company: string;
+    properties: string;
+    message: string;
+  };
 }
 
-const CalendarBooking: React.FC<CalendarBookingProps> = ({ onBookingComplete }) => {
+const CalendarBooking: React.FC<CalendarBookingProps> = ({ onBookingComplete, contactData }) => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [isBooked, setIsBooked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   // Available time slots
   const timeSlots = [
@@ -22,10 +34,41 @@ const CalendarBooking: React.FC<CalendarBookingProps> = ({ onBookingComplete }) 
     '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
   ];
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (selectedDate && selectedTime) {
-      onBookingComplete(selectedDate, selectedTime);
-      setIsBooked(true);
+      setIsSubmitting(true);
+      
+      try {
+        const success = await emailService.sendDemoRequest({
+          ...contactData,
+          selectedDate,
+          selectedTime,
+        });
+
+        if (success) {
+          onBookingComplete(selectedDate, selectedTime);
+          setIsBooked(true);
+          toast({
+            title: "Demo Scheduled!",
+            description: "Your demo request has been submitted successfully.",
+          });
+        } else {
+          toast({
+            title: "Submission Failed",
+            description: "Please try again or contact support.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error submitting demo request:', error);
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -113,8 +156,13 @@ const CalendarBooking: React.FC<CalendarBookingProps> = ({ onBookingComplete }) 
                     {selectedDate.toLocaleDateString()} at {selectedTime}
                   </p>
                 </div>
-                <Button onClick={handleBooking} size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Book Demo
+                <Button 
+                  onClick={handleBooking} 
+                  size="lg" 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Scheduling...' : 'Book Demo'}
                 </Button>
               </div>
             </CardContent>
