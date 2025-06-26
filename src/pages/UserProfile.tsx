@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,12 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Building2, Calendar, Edit, Save, X } from 'lucide-react';
+import { User, Mail, Building2, Calendar, Edit, Save, X, Camera, Upload } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const UserProfile = () => {
   const { user, isCompanyUser } = useAuth();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -29,6 +33,13 @@ const UserProfile = () => {
   const handleSave = () => {
     // Here you would typically update the user data
     console.log('Saving user data:', formData);
+    if (avatarPreview) {
+      console.log('Saving new avatar:', avatarPreview);
+    }
+    toast({
+      title: "Profile updated",
+      description: "Your profile has been successfully updated.",
+    });
     setIsEditing(false);
   };
 
@@ -41,12 +52,52 @@ const UserProfile = () => {
       phone: user?.phone || '',
       bio: user?.bio || ''
     });
+    setAvatarPreview(null);
     setIsEditing(false);
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleAvatarClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const currentAvatar = avatarPreview || user?.avatar;
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -80,13 +131,44 @@ const UserProfile = () => {
         <Card className="lg:col-span-1">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
-                  {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar 
+                  className={`h-24 w-24 ${isEditing ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                  onClick={handleAvatarClick}
+                >
+                  <AvatarImage src={currentAvatar} alt={user?.name} />
+                  <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
+                    {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity"
+                    onClick={handleAvatarClick}
+                  >
+                    <Camera className="h-6 w-6 text-white" />
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
             </div>
+            {isEditing && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleAvatarClick}
+                className="mx-auto"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Photo
+              </Button>
+            )}
             <CardTitle className="text-xl">{user?.name || 'User Name'}</CardTitle>
             <p className="text-gray-600">{user?.email}</p>
             <div className="flex justify-center mt-2">
