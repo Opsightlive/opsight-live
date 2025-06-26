@@ -4,8 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building, Home, Mail, Database } from 'lucide-react';
+import { Building, Home, Mail, Database, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+
+interface Property {
+  id: string;
+  name: string;
+  units: string;
+  address: string;
+}
 
 interface OnboardingSetupProps {
   onComplete: () => void;
@@ -16,14 +23,37 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [formData, setFormData] = useState({
     companyName: '',
     role: '',
-    propertyName: '',
-    units: '',
-    address: '',
     email: '',
     password: '',
     confirmPassword: '',
     dataSource: 'connect-pm'
   });
+
+  const [properties, setProperties] = useState<Property[]>([
+    { id: '1', name: '', units: '', address: '' }
+  ]);
+
+  const addProperty = () => {
+    const newProperty: Property = {
+      id: Date.now().toString(),
+      name: '',
+      units: '',
+      address: ''
+    };
+    setProperties([...properties, newProperty]);
+  };
+
+  const removeProperty = (id: string) => {
+    if (properties.length > 1) {
+      setProperties(properties.filter(prop => prop.id !== id));
+    }
+  };
+
+  const updateProperty = (id: string, field: keyof Property, value: string) => {
+    setProperties(properties.map(prop => 
+      prop.id === id ? { ...prop, [field]: value } : prop
+    ));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +67,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       alert('Password must be at least 6 characters');
       return;
     }
+
+    // Validate properties
+    const validProperties = properties.filter(prop => 
+      prop.name.trim() && prop.units.trim() && prop.address.trim()
+    );
+
+    if (validProperties.length === 0) {
+      alert('Please add at least one complete property');
+      return;
+    }
     
     // Store the registration data for use after payment
     localStorage.setItem('pendingRegistration', JSON.stringify({
@@ -45,10 +85,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       userData: {
         companyName: formData.companyName,
         role: formData.role,
-        propertyName: formData.propertyName,
-        units: formData.units,
-        address: formData.address,
-        dataSource: formData.dataSource
+        properties: validProperties,
+        dataSource: formData.dataSource,
+        propertyCount: validProperties.length,
+        totalCost: validProperties.length * 295
       }
     }));
     
@@ -59,6 +99,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const totalProperties = properties.filter(prop => 
+    prop.name.trim() && prop.units.trim() && prop.address.trim()
+  ).length;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -77,141 +121,178 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
           <p className="text-blue-600 text-lg tracking-wider">OPERATIONAL INSIGHT</p>
           <h2 className="text-3xl font-bold text-gray-900 mt-8">Let's get you set up.</h2>
+          {totalProperties > 0 && (
+            <p className="text-gray-600 mt-2">
+              {totalProperties} {totalProperties === 1 ? 'property' : 'properties'} configured
+            </p>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Company & Role */}
-          <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-            <div className="flex items-center mb-4">
-              <Building className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-bold">Company & Role</h3>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="companyName">Company Name:</Label>
-                <Input
-                  id="companyName"
-                  value={formData.companyName}
-                  onChange={(e) => handleInputChange('companyName', e.target.value)}
-                  placeholder="Enter your company name"
-                  className="mt-1"
-                  required
-                />
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Company & Role Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
+              <div className="flex items-center mb-4">
+                <Building className="h-6 w-6 text-blue-600 mr-2" />
+                <h3 className="text-xl font-bold">Company & Role</h3>
               </div>
               
-              <div>
-                <Label htmlFor="role">Role</Label>
-                <Select onValueChange={(value) => handleInputChange('role', value)} required>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gp">GP</SelectItem>
-                    <SelectItem value="lp">LP</SelectItem>
-                    <SelectItem value="asset-manager">Asset Manager</SelectItem>
-                    <SelectItem value="property-manager">Property Manager</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="companyName">Company Name:</Label>
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => handleInputChange('companyName', e.target.value)}
+                    placeholder="Enter your company name"
+                    className="mt-1"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="role">Role</Label>
+                  <Select onValueChange={(value) => handleInputChange('role', value)} required>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gp">GP</SelectItem>
+                      <SelectItem value="lp">LP</SelectItem>
+                      <SelectItem value="asset-manager">Asset Manager</SelectItem>
+                      <SelectItem value="property-manager">Property Manager</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Login Setup */}
+            <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
+              <div className="flex items-center mb-4">
+                <Mail className="h-6 w-6 text-blue-600 mr-2" />
+                <h3 className="text-xl font-bold">Login Setup</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    placeholder="Enter your email address"
+                    className="mt-1"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Create a secure password"
+                    className="mt-1"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="Confirm your password"
+                    className="mt-1"
+                    required
+                    minLength={6}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Property Details */}
+          {/* Properties Section */}
           <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-            <div className="flex items-center mb-4">
-              <Home className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-bold">Property Details</h3>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <Home className="h-6 w-6 text-blue-600 mr-2" />
+                <h3 className="text-xl font-bold">Property Portfolio</h3>
+              </div>
+              <Button
+                type="button"
+                onClick={addProperty}
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Property
+              </Button>
             </div>
             
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="propertyName">Property Name</Label>
-                <Input
-                  id="propertyName"
-                  value={formData.propertyName}
-                  onChange={(e) => handleInputChange('propertyName', e.target.value)}
-                  placeholder="Enter property name"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="units">Number of Units</Label>
-                <Input
-                  id="units"
-                  type="number"
-                  value={formData.units}
-                  onChange={(e) => handleInputChange('units', e.target.value)}
-                  placeholder="e.g. 100"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="address">Property Address</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter property address"
-                  className="mt-1"
-                  required
-                />
-              </div>
-            </div>
-          </div>
+              {properties.map((property, index) => (
+                <div key={property.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border border-gray-200 rounded-lg">
+                  <div>
+                    <Label htmlFor={`property-name-${property.id}`}>Property Name</Label>
+                    <Input
+                      id={`property-name-${property.id}`}
+                      value={property.name}
+                      onChange={(e) => updateProperty(property.id, 'name', e.target.value)}
+                      placeholder="Property name"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor={`property-units-${property.id}`}>Number of Units</Label>
+                    <Input
+                      id={`property-units-${property.id}`}
+                      type="number"
+                      value={property.units}
+                      onChange={(e) => updateProperty(property.id, 'units', e.target.value)}
+                      placeholder="e.g. 100"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor={`property-address-${property.id}`}>Property Address</Label>
+                    <Input
+                      id={`property-address-${property.id}`}
+                      value={property.address}
+                      onChange={(e) => updateProperty(property.id, 'address', e.target.value)}
+                      placeholder="Property address"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
 
-          {/* Login Setup */}
-          <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-            <div className="flex items-center mb-4">
-              <Mail className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-bold">Login Setup</h3>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your email address"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Create a secure password"
-                  className="mt-1"
-                  required
-                  minLength={6}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="Confirm your password"
-                  className="mt-1"
-                  required
-                  minLength={6}
-                />
-              </div>
+                  <div className="flex items-end">
+                    {properties.length > 1 && (
+                      <Button
+                        type="button"
+                        onClick={() => removeProperty(property.id)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -256,7 +337,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </div>
         </form>
 
-        <div className="text-center">
+        <div className="text-center mt-8">
           <Button 
             type="submit" 
             onClick={handleSubmit}

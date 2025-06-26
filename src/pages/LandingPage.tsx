@@ -13,7 +13,9 @@ import {
   CheckCircle,
   ArrowRight,
   Menu,
-  X
+  X,
+  Star,
+  Award
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,13 +39,14 @@ const LandingPage = () => {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-gray-900">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
-              <a href="#about" className="text-gray-600 hover:text-gray-900">About</a>
-              <Link to="/demo" className="text-gray-600 hover:text-gray-900">Schedule Demo</Link>
+              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</a>
+              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
+              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
+              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
+              <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
-                <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
               </Link>
             </div>
 
@@ -62,14 +65,15 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200">
               <div className="px-2 pt-2 pb-3 space-y-1">
-                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Features</a>
-                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
-                <a href="#about" className="block px-3 py-2 text-gray-600 hover:text-gray-900">About</a>
-                <Link to="/demo" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Schedule Demo</Link>
+                <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</a>
+                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
+                <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
+                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
+                <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
                   <Link to="/signup">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Try Free</Button>
                   </Link>
                 </div>
               </div>
@@ -79,36 +83,54 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+      <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-                The Operating System for 
-                <span className="text-blue-600 block">Real Estate Performance</span>
+              <div className="flex items-center mb-6">
+                <Award className="h-6 w-6 text-blue-600 mr-2" />
+                <span className="text-blue-600 font-semibold">Trusted by Leading Real Estate Professionals</span>
+              </div>
+              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                Transform Your 
+                <span className="text-blue-600 block">Portfolio Performance</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Automate KPI tracking, forecast red flags, and enforce resolution from property managers. 
-                Turn your portfolio into a high-performance asset with AI-powered operational insights.
+                The world's most advanced real estate intelligence platform. Automate operations, 
+                predict issues before they happen, and maximize returns with AI-powered insights.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/signup">
+                <Link to="/demo">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
-                    Start Free Trial
+                    Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/demo">
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                    Schedule Demo
+                <Link to="/signup">
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2">
+                    Start Free Trial
                   </Button>
                 </Link>
+              </div>
+              <div className="mt-8 flex items-center space-x-6 text-sm text-gray-500">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  No credit card required
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  Setup in minutes
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  Cancel anytime
+                </div>
               </div>
             </div>
             <div className="relative">
               <div className="bg-white rounded-lg shadow-2xl p-6 border">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900">Portfolio Dashboard</h3>
+                  <h3 className="font-semibold text-gray-900">Live Portfolio Dashboard</h3>
                   <div className="flex space-x-1">
                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
@@ -119,23 +141,23 @@ const LandingPage = () => {
                   <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                     <div className="flex items-center">
                       <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                      <span className="text-sm font-medium">3 Red Flag Alerts</span>
+                      <span className="text-sm font-medium">3 Predictive Alerts</span>
                     </div>
-                    <Button size="sm" variant="outline">View</Button>
+                    <Button size="sm" variant="outline">Review</Button>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div className="flex items-center">
                       <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
-                      <span className="text-sm font-medium">NOI Up 12%</span>
+                      <span className="text-sm font-medium">NOI Up 18%</span>
                     </div>
-                    <Button size="sm" variant="outline">Details</Button>
+                    <Button size="sm" variant="outline">View Report</Button>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center">
                       <Bot className="h-5 w-5 text-blue-500 mr-2" />
-                      <span className="text-sm font-medium">AI Insights Ready</span>
+                      <span className="text-sm font-medium">AI Recommendations</span>
                     </div>
-                    <Button size="sm" variant="outline">Review</Button>
+                    <Button size="sm" variant="outline">See All</Button>
                   </div>
                 </div>
               </div>
@@ -144,163 +166,208 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Features Section */}
-      <div id="features" className="py-16 lg:py-24 bg-white">
+      {/* Social Proof */}
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <p className="text-gray-500 font-medium">Trusted by industry leaders worldwide</p>
+          </div>
+          <div className="flex items-center justify-center space-x-8 opacity-60">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-gray-300 h-8 w-24 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Solutions Section */}
+      <div id="solutions" className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need to Optimize Performance
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Solutions Built for Real Estate Excellence
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From KPI tracking to predictive analytics, OPSIGHT provides the tools to turn your 
-              portfolio into a high-performance asset management operation.
+              From portfolio management to predictive analytics, OPSIGHT delivers 
+              the intelligence you need to stay ahead of the market.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <BarChart3 className="h-6 w-6 text-blue-600" />
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
+              <div className="bg-blue-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                <BarChart3 className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">KPI Command Center</h3>
-              <p className="text-gray-600">
-                Real-time dashboard tracking all critical metrics across your portfolio with automated reporting.
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Performance Intelligence</h3>
+              <p className="text-gray-600 mb-6">
+                Real-time KPI tracking, automated reporting, and performance optimization 
+                across your entire portfolio.
               </p>
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+                Learn more →
+              </Link>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-red-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="bg-gradient-to-br from-red-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
+              <div className="bg-red-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Red Flag Alerts</h3>
-              <p className="text-gray-600">
-                Predictive alerts that identify potential issues before they impact your bottom line.
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Predictive Risk Management</h3>
+              <p className="text-gray-600 mb-6">
+                Advanced AI algorithms identify potential issues before they impact 
+                your bottom line, keeping you ahead of problems.
               </p>
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+                Learn more →
+              </Link>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Bot className="h-6 w-6 text-green-600" />
+            <div className="bg-gradient-to-br from-green-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
+              <div className="bg-green-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                <Bot className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Intelligence</h3>
-              <p className="text-gray-600">
-                AI-powered insights and recommendations to optimize property performance and operations.
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">AI-Powered Operations</h3>
+              <p className="text-gray-600 mb-6">
+                Intelligent automation and insights that transform how you manage 
+                properties and engage with property managers.
               </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">PM Engagement</h3>
-              <p className="text-gray-600">
-                Track and improve property manager engagement with automated scoring and feedback systems.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Building2 className="h-6 w-6 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Portfolio Overview</h3>
-              <p className="text-gray-600">
-                Complete visibility across your entire portfolio with drill-down capabilities to individual properties.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="bg-teal-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Shield className="h-6 w-6 text-teal-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Automated Reporting</h3>
-              <p className="text-gray-600">
-                Generate professional reports for investors and stakeholders with automated data collection.
-              </p>
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+                Learn more →
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pricing Section */}
-      <div id="pricing" className="py-16 lg:py-24 bg-gray-50">
+      {/* Features Platform Section */}
+      <div id="features" className="py-16 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              The Complete Real Estate Intelligence Platform
             </h2>
-            <p className="text-xl text-gray-600">
-              $240 per property per month. Scale as you grow.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to optimize performance, minimize risk, and maximize returns.
             </p>
           </div>
 
-          <div className="max-w-lg mx-auto">
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Professional</h3>
-                <div className="text-4xl font-bold text-blue-600 mb-2">
-                  $240
-                  <span className="text-lg font-normal text-gray-600">/property/month</span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: BarChart3,
+                title: "KPI Command Center",
+                description: "Real-time dashboard tracking all critical metrics with automated reporting and trend analysis."
+              },
+              {
+                icon: AlertTriangle,
+                title: "Predictive Alerts",
+                description: "AI-powered early warning system that identifies potential issues before they become problems."
+              },
+              {
+                icon: Bot,
+                title: "AI Intelligence",
+                description: "Advanced machine learning insights and recommendations to optimize property performance."
+              },
+              {
+                icon: Users,
+                title: "PM Engagement",
+                description: "Track and improve property manager performance with automated scoring and feedback systems."
+              },
+              {
+                icon: Building2,
+                title: "Portfolio Overview",
+                description: "Complete visibility across your entire portfolio with drill-down capabilities to individual properties."
+              },
+              {
+                icon: Shield,
+                title: "Automated Compliance",
+                description: "Stay compliant with automated reporting and documentation management systems."
+              }
+            ].map((feature, index) => (
+              <div key={index} className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+                <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <feature.icon className="h-6 w-6 text-blue-600" />
                 </div>
-                <p className="text-gray-600">Everything you need to optimize your portfolio</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>Real-time KPI tracking</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>Predictive red flag alerts</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>AI-powered insights</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>Automated reporting</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>PM engagement scoring</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <span>24/7 support</span>
-                </li>
-              </ul>
+      {/* Customer Stories */}
+      <div id="customers" className="py-16 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Success Stories
+            </h2>
+            <p className="text-xl text-gray-600">
+              See how industry leaders are transforming their operations with OPSIGHT
+            </p>
+          </div>
 
-              <Link to="/signup">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3">
-                  Start Free Trial
-                </Button>
-              </Link>
-            </div>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "OPSIGHT helped us increase NOI by 22% across our portfolio while reducing operational overhead by 35%.",
+                author: "Sarah Chen",
+                title: "Portfolio Manager",
+                company: "Premier Real Estate Group"
+              },
+              {
+                quote: "The predictive alerts alone saved us from three major issues that could have cost millions.",
+                author: "Michael Rodriguez",
+                title: "Asset Manager", 
+                company: "Coastal Properties"
+              },
+              {
+                quote: "We now have complete visibility into our portfolio performance. The AI insights are game-changing.",
+                author: "Jennifer Walsh",
+                title: "VP of Operations",
+                company: "Metro Holdings"
+              }
+            ].map((testimonial, index) => (
+              <div key={index} className="bg-gray-50 p-8 rounded-lg">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-6 italic">"{testimonial.quote}"</p>
+                <div>
+                  <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                  <p className="text-gray-600">{testimonial.title}</p>
+                  <p className="text-gray-500">{testimonial.company}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="bg-blue-600">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
               Ready to Transform Your Portfolio?
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join leading real estate professionals who trust OPSIGHT to optimize their operations and maximize returns.
+              Join thousands of real estate professionals who trust OPSIGHT to optimize 
+              their operations and maximize returns.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup">
+              <Link to="/demo">
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
-                  Start Your Free Trial
+                  Schedule Your Demo
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/demo">
+              <Link to="/signup">
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-600">
-                  Schedule a Demo
+                  Start Free Trial
                 </Button>
               </Link>
             </div>
@@ -311,8 +378,8 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid md:grid-cols-5 gap-8">
+            <div className="md:col-span-2">
               <div className="flex items-center mb-4">
                 <img 
                   src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
@@ -321,34 +388,39 @@ const LandingPage = () => {
                 />
                 <span className="text-xl font-bold">OPSIGHT</span>
               </div>
-              <p className="text-gray-400">
-                The operating system for real estate performance optimization.
+              <p className="text-gray-400 mb-4">
+                The world's most advanced real estate intelligence platform.
+              </p>
+              <p className="text-gray-400 text-sm">
+                Transform your portfolio performance with AI-powered insights.
               </p>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
+              <h3 className="font-semibold mb-4">Solutions</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">Portfolio Management</a></li>
+                <li><a href="#" className="hover:text-white">Risk Intelligence</a></li>
+                <li><a href="#" className="hover:text-white">Performance Analytics</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#features" className="hover:text-white">Features</a></li>
-                <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
-                <li><Link to="/demo" className="hover:text-white">Demo</Link></li>
+                <li><a href="#" className="hover:text-white">Integrations</a></li>
+                <li><a href="#" className="hover:text-white">Security</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#about" className="hover:text-white">About</a></li>
+                <li><a href="#" className="hover:text-white">About</a></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
                 <li><a href="#" className="hover:text-white">Support</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white">Privacy</a></li>
               </ul>
             </div>
           </div>
