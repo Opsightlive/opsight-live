@@ -140,39 +140,31 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
-        {/* Header with Back Button */}
-        <div className="flex items-center mb-8">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBackClick}
-            className="mr-4 hover:bg-gray-100"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Logo and Title */}
-        <div className="text-center mb-12">
-          <div className="mb-6">
-            <div className="w-20 h-20 mx-auto">
-              <img 
-                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-                alt="OPSIGHT Logo" 
-                className="w-full h-full object-contain"
-              />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Blue Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">Add New Property</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">
+                Let's get your new property set up with OPSIGHT
+              </p>
+              {totalProperties > 0 && (
+                <p className="text-blue-100 mt-2">
+                  {totalProperties} {totalProperties === 1 ? 'property' : 'properties'} configured
+                </p>
+              )}
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBackClick}
+              className="text-white hover:bg-blue-600"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
           </div>
-          <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
-          <p className="text-blue-600 text-lg tracking-wider">OPERATIONAL INSIGHT</p>
-          <h2 className="text-3xl font-bold text-gray-900 mt-8">Let's get you set up.</h2>
-          {totalProperties > 0 && (
-            <p className="text-gray-600 mt-2">
-              {totalProperties} {totalProperties === 1 ? 'property' : 'properties'} configured
-            </p>
-          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -434,7 +426,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               type="submit" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
             >
-              Continue to Payment
+              See Your New Portfolio Payment
             </Button>
           </div>
         </form>
