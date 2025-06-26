@@ -15,6 +15,7 @@ import {
   VolumeX
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AISuggestionsPanel from '@/components/ai/AISuggestionsPanel';
 
 const AlertsNotifications = () => {
   const { toast } = useToast();
@@ -107,6 +108,9 @@ const AlertsNotifications = () => {
             <p className="text-xl text-blue-100 max-w-3xl">Manage your notification preferences and view real-time alerts from across your property portfolio</p>
           </div>
         </div>
+
+        {/* AI Suggestions Panel */}
+        <AISuggestionsPanel />
 
         {/* Notification Settings */}
         <Card>
