@@ -1,14 +1,15 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Download, Trash2, Eye, Brain } from 'lucide-react';
+import { Upload, FileText, Download, Trash2, Eye, Brain, Settings, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AIReader = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadMode, setUploadMode] = useState('automatic');
   const [uploadedFiles, setUploadedFiles] = useState<Array<{
     id: string;
     name: string;
@@ -45,6 +46,14 @@ const AIReader = () => {
       ]
     }
   ]);
+
+  // Load upload mode from localStorage on component mount
+  useEffect(() => {
+    const savedMode = localStorage.getItem('aiReaderMode');
+    if (savedMode) {
+      setUploadMode(savedMode);
+    }
+  }, []);
 
   const handleFileUpload = () => {
     fileInputRef.current?.click();
@@ -111,36 +120,96 @@ const AIReader = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <div>
-            <h1 className="text-4xl font-bold mb-4">AI Document Reader</h1>
-            <p className="text-xl text-blue-100 max-w-3xl">Upload and analyze documents with AI-powered insights for property management and financial reports</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">AI Document Reader</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">
+                Upload and analyze documents with AI-powered insights for property management and financial reports
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge 
+                variant={uploadMode === 'automatic' ? 'default' : 'secondary'} 
+                className="bg-white text-blue-600 flex items-center gap-2"
+              >
+                {uploadMode === 'automatic' ? (
+                  <>
+                    <Zap className="h-4 w-4" />
+                    Automatic Mode
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4" />
+                    Manual Mode
+                  </>
+                )}
+              </Badge>
+              <p className="text-sm text-blue-100">
+                Change mode in <Settings className="h-4 w-4 inline" /> Settings
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Upload Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Upload className="h-5 w-5" />
-              Upload Documents
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-4">
-              <p className="text-sm text-gray-600">
-                Supported formats: PDF, DOCX, TXT, CSV, XLSX. Max file size: 10MB
-              </p>
-              <Button onClick={handleFileUpload}>
-                <Upload className="h-4 w-4 mr-2" />
-                Select Files
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {uploadMode === 'automatic' ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Automatic Document Processing
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col space-y-4">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">Automatic Mode Active</h4>
+                  <p className="text-sm text-blue-700 mb-3">
+                    Documents are automatically detected and processed from your connected sources. 
+                    New documents will appear here as they are discovered and analyzed.
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    Monitoring for new documents...
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Supported formats: PDF, DOCX, TXT, CSV, XLSX. Max file size: 10MB
+                </p>
+                <Button onClick={handleFileUpload} variant="outline">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Manually Add Document (Override)
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Upload Documents
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col space-y-4">
+                <p className="text-sm text-gray-600">
+                  Supported formats: PDF, DOCX, TXT, CSV, XLSX. Max file size: 10MB
+                </p>
+                <Button onClick={handleFileUpload}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Select Files
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Files List */}
         <div>
-          <h2 className="text-lg font-semibold text-black mb-4">Uploaded Files ({uploadedFiles.length})</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">
+            {uploadMode === 'automatic' ? 'Processed Documents' : 'Uploaded Files'} ({uploadedFiles.length})
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {uploadedFiles.map((file) => (
               <Card key={file.id}>
@@ -152,7 +221,9 @@ const AIReader = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <p className="text-xs text-gray-600">Size: {file.size}</p>
-                  <p className="text-xs text-gray-600">Uploaded: {file.uploadDate}</p>
+                  <p className="text-xs text-gray-600">
+                    {uploadMode === 'automatic' ? 'Processed' : 'Uploaded'}: {file.uploadDate}
+                  </p>
                   
                   {file.processed ? (
                     <div className="space-y-2">

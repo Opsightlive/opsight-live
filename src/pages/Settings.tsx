@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
   Settings as SettingsIcon, 
   Bell, 
@@ -15,7 +16,8 @@ import {
   Database,
   Image as ImageIcon,
   Save,
-  Trash2
+  Trash2,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -31,8 +33,12 @@ const Settings = () => {
     redFlags: true,
     reports: true
   });
+  const [aiReaderMode, setAiReaderMode] = useState('automatic');
 
   const handleSaveSettings = () => {
+    // Save AI Reader mode to localStorage
+    localStorage.setItem('aiReaderMode', aiReaderMode);
+    
     toast({
       title: "Settings saved",
       description: "Your preferences have been updated successfully.",
@@ -105,6 +111,47 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <Switch id="autoSave" defaultChecked />
                   <Label htmlFor="autoSave">Auto-save changes</Label>
+                </div>
+
+                <Separator />
+
+                {/* AI Reader Settings */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Upload className="h-5 w-5" />
+                    <Label className="text-base font-medium">AI Reader Upload Mode</Label>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Choose how documents are uploaded to the AI Reader
+                  </p>
+                  <RadioGroup 
+                    value={aiReaderMode} 
+                    onValueChange={setAiReaderMode}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="automatic" id="automatic" />
+                      <Label htmlFor="automatic" className="cursor-pointer">
+                        <div>
+                          <div className="font-medium">Automatic Upload</div>
+                          <div className="text-sm text-gray-600">
+                            Documents are automatically processed and analyzed
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="manual" id="manual" />
+                      <Label htmlFor="manual" className="cursor-pointer">
+                        <div>
+                          <div className="font-medium">Manual Upload</div>
+                          <div className="text-sm text-gray-600">
+                            You manually select and upload documents for processing
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </CardContent>
             </Card>
