@@ -159,165 +159,168 @@ const AlertDeliveryLogs = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header with blue background matching the mockup */}
-      <div className="bg-blue-500 text-white p-6 rounded-lg">
-        <h1 className="text-3xl font-bold">Alert Delivery Logs + Escalation Tracker</h1>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Header */}
+        <div className="bg-blue-500 text-white p-8 rounded-lg shadow-sm">
+          <h1 className="text-3xl font-bold">Alert Delivery Logs + Escalation Tracker</h1>
+        </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-              <SelectTrigger>
-                <SelectValue placeholder="Property" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Properties</SelectItem>
-                {properties.map(property => (
-                  <SelectItem key={property} value={property}>
-                    {property}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Filters */}
+        <Card className="shadow-sm">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Select value={selectedProperty} onValueChange={setSelectedProperty}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Properties</SelectItem>
+                  {properties.map(property => (
+                    <SelectItem key={property} value={property}>
+                      {property}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-              <SelectTrigger>
-                <SelectValue placeholder="Channel" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Channels</SelectItem>
-                {channels.map(channel => (
-                  <SelectItem key={channel} value={channel}>
-                    {channel}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select value={selectedChannel} onValueChange={setSelectedChannel}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Channel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Channels</SelectItem>
+                  {channels.map(channel => (
+                    <SelectItem key={channel} value={channel}>
+                      {channel}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {statuses.map(status => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {statuses.map(status => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <div className="relative">
-              <Input
-                placeholder="Date Range"
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="pr-10"
-              />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <div className="relative">
+                <Input
+                  placeholder="Date Range"
+                  value={dateRange}
+                  onChange={(e) => setDateRange(e.target.value)}
+                  className="h-10 pr-10"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Data Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Delivery Logs ({filteredLogs.length})</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleSelectAll}>
-                {selectedLogs.length === filteredLogs.length ? 'Deselect All' : 'Select All'}
-              </Button>
+        {/* Data Table */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-xl">Delivery Logs ({filteredLogs.length})</CardTitle>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={handleSelectAll} className="h-9">
+                  {selectedLogs.length === filteredLogs.length ? 'Deselect All' : 'Select All'}
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader className="bg-blue-500">
-                <TableRow>
-                  <TableHead className="text-white">
-                    <input
-                      type="checkbox"
-                      checked={selectedLogs.length === filteredLogs.length && filteredLogs.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded"
-                    />
-                  </TableHead>
-                  <TableHead className="text-white font-semibold">Date</TableHead>
-                  <TableHead className="text-white font-semibold">Property</TableHead>
-                  <TableHead className="text-white font-semibold">Recipient</TableHead>
-                  <TableHead className="text-white font-semibold">Channel</TableHead>
-                  <TableHead className="text-white font-semibold">Status</TableHead>
-                  <TableHead className="text-white font-semibold">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLogs.map((log) => (
-                  <TableRow key={log.id} className="hover:bg-gray-50">
-                    <TableCell>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader className="bg-blue-500">
+                  <TableRow className="border-0">
+                    <TableHead className="text-white font-semibold w-12">
                       <input
                         type="checkbox"
-                        checked={selectedLogs.includes(log.id)}
-                        onChange={() => handleSelectLog(log.id)}
+                        checked={selectedLogs.length === filteredLogs.length && filteredLogs.length > 0}
+                        onChange={handleSelectAll}
                         className="rounded"
                       />
-                    </TableCell>
-                    <TableCell className="font-medium">{log.date}</TableCell>
-                    <TableCell>{log.property}</TableCell>
-                    <TableCell>{log.recipient}</TableCell>
-                    <TableCell>
-                      <Badge className={getChannelColor(log.channel)}>
-                        {log.channel}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(log.status)}>
-                        {log.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewDetails(log.id)}
-                      >
-                        View
-                      </Button>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead className="text-white font-semibold">Date</TableHead>
+                    <TableHead className="text-white font-semibold">Property</TableHead>
+                    <TableHead className="text-white font-semibold">Recipient</TableHead>
+                    <TableHead className="text-white font-semibold">Channel</TableHead>
+                    <TableHead className="text-white font-semibold">Status</TableHead>
+                    <TableHead className="text-white font-semibold w-20">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredLogs.map((log) => (
+                    <TableRow key={log.id} className="hover:bg-gray-50 border-b">
+                      <TableCell className="py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedLogs.includes(log.id)}
+                          onChange={() => handleSelectLog(log.id)}
+                          className="rounded"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium py-3">{log.date}</TableCell>
+                      <TableCell className="py-3">{log.property}</TableCell>
+                      <TableCell className="py-3">{log.recipient}</TableCell>
+                      <TableCell className="py-3">
+                        <Badge className={getChannelColor(log.channel)}>
+                          {log.channel}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Badge className={getStatusColor(log.status)}>
+                          {log.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewDetails(log.id)}
+                          className="h-8"
+                        >
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button variant="outline" onClick={handleDownloadLog} className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          Download Log
-        </Button>
-        
-        <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          Export as CSV
-        </Button>
-        
-        <Button 
-          onClick={handleResendSelected}
-          disabled={selectedLogs.length === 0}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Resend Selected
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={handleDownloadLog} className="flex items-center gap-2 h-10">
+            <Download className="h-4 w-4" />
+            Download Log
+          </Button>
+          
+          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2 h-10">
+            <FileText className="h-4 w-4" />
+            Export as CSV
+          </Button>
+          
+          <Button 
+            onClick={handleResendSelected}
+            disabled={selectedLogs.length === 0}
+            className="flex items-center gap-2 h-10 bg-blue-500 hover:bg-blue-600"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Resend Selected
+          </Button>
+        </div>
       </div>
     </div>
   );
