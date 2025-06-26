@@ -1,16 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building2, TrendingUp, Users, DollarSign, AlertCircle, Plus, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
+import OnboardingSetup from '@/components/auth/OnboardingSetup';
 
 const PortfolioOverview = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isMobile } = useDeviceDetection();
+  const [showAddProperty, setShowAddProperty] = useState(false);
 
   const properties = [
     {
@@ -47,9 +49,14 @@ const PortfolioOverview = () => {
   };
 
   const handleAddProperty = () => {
+    setShowAddProperty(true);
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowAddProperty(false);
     toast({
-      title: "Add Property",
-      description: "Property addition functionality coming soon",
+      title: "Property Added Successfully",
+      description: "Your new property has been added to your portfolio",
     });
   };
 
@@ -60,6 +67,10 @@ const PortfolioOverview = () => {
   const handleViewAlerts = (propertyId: number) => {
     navigate(`/red-flag-alerts?property=${propertyId}`);
   };
+
+  if (showAddProperty) {
+    return <OnboardingSetup onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
