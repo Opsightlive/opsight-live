@@ -184,18 +184,9 @@ const RedFlagAlerts = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-4">Red Flag Alert System</h1>
-              <p className="text-xl text-blue-100 max-w-3xl">Monitor and resolve critical performance alerts across all properties with real-time insights and automated notifications</p>
-            </div>
-            <button
-              onClick={handleAddProperty}
-              className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Property
-            </button>
+          <div>
+            <h1 className="text-4xl font-bold mb-4">Red Flag Alert System</h1>
+            <p className="text-xl text-blue-100 max-w-3xl">Monitor and resolve critical performance alerts across all properties with real-time insights and automated notifications</p>
           </div>
         </div>
 
