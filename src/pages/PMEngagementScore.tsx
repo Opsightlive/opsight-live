@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,7 +50,6 @@ const PMEngagementScore = () => {
       score: 85,
       trend: 'up',
       responseTime: '3.2 hrs',
-      completionRate: 91,
       completionRate: 91,
       tenantSatisfaction: 4.5,
       status: 'good'
