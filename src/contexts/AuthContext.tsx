@@ -10,6 +10,12 @@ interface User {
   userType?: 'client' | 'company';
   avatar?: string;
   bio?: string;
+  subscription?: {
+    status: 'trial' | 'active' | 'cancelled' | 'expired';
+    trialEnd?: string;
+    plan?: string;
+    tier?: 'starter' | 'professional' | 'enterprise';
+  };
 }
 
 interface AuthContextType {
