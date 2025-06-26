@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,11 +35,10 @@ const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
       // Simulate connection process
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Complete the registration
+      // Complete the registration - fix: only pass email and password
       const success = await register(
         registrationData.email,
-        registrationData.password,
-        registrationData.userData
+        registrationData.password
       );
 
       if (success) {

@@ -41,11 +41,12 @@ const CompanyProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 // Dashboard Routes - Protected by AuthWrapper
 const DashboardRoutes = () => (
   <AuthWrapper>
-    <Layout>
+    <Layout showNavigation={true}>
       <Routes>
         <Route path="/dashboard" element={<PortfolioOverview />} />
+        <Route path="/portfolio" element={<PortfolioOverview />} />
         <Route path="/kpi-center" element={<KPICommandCenter />} />
-        <Route path="/red-flags" element={<RedFlagAlerts />} />
+        <Route path="/red-flag-alerts" element={<RedFlagAlerts />} />
         <Route path="/ai-reader" element={<AIReader />} />
         <Route path="/users" element={<UserManagement />} />
         <Route path="/company-dashboard" element={
@@ -53,7 +54,7 @@ const DashboardRoutes = () => (
             <CompanyDashboard />
           </CompanyProtectedRoute>
         } />
-        {/* Placeholder routes for remaining modules */}
+        {/* All the modules from sidebar */}
         <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/lp-dashboard" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Dashboard</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/ai-tools" element={<div className="p-6"><h1 className="text-2xl font-bold">AI Intelligence Tools</h1><p className="text-gray-600">Coming Soon</p></div>} />
@@ -69,6 +70,7 @@ const DashboardRoutes = () => (
         <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/help/getting-started" element={<GettingStartedGuide />} />
         <Route path="/help/user-management" element={<UserManagementGuide />} />

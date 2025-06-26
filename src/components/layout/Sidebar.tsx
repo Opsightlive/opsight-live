@@ -10,7 +10,13 @@ import {
   Users,
   Settings,
   HelpCircle,
-  FileText
+  FileText,
+  Mail,
+  MessageSquare,
+  TrendingUp,
+  Calendar,
+  Database,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -47,6 +53,71 @@ const sidebarItems: SidebarItem[] = [
     icon: Bot,
     label: 'AI Reader',
     path: '/ai-reader'
+  },
+  {
+    icon: FileText,
+    label: 'LP Report Generator',
+    path: '/lp-reports'
+  },
+  {
+    icon: TrendingUp,
+    label: 'LP Dashboard',
+    path: '/lp-dashboard'
+  },
+  {
+    icon: Bot,
+    label: 'AI Intelligence Tools',
+    path: '/ai-tools'
+  },
+  {
+    icon: TrendingUp,
+    label: 'Predictive Signals',
+    path: '/predictive'
+  },
+  {
+    icon: FileText,
+    label: 'Deal Vetting Toolkit',
+    path: '/deal-vetting'
+  },
+  {
+    icon: Mail,
+    label: 'Email Automation',
+    path: '/email-automation'
+  },
+  {
+    icon: MessageSquare,
+    label: 'SMS Automation',
+    path: '/sms-automation'
+  },
+  {
+    icon: BarChart3,
+    label: 'PM Engagement Score',
+    path: '/pm-engagement'
+  },
+  {
+    icon: Calendar,
+    label: 'Red Flag Timeline',
+    path: '/timeline'
+  },
+  {
+    icon: FileText,
+    label: 'Resolution Summary',
+    path: '/resolutions'
+  },
+  {
+    icon: Bell,
+    label: 'Alert Delivery Logs',
+    path: '/delivery-logs'
+  },
+  {
+    icon: Database,
+    label: 'Data Vault',
+    path: '/data-vault'
+  },
+  {
+    icon: Bell,
+    label: 'Alerts & Notifications',
+    path: '/notifications'
   },
   {
     icon: Users,
