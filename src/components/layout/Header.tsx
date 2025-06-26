@@ -1,15 +1,15 @@
-
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bell, Settings, LogOut, User, HelpCircle } from 'lucide-react';
+import { Bell, Settings, LogOut, User, HelpCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Header: React.FC = () => {
   const { user, logout, isCompanyUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -32,10 +32,26 @@ const Header: React.FC = () => {
     navigate('/help');
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const showBackButton = location.pathname !== '/dashboard';
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
+          {showBackButton && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBackClick}
+              className="hover:bg-gray-100"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
           <Link to="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <img 
               src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 

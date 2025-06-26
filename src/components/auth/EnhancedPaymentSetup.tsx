@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check, CreditCard, Building2, FileText, Plus, X } from 'lucide-react';
+import { Check, CreditCard, Building2, FileText, Plus, X, ArrowLeft, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import DataSetup from './DataSetup';
 
 interface EnhancedPaymentSetupProps {
@@ -28,6 +29,7 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -36,6 +38,10 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
   useEffect(() => {
@@ -110,9 +116,27 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
   const annualSavings = monthlyTotal * 2;
   const discountedAnnualTotal = annualTotal - annualSavings;
 
+  // Calculate credit card discount (10% off)
+  const creditCardDiscount = 0.10;
+  const hasAllCardPayments = paymentMethods.every(method => method.type === 'card');
+  const discountAmount = hasAllCardPayments ? Math.round((selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal) * creditCardDiscount) : 0;
+  const finalTotal = (selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal) - discountAmount;
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl">
+        {/* Header with Back Button */}
+        <div className="flex items-center mb-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackClick}
+            className="mr-4 hover:bg-gray-100"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Logo and Title */}
         <div className="text-center mb-12">
           <div className="mb-6">
@@ -130,6 +154,14 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
           <p className="text-gray-600 mt-2">
             Configure billing for your {propertyCount} {propertyCount === 1 ? 'property' : 'properties'}
           </p>
+          {hasAllCardPayments && discountAmount > 0 && (
+            <div className="mt-4 inline-flex items-center bg-green-50 border border-green-200 rounded-lg px-4 py-2">
+              <Zap className="h-5 w-5 text-green-600 mr-2" />
+              <span className="text-green-700 font-medium">
+                Credit Card Discount: Save {formatCurrency(discountAmount)} (10% off)
+              </span>
+            </div>
+          )}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -280,6 +312,21 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                 </Button>
               </div>
 
+              {/* Credit Card Promotion Banner */}
+              <Card className="border-2 border-green-200 bg-green-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <Zap className="h-6 w-6 text-green-600 mr-3" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">Pay with Credit Card & Save 10%!</h4>
+                      <p className="text-sm text-green-700">
+                        Get immediate access and save money. Invoice payments can take weeks to process.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {paymentMethods.map((method, index) => (
                 <Card key={method.id} className="border-2">
                   <CardHeader>
@@ -291,6 +338,11 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                           <FileText className="h-5 w-5 mr-2" />
                         )}
                         Payment Method {index + 1}
+                        {method.type === 'card' && (
+                          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                            10% OFF
+                          </span>
+                        )}
                       </CardTitle>
                       {paymentMethods.length > 1 && (
                         <Button 
@@ -308,9 +360,10 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                       <Button 
                         variant={method.type === 'card' ? 'default' : 'outline'}
                         onClick={() => updatePaymentMethod(method.id, { type: 'card' })}
+                        className={method.type === 'card' ? 'bg-green-600 hover:bg-green-700' : ''}
                       >
                         <CreditCard className="h-4 w-4 mr-2" />
-                        Credit Card
+                        Credit Card (10% OFF)
                       </Button>
                       <Button 
                         variant={method.type === 'invoice' ? 'default' : 'outline'}
@@ -322,27 +375,34 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                     </div>
 
                     {method.type === 'card' && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          placeholder="Card Number"
-                          className="p-3 border border-gray-300 rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          placeholder="MM/YY"
-                          className="p-3 border border-gray-300 rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          placeholder="CVC"
-                          className="p-3 border border-gray-300 rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Cardholder Name"
-                          className="p-3 border border-gray-300 rounded-lg"
-                        />
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            type="text"
+                            placeholder="Card Number"
+                            className="p-3 border border-gray-300 rounded-lg"
+                          />
+                          <input
+                            type="text"
+                            placeholder="MM/YY"
+                            className="p-3 border border-gray-300 rounded-lg"
+                          />
+                          <input
+                            type="text"
+                            placeholder="CVC"
+                            className="p-3 border border-gray-300 rounded-lg"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Cardholder Name"
+                            className="p-3 border border-gray-300 rounded-lg"
+                          />
+                        </div>
+                        <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                          <p className="font-medium">✓ Instant activation</p>
+                          <p className="font-medium">✓ 10% discount applied</p>
+                          <p className="font-medium">✓ Secure processing</p>
+                        </div>
                       </div>
                     )}
 
@@ -362,9 +422,9 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                           value={method.invoiceEmail || ''}
                           onChange={(e) => updatePaymentMethod(method.id, { invoiceEmail: e.target.value })}
                         />
-                        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-                          <p className="font-medium">Invoice Payment:</p>
-                          <p>We'll send an invoice to the provided email address. Payment terms are Net 30.</p>
+                        <div className="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg">
+                          <p className="font-medium">⚠️ Invoice Payment:</p>
+                          <p>Payment terms are Net 30. Account activation may be delayed until payment is received.</p>
                         </div>
                       </div>
                     )}
@@ -416,14 +476,27 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                     <div>
                       <p className="font-semibold">{selectedPlan === 'monthly' ? 'Monthly' : 'Annual'} Plan</p>
                       <p className="text-gray-600">{propertyCount} {propertyCount === 1 ? 'property' : 'properties'}</p>
+                      {hasAllCardPayments && discountAmount > 0 && (
+                        <p className="text-green-600 font-medium">Credit Card Discount Applied!</p>
+                      )}
                     </div>
                     <div className="text-right">
+                      {hasAllCardPayments && discountAmount > 0 && (
+                        <p className="text-sm text-gray-500 line-through">
+                          {formatCurrency(selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal)}
+                        </p>
+                      )}
                       <p className="text-2xl font-bold">
-                        {formatCurrency(selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal)}
+                        {formatCurrency(finalTotal)}
                       </p>
                       <p className="text-gray-600">
                         {selectedPlan === 'monthly' ? '/month' : '/year'}
                       </p>
+                      {hasAllCardPayments && discountAmount > 0 && (
+                        <p className="text-sm text-green-600 font-medium">
+                          You save {formatCurrency(discountAmount)}!
+                        </p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -440,6 +513,11 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                         <FileText className="h-5 w-5 mr-2" />
                       )}
                       Payment Method {index + 1} - {method.type === 'card' ? 'Credit Card' : 'Invoice'}
+                      {method.type === 'card' && (
+                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                          10% DISCOUNT
+                        </span>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
