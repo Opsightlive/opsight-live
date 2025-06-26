@@ -14,7 +14,11 @@ import {
   Menu,
   X,
   Star,
-  Award
+  Award,
+  Play,
+  Check,
+  CreditCard,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -40,6 +44,7 @@ const LandingPage = () => {
             <div className="hidden md:flex items-center space-x-8">
               <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</a>
               <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
+              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
               <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
@@ -66,6 +71,7 @@ const LandingPage = () => {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</a>
                 <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
+                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
                 <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
@@ -98,6 +104,27 @@ const LandingPage = () => {
                 The world's most advanced real estate intelligence platform. Automate operations, 
                 predict issues before they happen, and maximize returns with AI-powered insights.
               </p>
+
+              {/* Demo Video Section */}
+              <div className="mb-8">
+                <div className="bg-white rounded-lg shadow-lg p-6 border">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900">Watch 2-Minute Demo</h3>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      <Play className="h-4 w-4 mr-2" />
+                      Play Demo
+                    </Button>
+                  </div>
+                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Play className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500">Demo video placeholder</p>
+                      <p className="text-sm text-gray-400">See OPSIGHT in action</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/demo">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
@@ -295,8 +322,123 @@ const LandingPage = () => {
         </div>
       </div>
 
+      {/* Pricing Section */}
+      <div id="pricing" className="py-16 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              $295 per property per month. No hidden fees, no setup costs. 
+              Scale with your portfolio and pay only for what you use.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Monthly Plan */}
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Monthly</h3>
+                <div className="flex items-baseline justify-center">
+                  <span className="text-5xl font-bold text-gray-900">$295</span>
+                  <span className="text-gray-500 ml-2">/property/month</span>
+                </div>
+                <p className="text-gray-600 mt-2">Pay as you scale</p>
+              </div>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Real-time KPI tracking</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Predictive alerts</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>AI-powered insights</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>24/7 support</span>
+                </li>
+              </ul>
+              
+              <Link to="/signup">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Start Monthly Plan
+                </Button>
+              </Link>
+            </div>
+
+            {/* Annual Plan */}
+            <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-8 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  Save $590 per property
+                </span>
+              </div>
+              
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Annual</h3>
+                <div className="flex items-baseline justify-center">
+                  <span className="text-5xl font-bold text-gray-900">$2,950</span>
+                  <span className="text-gray-500 ml-2">/property/year</span>
+                </div>
+                <p className="text-gray-600 mt-2">
+                  <span className="line-through">$3,540</span> 
+                  <span className="ml-2 text-green-600 font-medium">2 months free!</span>
+                </p>
+              </div>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Everything in Monthly</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Priority support</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Advanced analytics</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Custom integrations</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Dedicated account manager</span>
+                </li>
+              </ul>
+              
+              <Link to="/signup">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Start Annual Plan
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">
+              Questions about pricing? Need custom enterprise pricing?
+            </p>
+            <Link to="/demo">
+              <Button variant="outline" size="lg">
+                Contact Sales
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Customer Stories */}
-      <div id="customers" className="py-16 lg:py-24 bg-white">
+      <div id="customers" className="py-16 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -342,6 +484,39 @@ const LandingPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* What is OPSIGHT Video Section */}
+      <div className="py-16 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              What is OPSIGHT?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Watch this 3-minute video to understand how OPSIGHT transforms 
+              real estate portfolio management through AI-powered intelligence.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-lg shadow-2xl p-8 border">
+              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <Play className="h-20 w-20 text-blue-600 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">What is OPSIGHT?</h3>
+                  <p className="text-gray-600 mb-4">
+                    See how our platform revolutionizes real estate operations
+                  </p>
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    <Play className="h-5 w-5 mr-2" />
+                    Watch Now
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
