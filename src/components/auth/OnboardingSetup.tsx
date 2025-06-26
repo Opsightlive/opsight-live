@@ -26,7 +26,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
     role: '',
     dataSource: 'connect-pm',
     pmSoftware: '',
-    otherSoftware: ''
+    otherSoftware: '',
+    pmUsername: '',
+    pmPassword: '',
+    pmConfirmPassword: ''
   });
 
   const [properties, setProperties] = useState<Property[]>([
@@ -74,7 +77,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       return;
     }
 
-    // If connecting PM system, validate software selection
+    // If connecting PM system, validate software selection and credentials
     if (formData.dataSource === 'connect-pm') {
       if (!formData.pmSoftware) {
         alert('Please select your property management software');
@@ -82,6 +85,18 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       }
       if (formData.pmSoftware === 'other' && !formData.otherSoftware.trim()) {
         alert('Please specify your property management software');
+        return;
+      }
+      if (!formData.pmUsername.trim()) {
+        alert('Please enter your property management platform username');
+        return;
+      }
+      if (!formData.pmPassword.trim()) {
+        alert('Please enter your property management platform password');
+        return;
+      }
+      if (formData.pmPassword !== formData.pmConfirmPassword) {
+        alert('Passwords do not match');
         return;
       }
     }
@@ -98,6 +113,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
         properties: validProperties,
         dataSource: formData.dataSource,
         pmSoftware: formData.pmSoftware === 'other' ? formData.otherSoftware : formData.pmSoftware,
+        pmCredentials: formData.dataSource === 'connect-pm' ? {
+          username: formData.pmUsername,
+          password: formData.pmPassword
+        } : null,
         propertyCount: validProperties.length,
         totalCost: validProperties.length * 295
       }
@@ -286,10 +305,18 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                         <SelectValue placeholder="Select your PM software" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="onesite">OneSite</SelectItem>
                         <SelectItem value="yardi">Yardi</SelectItem>
+                        <SelectItem value="onesite">OneSite</SelectItem>
                         <SelectItem value="resman">RESMan</SelectItem>
-                        <SelectItem value="appfolio">Appfolio</SelectItem>
+                        <SelectItem value="appfolio">AppFolio</SelectItem>
+                        <SelectItem value="realpage">RealPage</SelectItem>
+                        <SelectItem value="entrata">Entrata</SelectItem>
+                        <SelectItem value="mri">MRI Software</SelectItem>
+                        <SelectItem value="propertyware">Propertyware</SelectItem>
+                        <SelectItem value="buildium">Buildium</SelectItem>
+                        <SelectItem value="rent-manager">Rent Manager</SelectItem>
+                        <SelectItem value="property-solutions">Property Solutions</SelectItem>
+                        <SelectItem value="voyager">Voyager</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -306,6 +333,53 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                         className="mt-1"
                         required
                       />
+                    </div>
+                  )}
+
+                  {formData.pmSoftware && (
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                      <h4 className="font-medium text-gray-900">Platform Credentials</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="pmUsername">Username</Label>
+                          <Input
+                            id="pmUsername"
+                            value={formData.pmUsername}
+                            onChange={(e) => handleInputChange('pmUsername', e.target.value)}
+                            placeholder="Enter your PM platform username"
+                            className="mt-1"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="pmPassword">Password</Label>
+                          <Input
+                            id="pmPassword"
+                            type="password"
+                            value={formData.pmPassword}
+                            onChange={(e) => handleInputChange('pmPassword', e.target.value)}
+                            placeholder="Enter your PM platform password"
+                            className="mt-1"
+                            required
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="pmConfirmPassword">Confirm Password</Label>
+                          <Input
+                            id="pmConfirmPassword"
+                            type="password"
+                            value={formData.pmConfirmPassword}
+                            onChange={(e) => handleInputChange('pmConfirmPassword', e.target.value)}
+                            placeholder="Confirm your PM platform password"
+                            className="mt-1"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                        <p className="font-medium">🔒 Your credentials are encrypted and secure</p>
+                        <p>This allows us to automatically sync your property data and KPIs in real-time.</p>
+                      </div>
                     </div>
                   )}
                 </div>

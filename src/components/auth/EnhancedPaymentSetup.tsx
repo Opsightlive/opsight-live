@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -320,7 +319,7 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                     <div>
                       <h4 className="font-semibold text-green-800">Pay with Credit Card & Save 10%!</h4>
                       <p className="text-sm text-green-700">
-                        Get immediate access and save money. Invoice payments can take weeks to process.
+                        Get instant account activation, secure processing, and save money with our credit card discount.
                       </p>
                     </div>
                   </div>
@@ -340,7 +339,7 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                         Payment Method {index + 1}
                         {method.type === 'card' && (
                           <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                            10% OFF
+                            10% DISCOUNT
                           </span>
                         )}
                       </CardTitle>
@@ -363,7 +362,7 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                         className={method.type === 'card' ? 'bg-green-600 hover:bg-green-700' : ''}
                       >
                         <CreditCard className="h-4 w-4 mr-2" />
-                        Credit Card (10% OFF)
+                        Credit Card (10% DISCOUNT)
                       </Button>
                       <Button 
                         variant={method.type === 'invoice' ? 'default' : 'outline'}
@@ -399,9 +398,10 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                           />
                         </div>
                         <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                          <p className="font-medium">✓ Instant activation</p>
-                          <p className="font-medium">✓ 10% discount applied</p>
-                          <p className="font-medium">✓ Secure processing</p>
+                          <p className="font-medium">✓ Instant account activation</p>
+                          <p className="font-medium">✓ 10% discount automatically applied</p>
+                          <p className="font-medium">✓ Secure processing with bank-level encryption</p>
+                          <p className="font-medium">✓ No delays - start using OPSIGHT immediately</p>
                         </div>
                       </div>
                     )}
@@ -423,8 +423,11 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                           onChange={(e) => updatePaymentMethod(method.id, { invoiceEmail: e.target.value })}
                         />
                         <div className="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg">
-                          <p className="font-medium">⚠️ Invoice Payment:</p>
-                          <p>Payment terms are Net 30. Account activation may be delayed until payment is received.</p>
+                          <p className="font-medium">⚠️ Invoice Payment Processing:</p>
+                          <p>• Payment terms are Net 30 days</p>
+                          <p>• Account activation delayed until payment received</p>
+                          <p>• Processing time: 3-5 business days minimum</p>
+                          <p>• No instant access to platform features</p>
                         </div>
                       </div>
                     )}
