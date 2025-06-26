@@ -333,7 +333,7 @@ const LandingPage = () => {
               Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              $3-5 per door per month based on your property needs. No hidden fees, no setup costs. 
+              Starting at just $3 per door per month. No hidden fees, no setup costs. 
               Scale with your portfolio and pay only for what you use.
             </p>
           </div>
@@ -352,19 +352,19 @@ const LandingPage = () => {
               
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Basic KPI tracking</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Standard alerts</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Monthly reporting</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Email support</span>
                 </li>
               </ul>
@@ -395,23 +395,23 @@ const LandingPage = () => {
               
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Everything in Basic</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Real-time KPI tracking</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Predictive alerts</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>AI-powered insights</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>24/7 support</span>
                 </li>
               </ul>
@@ -436,23 +436,23 @@ const LandingPage = () => {
               
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Everything in Professional</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Advanced analytics</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Custom integrations</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Dedicated account manager</span>
                 </li>
                 <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                   <span>Priority support</span>
                 </li>
               </ul>
