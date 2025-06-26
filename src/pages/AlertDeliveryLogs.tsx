@@ -20,9 +20,9 @@ interface DeliveryLog {
 }
 
 const AlertDeliveryLogs = () => {
-  const [selectedProperty, setSelectedProperty] = useState<string>('');
-  const [selectedChannel, setSelectedChannel] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [selectedProperty, setSelectedProperty] = useState<string>('all');
+  const [selectedChannel, setSelectedChannel] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [dateRange, setDateRange] = useState<string>('');
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
 
@@ -115,9 +115,9 @@ const AlertDeliveryLogs = () => {
   };
 
   const filteredLogs = deliveryLogs.filter(log => {
-    if (selectedProperty && log.property !== selectedProperty) return false;
-    if (selectedChannel && log.channel !== selectedChannel) return false;
-    if (selectedStatus && log.status !== selectedStatus) return false;
+    if (selectedProperty !== 'all' && log.property !== selectedProperty) return false;
+    if (selectedChannel !== 'all' && log.channel !== selectedChannel) return false;
+    if (selectedStatus !== 'all' && log.status !== selectedStatus) return false;
     return true;
   });
 
@@ -174,7 +174,7 @@ const AlertDeliveryLogs = () => {
                 <SelectValue placeholder="Property" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Properties</SelectItem>
+                <SelectItem value="all">All Properties</SelectItem>
                 {properties.map(property => (
                   <SelectItem key={property} value={property}>
                     {property}
@@ -188,7 +188,7 @@ const AlertDeliveryLogs = () => {
                 <SelectValue placeholder="Channel" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Channels</SelectItem>
+                <SelectItem value="all">All Channels</SelectItem>
                 {channels.map(channel => (
                   <SelectItem key={channel} value={channel}>
                     {channel}
@@ -202,7 +202,7 @@ const AlertDeliveryLogs = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 {statuses.map(status => (
                   <SelectItem key={status} value={status}>
                     {status}
