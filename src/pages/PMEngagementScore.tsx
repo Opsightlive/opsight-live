@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Clock, MessageSquare } from 'lucide-react';
 
 const PMEngagementScore = () => {
-  const [selectedProperty, setSelectedProperty] = useState('');
+  const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState('30days');
 
   const properties = [
@@ -65,13 +66,13 @@ const PMEngagementScore = () => {
     { label: 'Follow-up Rate', value: '67%', target: '>70%', status: 'warning' }
   ];
 
-  const getScoreColor = (score) => {
+  const getScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600';
     if (score >= 75) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'excellent': return 'bg-green-100 text-green-800';
       case 'good': return 'bg-blue-100 text-blue-800';
@@ -104,7 +105,7 @@ const PMEngagementScore = () => {
                     <SelectValue placeholder="All Properties" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Properties</SelectItem>
+                    <SelectItem value="all">All Properties</SelectItem>
                     {properties.map((property) => (
                       <SelectItem key={property.value} value={property.value}>
                         {property.label}
