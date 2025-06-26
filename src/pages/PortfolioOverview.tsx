@@ -1,12 +1,13 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building2, TrendingUp, Users, DollarSign, AlertCircle, Plus, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const PortfolioOverview = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const properties = [
     {
@@ -43,7 +44,10 @@ const PortfolioOverview = () => {
   };
 
   const handleAddProperty = () => {
-    navigate('/settings');
+    toast({
+      title: "Add Property",
+      description: "Property addition functionality coming soon",
+    });
   };
 
   const handleViewKPIs = (propertyId: number) => {
