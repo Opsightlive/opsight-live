@@ -16,16 +16,23 @@ import {
   TrendingUp,
   Calendar,
   Database,
-  Bell
+  Bell,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDeviceDetection } from '@/hooks/use-device-detection';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface SidebarItem {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   path: string;
   companyOnly?: boolean;
+}
+
+interface SidebarProps {
+  onClose?: () => void;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -154,18 +161,47 @@ const sidebarItems: SidebarItem[] = [
   }
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const location = useLocation();
   const { isCompanyUser } = useAuth();
+  const { isMobile } = useDeviceDetection();
 
   const filteredItems = sidebarItems.filter(item => 
     !item.companyOnly || isCompanyUser
   );
 
+  const handleItemClick = () => {
+    if (isMobile && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="bg-white border-r border-gray-200 w-64 h-full flex flex-col">
+    <div className={`bg-white border-r border-gray-200 ${isMobile ? 'w-80' : 'w-64'} h-full flex flex-col`}>
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+              alt="OPSIGHT Logo" 
+              className="h-8 w-8 object-contain"
+            />
+            <h1 className="text-xl font-bold text-gray-900">OPSIGHT</h1>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="hover:bg-gray-100"
+          >
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto">
-        <nav className="mt-8 px-4 pb-8">
+        <nav className={`${isMobile ? 'mt-4' : 'mt-8'} px-4 pb-8`}>
           <ul className="space-y-2">
             {filteredItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -174,6 +210,7 @@ const Sidebar: React.FC = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
+                    onClick={handleItemClick}
                     className={cn(
                       "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50 group",
                       isActive 

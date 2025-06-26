@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,9 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Bell, Settings, LogOut, User, HelpCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDeviceDetection } from '@/hooks/use-device-detection';
 
 const Header: React.FC = () => {
   const { user, logout, isCompanyUser } = useAuth();
+  const { isMobile } = useDeviceDetection();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,6 +40,9 @@ const Header: React.FC = () => {
   };
 
   const showBackButton = location.pathname !== '/dashboard';
+
+  // Don't render header on mobile (handled in Layout component)
+  if (isMobile) return null;
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
