@@ -289,6 +289,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                         <SelectItem value="onesite">OneSite</SelectItem>
                         <SelectItem value="yardi">Yardi</SelectItem>
                         <SelectItem value="resman">RESMan</SelectItem>
+                        <SelectItem value="appfolio">Appfolio</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
