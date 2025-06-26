@@ -333,24 +333,71 @@ const LandingPage = () => {
               Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              $295 per property per month. No hidden fees, no setup costs. 
+              $3-5 per door per month based on your property needs. No hidden fees, no setup costs. 
               Scale with your portfolio and pay only for what you use.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Monthly Plan */}
+          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Basic Plan */}
             <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Monthly</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Basic</h3>
                 <div className="flex items-baseline justify-center">
-                  <span className="text-5xl font-bold text-gray-900">$295</span>
-                  <span className="text-gray-500 ml-2">/property/month</span>
+                  <span className="text-5xl font-bold text-gray-900">$3</span>
+                  <span className="text-gray-500 ml-2">/door/month</span>
                 </div>
-                <p className="text-gray-600 mt-2">Pay as you scale</p>
+                <p className="text-gray-600 mt-2">Essential monitoring</p>
               </div>
               
               <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Basic KPI tracking</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Standard alerts</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Monthly reporting</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Email support</span>
+                </li>
+              </ul>
+              
+              <Link to="/signup">
+                <Button variant="outline" className="w-full">
+                  Start Basic Plan
+                </Button>
+              </Link>
+            </div>
+
+            {/* Professional Plan */}
+            <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-8 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  Most Popular
+                </span>
+              </div>
+              
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Professional</h3>
+                <div className="flex items-baseline justify-center">
+                  <span className="text-5xl font-bold text-gray-900">$4</span>
+                  <span className="text-gray-500 ml-2">/door/month</span>
+                </div>
+                <p className="text-gray-600 mt-2">Advanced analytics & AI</p>
+              </div>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Everything in Basic</span>
+                </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3" />
                   <span>Real-time KPI tracking</span>
@@ -371,39 +418,26 @@ const LandingPage = () => {
               
               <Link to="/signup">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Start Monthly Plan
+                  Start Professional Plan
                 </Button>
               </Link>
             </div>
 
-            {/* Annual Plan */}
-            <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-8 relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Save $590 per property
-                </span>
-              </div>
-              
+            {/* Enterprise Plan */}
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Annual</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Enterprise</h3>
                 <div className="flex items-baseline justify-center">
-                  <span className="text-5xl font-bold text-gray-900">$2,950</span>
-                  <span className="text-gray-500 ml-2">/property/year</span>
+                  <span className="text-5xl font-bold text-gray-900">$5</span>
+                  <span className="text-gray-500 ml-2">/door/month</span>
                 </div>
-                <p className="text-gray-600 mt-2">
-                  <span className="line-through">$3,540</span> 
-                  <span className="ml-2 text-green-600 font-medium">2 months free!</span>
-                </p>
+                <p className="text-gray-600 mt-2">Full-service solution</p>
               </div>
               
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3" />
-                  <span>Everything in Monthly</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-green-500 mr-3" />
-                  <span>Priority support</span>
+                  <span>Everything in Professional</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3" />
@@ -417,11 +451,15 @@ const LandingPage = () => {
                   <Check className="h-5 w-5 text-green-500 mr-3" />
                   <span>Dedicated account manager</span>
                 </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Priority support</span>
+                </li>
               </ul>
               
               <Link to="/signup">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Start Annual Plan
+                <Button variant="outline" className="w-full">
+                  Start Enterprise Plan
                 </Button>
               </Link>
             </div>
@@ -429,7 +467,7 @@ const LandingPage = () => {
 
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-4">
-              Questions about pricing? Need custom enterprise pricing?
+              Questions about pricing? Need custom enterprise pricing for large portfolios?
             </p>
             <Link to="/demo">
               <Button variant="outline" size="lg">
