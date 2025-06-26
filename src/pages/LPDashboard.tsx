@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, Building2, DollarSign, Users, Calendar, Download, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Building2, DollarSign, Users, Calendar, Download, BarChart3, PiggyBank, Target, Clock } from 'lucide-react';
 
 const LPDashboard = () => {
   const [selectedProperty, setSelectedProperty] = useState('all');
@@ -17,6 +16,23 @@ const LPDashboard = () => {
     totalUnits: 847,
     occupiedUnits: 777,
     portfolioGrowth: 5.8
+  };
+
+  const distributionsData = {
+    recordedDistributions: {
+      ytd: 2847500,
+      lastQuarter: 698750,
+      totalToDate: 12450000
+    },
+    projectedDistributions: {
+      nextQuarter: 725000,
+      yearEnd: 3200000,
+      nextYear: 3850000
+    },
+    distributionYield: 8.2,
+    irr: 14.7,
+    equityMultiple: 1.43,
+    cashOnCashReturn: 12.1
   };
 
   const properties = [
@@ -133,6 +149,65 @@ const LPDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Distributions Overview */}
+        <Card className="border-2 border-green-200">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center">
+              <PiggyBank className="h-8 w-8 text-green-600 mr-3" />
+              Distributions & Returns
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-green-600">{formatCurrency(distributionsData.recordedDistributions.ytd)}</div>
+                <div className="text-sm text-gray-600">YTD Distributions</div>
+                <div className="text-xs text-green-600 mt-1">Total to Date: {formatCurrency(distributionsData.recordedDistributions.totalToDate)}</div>
+              </div>
+              
+              <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <Target className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-blue-600">{formatCurrency(distributionsData.projectedDistributions.nextQuarter)}</div>
+                <div className="text-sm text-gray-600">Next Quarter Projected</div>
+                <div className="text-xs text-blue-600 mt-1">Year End: {formatCurrency(distributionsData.projectedDistributions.yearEnd)}</div>
+              </div>
+              
+              <div className="text-center p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
+                <BarChart3 className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-purple-600">{distributionsData.irr}%</div>
+                <div className="text-sm text-gray-600">IRR</div>
+                <div className="text-xs text-gray-600 mt-1">Equity Multiple: {distributionsData.equityMultiple}x</div>
+              </div>
+              
+              <div className="text-center p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-orange-600">{distributionsData.cashOnCashReturn}%</div>
+                <div className="text-sm text-gray-600">Cash-on-Cash Return</div>
+                <div className="text-xs text-gray-600 mt-1">Distribution Yield: {distributionsData.distributionYield}%</div>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold text-lg mb-3">Distribution Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-gray-600">Last Quarter:</span>
+                  <div className="text-lg font-bold text-green-600">{formatCurrency(distributionsData.recordedDistributions.lastQuarter)}</div>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Next Year Projected:</span>
+                  <div className="text-lg font-bold text-blue-600">{formatCurrency(distributionsData.projectedDistributions.nextYear)}</div>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Performance Status:</span>
+                  <Badge className="bg-green-100 text-green-800 ml-2">On Track</Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Portfolio Summary */}
         <Card className="border-2 border-blue-200">
