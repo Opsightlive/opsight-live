@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +13,7 @@ interface DataSetupProps {
 const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
-  const { register } = useAuth();
+  const { completeRegistration } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,8 +36,8 @@ const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
       // Simulate connection process
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Complete the registration - fix: pass the full registration data object
-      const success = await register(registrationData);
+      // Complete the registration using the correct function
+      const success = await completeRegistration(registrationData);
 
       if (success) {
         localStorage.removeItem('pendingRegistration');
