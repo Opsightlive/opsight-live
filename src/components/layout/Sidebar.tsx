@@ -26,7 +26,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import AISuggestionsPanel from '@/components/ai/AISuggestionsPanel';
 
 interface SidebarItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -34,7 +33,6 @@ interface SidebarItem {
   path?: string;
   companyOnly?: boolean;
   children?: SidebarItem[];
-  component?: React.ComponentType;
 }
 
 interface SidebarProps {
@@ -123,7 +121,7 @@ const sidebarItems: SidebarItem[] = [
       {
         icon: Lightbulb,
         label: 'AI Suggestions',
-        component: AISuggestionsPanel
+        path: '/ai-suggestions'
       }
     ]
   },
@@ -262,17 +260,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             </button>
             {isExpanded && (
               <ul className="ml-4 mt-1 space-y-1">
-                {item.children.map(child => {
-                  if (child.component) {
-                    const Component = child.component;
-                    return (
-                      <li key={child.label} className="px-4 py-2">
-                        <Component />
-                      </li>
-                    );
-                  }
-                  return renderSidebarItem(child, level + 1);
-                })}
+                {item.children.map(child => renderSidebarItem(child, level + 1))}
               </ul>
             )}
           </>
