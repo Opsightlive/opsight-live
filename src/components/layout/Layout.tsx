@@ -17,9 +17,9 @@ const Layout = ({ children, showNavigation = false }: LayoutProps) => {
   const shouldShowNavigation = showNavigation && location.pathname !== '/dashboard';
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-white overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header />
         <main className="flex-1 overflow-auto bg-gray-50">
           {shouldShowNavigation && (

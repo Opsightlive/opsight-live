@@ -163,38 +163,40 @@ const Sidebar: React.FC = () => {
   );
 
   return (
-    <div className="bg-white border-r border-gray-200 w-64 min-h-screen">
-      <nav className="mt-8 px-4">
-        <ul className="space-y-2">
-          {filteredItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            
-            return (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50 group",
-                    isActive 
-                      ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
-                      : "text-gray-700 hover:text-gray-900"
-                  )}
-                >
-                  <item.icon 
+    <div className="bg-white border-r border-gray-200 w-64 h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <nav className="mt-8 px-4 pb-8">
+          <ul className="space-y-2">
+            {filteredItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              
+              return (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
                     className={cn(
-                      "mr-3 h-5 w-5 transition-colors",
+                      "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50 group",
                       isActive 
-                        ? "text-blue-700" 
-                        : "text-gray-500 group-hover:text-gray-700"
-                    )} 
-                  />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
+                        : "text-gray-700 hover:text-gray-900"
+                    )}
+                  >
+                    <item.icon 
+                      className={cn(
+                        "mr-3 h-5 w-5 transition-colors",
+                        isActive 
+                          ? "text-blue-700" 
+                          : "text-gray-500 group-hover:text-gray-700"
+                      )} 
+                    />
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 };
