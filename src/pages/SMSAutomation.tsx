@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -278,7 +277,6 @@ const SMSAutomation = () => {
               </div>
               
               <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 mb-3">This is how your SMS will appear on mobile devices</p>
                 <Button onClick={() => setShowPreview(false)} className="w-full">
                   Close Preview
                 </Button>
