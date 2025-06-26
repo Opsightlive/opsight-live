@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2, TrendingUp, Users, DollarSign, AlertCircle, Plus } from 'lucide-react';
+import { Building2, TrendingUp, Users, DollarSign, AlertCircle, Plus, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const PortfolioOverview = () => {

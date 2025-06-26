@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -8,7 +7,9 @@ interface User {
   company?: string;
   phone?: string;
   role?: string;
-  userType?: 'client' | 'company'; // Add user type
+  userType?: 'client' | 'company';
+  avatar?: string;
+  bio?: string;
 }
 
 interface AuthContextType {
@@ -18,6 +19,7 @@ interface AuthContextType {
   completeRegistration: (userData: any) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  isCompanyUser: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +27,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Derived property for company user check
+  const isCompanyUser = user?.userType === 'company';
 
   useEffect(() => {
     // Check if user is already logged in
@@ -154,7 +159,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     completeRegistration,
     logout,
-    isLoading
+    isLoading,
+    isCompanyUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
