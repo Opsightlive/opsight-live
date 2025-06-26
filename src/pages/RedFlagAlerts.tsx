@@ -1,8 +1,11 @@
+
 import React, { useState } from 'react';
-import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar, Plus, Eye } from 'lucide-react';
+import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar, Plus, Eye, UserPlus, ChevronDown } from 'lucide-react';
 import AIAdvisor from '../components/ai/AIAdvisor';
 import SendToPMModal from '../components/modals/SendToPMModal';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const RedFlagAlerts = () => {
   const [selectedSeverity, setSelectedSeverity] = useState('all');
@@ -115,6 +118,14 @@ const RedFlagAlerts = () => {
     });
   };
 
+  const handleAssignTask = (alert: any) => {
+    toast({
+      title: "Task Assigned",
+      description: `Task created for ${alert.metric} at ${alert.property} and assigned to ${alert.assignedPM}`,
+    });
+    console.log('Assigning task for alert:', alert);
+  };
+
   const handleResolveAlert = (alertId: number, resolution?: string) => {
     setResolvedAlerts(prev => new Set([...prev, alertId]));
     toast({
@@ -184,9 +195,34 @@ const RedFlagAlerts = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <div>
-            <h1 className="text-4xl font-bold mb-4">Red Flag Alert System</h1>
-            <p className="text-xl text-blue-100 max-w-3xl">Monitor and resolve critical performance alerts across all properties with real-time insights and automated notifications</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">Red Flag Alert System</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">Monitor and resolve critical performance alerts across all properties with real-time insights and automated notifications</p>
+            </div>
+            
+            {/* Navigation Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="bg-white text-blue-600 hover:bg-blue-50">
+                  Alert Views <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem>
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Active Red Flags
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Forecasted Alerts
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Clock className="h-4 w-4 mr-2" />
+                  Alert Timeline
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -286,6 +322,14 @@ const RedFlagAlerts = () => {
                       Send to PM
                     </button>
                     <button 
+                      onClick={() => handleAssignTask(alert)}
+                      className="flex-1 bg-purple-600 text-white py-2 px-4 text-sm font-medium hover:bg-purple-700 flex items-center justify-center"
+                      disabled={resolvedAlerts.has(alert.id)}
+                    >
+                      <UserPlus className="h-4 w-4 mr-1" />
+                      Assign Task
+                    </button>
+                    <button 
                       onClick={() => handleResolveAlert(alert.id)}
                       className="flex-1 bg-green-600 text-white py-2 px-4 text-sm font-medium hover:bg-green-700 flex items-center justify-center"
                       disabled={resolvedAlerts.has(alert.id)}
@@ -293,9 +337,12 @@ const RedFlagAlerts = () => {
                       <CheckCircle className="h-4 w-4 mr-1" />
                       {resolvedAlerts.has(alert.id) ? 'Resolved' : 'Resolve'}
                     </button>
+                  </div>
+
+                  <div className="flex space-x-2 mb-4">
                     <button
                       onClick={() => handleViewDetails(alert)}
-                      className="bg-gray-600 text-white py-2 px-4 text-sm font-medium hover:bg-gray-700 flex items-center"
+                      className="flex-1 bg-gray-600 text-white py-2 px-4 text-sm font-medium hover:bg-gray-700 flex items-center justify-center"
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       View Details

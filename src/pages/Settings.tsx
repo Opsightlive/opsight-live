@@ -22,7 +22,6 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import SidebarImageManager from '@/components/sidebar/SidebarImageManager';
-import AISuggestionsPanel from '@/components/ai/AISuggestionsPanel';
 
 const Settings = () => {
   const { user, isCompanyUser } = useAuth();
@@ -72,9 +71,6 @@ const Settings = () => {
             </Badge>
           </div>
         </div>
-
-        {/* AI Suggestions Panel */}
-        <AISuggestionsPanel />
 
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6">

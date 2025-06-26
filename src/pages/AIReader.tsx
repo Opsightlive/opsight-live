@@ -3,13 +3,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, Download, Trash2, Eye, Brain, Settings, Zap } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Upload, FileText, Download, Trash2, Eye, Brain, Settings, Zap, Clock, Folder } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AIReader = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadMode, setUploadMode] = useState('automatic');
+  const [autoProcessingEnabled, setAutoProcessingEnabled] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [processingFrequency, setProcessingFrequency] = useState('realtime');
+  const [watchedFolders, setWatchedFolders] = useState(true);
+  
   const [uploadedFiles, setUploadedFiles] = useState<Array<{
     id: string;
     name: string;
@@ -165,7 +173,7 @@ const AIReader = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col space-y-4">
+              <div className="space-y-6">
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <h4 className="font-medium text-blue-800 mb-2">Automatic Mode Active</h4>
                   <p className="text-sm text-blue-700 mb-3">
@@ -177,13 +185,94 @@ const AIReader = () => {
                     Monitoring for new documents...
                   </div>
                 </div>
+
+                {/* Automatic Processing Settings */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-gray-900">Processing Options</h5>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="font-medium">Auto-Processing</Label>
+                        <p className="text-sm text-gray-600">Automatically process new documents</p>
+                      </div>
+                      <Switch 
+                        checked={autoProcessingEnabled}
+                        onCheckedChange={setAutoProcessingEnabled}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="font-medium">Watch Folders</Label>
+                        <p className="text-sm text-gray-600">Monitor connected folder sources</p>
+                      </div>
+                      <Switch 
+                        checked={watchedFolders}
+                        onCheckedChange={setWatchedFolders}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="font-medium">Email Notifications</Label>
+                        <p className="text-sm text-gray-600">Get notified when documents are processed</p>
+                      </div>
+                      <Switch 
+                        checked={emailNotifications}
+                        onCheckedChange={setEmailNotifications}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-gray-900">Processing Frequency</h5>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Check for new documents:</Label>
+                      <Select value={processingFrequency} onValueChange={setProcessingFrequency}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="realtime">Real-time</SelectItem>
+                          <SelectItem value="5min">Every 5 minutes</SelectItem>
+                          <SelectItem value="15min">Every 15 minutes</SelectItem>
+                          <SelectItem value="30min">Every 30 minutes</SelectItem>
+                          <SelectItem value="1hour">Every hour</SelectItem>
+                          <SelectItem value="daily">Daily at 9 AM</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
+                        <Folder className="h-4 w-4" />
+                        <span className="font-medium">Connected Sources:</span>
+                      </div>
+                      <ul className="text-sm text-gray-600 mt-1 ml-6">
+                        <li>• Google Drive (/Property Reports)</li>
+                        <li>• Dropbox (/Financial Docs)</li>
+                        <li>• Email attachments (filtered)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleFileUpload} variant="outline">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Manually Add Document (Override)
+                  </Button>
+                  <Button variant="outline">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Configure Sources
+                  </Button>
+                </div>
+
                 <p className="text-sm text-gray-600">
                   Supported formats: PDF, DOCX, TXT, CSV, XLSX. Max file size: 10MB
                 </p>
-                <Button onClick={handleFileUpload} variant="outline">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Manually Add Document (Override)
-                </Button>
               </div>
             </CardContent>
           </Card>

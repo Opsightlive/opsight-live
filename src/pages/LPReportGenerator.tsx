@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileText, Download, Mail, Eye } from 'lucide-react';
+import { FileText, Download, Mail, Eye, Users } from 'lucide-react';
 
 const LPReportGenerator = () => {
   const [selectedProperty, setSelectedProperty] = useState('');
@@ -15,6 +15,7 @@ const LPReportGenerator = () => {
   const [emailRecipient, setEmailRecipient] = useState('');
   const [copyMyself, setCopyMyself] = useState(true);
   const [notifyWhenViewed, setNotifyWhenViewed] = useState(true);
+  const [sendToAllLPs, setSendToAllLPs] = useState(false);
 
   const [sections, setSections] = useState({
     kpiSummary: true,
@@ -63,6 +64,7 @@ const LPReportGenerator = () => {
     console.log('Sending report to:', emailRecipient, {
       copyMyself,
       notifyWhenViewed,
+      sendToAllLPs,
       property: selectedProperty,
       dateRange: selectedDateRange,
       format: selectedFormat,
@@ -201,10 +203,29 @@ const LPReportGenerator = () => {
                     value={emailRecipient}
                     onChange={(e) => setEmailRecipient(e.target.value)}
                     className="h-12"
+                    disabled={sendToAllLPs}
                   />
                 </div>
 
                 <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="sendToAllLPs"
+                      checked={sendToAllLPs}
+                      onCheckedChange={(checked) => setSendToAllLPs(checked === true)}
+                      className="w-5 h-5"
+                    />
+                    <Label htmlFor="sendToAllLPs" className="cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        <span className="font-medium">Send to All Limited Partners</span>
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Automatically send to all LPs in your contact list
+                      </div>
+                    </Label>
+                  </div>
+
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       id="copyMyself"
@@ -230,13 +251,25 @@ const LPReportGenerator = () => {
                   </div>
                 </div>
 
+                {sendToAllLPs && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800 font-medium">Sending to all Limited Partners:</p>
+                    <ul className="text-sm text-blue-700 mt-1">
+                      <li>• John Smith (john@example.com)</li>
+                      <li>• Sarah Johnson (sarah@example.com)</li>
+                      <li>• Mike Chen (mike@example.com)</li>
+                      <li>• + 12 more partners</li>
+                    </ul>
+                  </div>
+                )}
+
                 <Button 
                   onClick={handleSendReport}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg"
-                  disabled={!emailRecipient.trim()}
+                  disabled={!sendToAllLPs && !emailRecipient.trim()}
                 >
                   <Mail className="h-5 w-5 mr-2" />
-                  Send Report
+                  {sendToAllLPs ? 'Send to All LPs' : 'Send Report'}
                 </Button>
               </CardContent>
             </Card>
