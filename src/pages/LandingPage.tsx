@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -105,27 +106,7 @@ const LandingPage = () => {
                 predict issues before they happen, and maximize returns with AI-powered insights.
               </p>
 
-              {/* Demo Video Section */}
-              <div className="mb-8">
-                <div className="bg-white rounded-lg shadow-lg p-6 border">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">Watch 2-Minute Demo</h3>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                      <Play className="h-4 w-4 mr-2" />
-                      Play Demo
-                    </Button>
-                  </div>
-                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Play className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">Demo video placeholder</p>
-                      <p className="text-sm text-gray-400">See OPSIGHT in action</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link to="/demo">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
                     Get Your Demo
@@ -138,7 +119,8 @@ const LandingPage = () => {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-8 flex items-center space-x-6 text-sm text-gray-500">
+
+              <div className="flex items-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
                   No credit card required
@@ -192,8 +174,29 @@ const LandingPage = () => {
         </div>
       </div>
 
+      {/* Quick Demo Video Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">See OPSIGHT in Action</h2>
+            <p className="text-lg text-gray-600">Watch this 2-minute demo to see how OPSIGHT transforms portfolio management</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+              <div className="text-center">
+                <div className="bg-blue-600 rounded-full p-6 mx-auto mb-4 hover:bg-blue-700 transition-colors cursor-pointer">
+                  <Play className="h-12 w-12 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Quick Platform Demo</h3>
+                <p className="text-gray-600">See real-time analytics and predictive insights</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Social Proof */}
-      <div className="bg-gray-50 py-12">
+      <div className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-gray-500 font-medium">Trusted by industry leaders worldwide</p>
@@ -496,23 +499,25 @@ const LandingPage = () => {
               What is OPSIGHT?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Watch this 3-minute video to understand how OPSIGHT transforms 
+              Watch this comprehensive overview to understand how OPSIGHT transforms 
               real estate portfolio management through AI-powered intelligence.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-2xl p-8 border">
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-2xl p-8">
+              <div className="aspect-video bg-white rounded-xl shadow-inner flex items-center justify-center">
                 <div className="text-center">
-                  <Play className="h-20 w-20 text-blue-600 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">What is OPSIGHT?</h3>
-                  <p className="text-gray-600 mb-4">
-                    See how our platform revolutionizes real estate operations
+                  <div className="bg-blue-600 rounded-full p-8 mx-auto mb-6 hover:bg-blue-700 transition-colors cursor-pointer shadow-lg">
+                    <Play className="h-16 w-16 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">What is OPSIGHT?</h3>
+                  <p className="text-gray-600 mb-6 text-lg">
+                    Comprehensive platform overview and capabilities demonstration
                   </p>
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3">
                     <Play className="h-5 w-5 mr-2" />
-                    Watch Now
+                    Watch Full Overview
                   </Button>
                 </div>
               </div>
@@ -600,7 +605,7 @@ const LandingPage = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 OPSIGHT. All rights reserved.</p>
+            <p>&copy; 2025 OPSIGHT. All rights reserved.</p>
           </div>
         </div>
       </footer>
