@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import Navigation from './Navigation';
 import { useLocation } from 'react-router-dom';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
 import { Menu, X } from 'lucide-react';
@@ -17,9 +16,6 @@ const Layout = ({ children, showNavigation = false }: LayoutProps) => {
   const location = useLocation();
   const { isMobile } = useDeviceDetection();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  // Don't show navigation (back button) on dashboard
-  const shouldShowNavigation = showNavigation && location.pathname !== '/dashboard';
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
@@ -65,11 +61,6 @@ const Layout = ({ children, showNavigation = false }: LayoutProps) => {
         {!isMobile && <Header />}
         
         <main className="flex-1 overflow-auto bg-gray-50">
-          {shouldShowNavigation && !isMobile && (
-            <div className="p-4">
-              <Navigation />
-            </div>
-          )}
           {children}
         </main>
       </div>

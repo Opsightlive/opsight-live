@@ -45,7 +45,7 @@ const Header: React.FC = () => {
   if (isMobile) return null;
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-blue-700 border-b border-blue-800 px-6 py-4">
+    <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {showBackButton && (
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
               variant="ghost"
               size="icon"
               onClick={handleBackClick}
-              className="text-white hover:bg-blue-600"
+              className="text-gray-600 hover:bg-gray-100"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
               alt="OPSIGHT Logo" 
               className="h-8 w-8 object-contain"
             />
-            <h1 className="text-xl font-bold text-white">OPSIGHT</h1>
+            <h1 className="text-xl font-bold text-gray-900">OPSIGHT</h1>
           </Link>
         </div>
 
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             variant="ghost"
             size="icon"
             onClick={handleNotificationClick}
-            className="relative text-white hover:bg-blue-600"
+            className="relative text-gray-600 hover:bg-gray-100"
           >
             <Bell className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
@@ -87,7 +87,7 @@ const Header: React.FC = () => {
             variant="ghost"
             size="icon"
             onClick={handleHelpClick}
-            className="text-white hover:bg-blue-600"
+            className="text-gray-600 hover:bg-gray-100"
           >
             <HelpCircle className="h-5 w-5" />
           </Button>
@@ -97,7 +97,7 @@ const Header: React.FC = () => {
             variant="ghost"
             size="icon"
             onClick={handleSettingsClick}
-            className="text-white hover:bg-blue-600"
+            className="text-gray-600 hover:bg-gray-100"
           >
             <Settings className="h-5 w-5" />
           </Button>
@@ -105,10 +105,10 @@ const Header: React.FC = () => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full text-white hover:bg-blue-600">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full text-gray-600 hover:bg-gray-100">
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                  <AvatarFallback className="bg-gray-100 text-gray-600">
                     {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
