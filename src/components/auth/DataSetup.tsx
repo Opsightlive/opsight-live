@@ -35,11 +35,8 @@ const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
       // Simulate connection process
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Complete the registration - fix: only pass email and password
-      const success = await register(
-        registrationData.email,
-        registrationData.password
-      );
+      // Complete the registration - fix: pass the full registration data object
+      const success = await register(registrationData);
 
       if (success) {
         localStorage.removeItem('pendingRegistration');
