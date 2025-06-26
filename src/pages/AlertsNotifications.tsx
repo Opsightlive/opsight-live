@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, CheckCircle, Clock, Download, FileText, Send, Snooze, UserCheck, Eye, Bell } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Download, FileText, Send, UserCheck, Eye, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Alert {
@@ -268,6 +267,7 @@ const AlertsNotifications = () => {
                             size="sm" 
                             onClick={() => handleAction('Snooze', alert.id)}
                           >
+                            <Clock className="h-4 w-4 mr-1" />
                             Snooze
                           </Button>
                           <Button 
@@ -300,6 +300,7 @@ const AlertsNotifications = () => {
                             size="sm" 
                             onClick={() => handleAction('Snooze', alert.id)}
                           >
+                            <Clock className="h-4 w-4 mr-1" />
                             Snooze
                           </Button>
                           <Button 
