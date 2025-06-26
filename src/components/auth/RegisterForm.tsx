@@ -94,7 +94,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             </div>
           </div>
           <h1 className={`${isMobile ? 'text-4xl' : 'text-6xl'} font-bold text-white mb-2`}>OPSIGHT</h1>
-          <p className={`text-gray-400 ${isMobile ? 'text-base' : 'text-xl'}`}>Asset Performance OS</p>
+          <p className={`text-gray-400 ${isMobile ? 'text-base' : 'text-xl'}`}>Operational Insight</p>
         </div>
 
         <div className={`bg-white rounded-lg shadow-xl ${isMobile ? 'p-6' : 'p-10'}`}>
