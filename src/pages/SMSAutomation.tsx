@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -240,28 +239,15 @@ const SMSAutomation = () => {
           </CardContent>
         </Card>
 
-        {/* SMS Preview Modal */}
+        {/* SMS Preview Modal - Only iPhone Image */}
         {showPreview && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPreview(false)}>
-            <div className="bg-white rounded-lg p-6 max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">SMS Preview</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>×</Button>
-              </div>
-              
-              <div className="relative">
-                <img 
-                  src="/lovable-uploads/735f0723-47f3-498a-88a7-8bdef80978f9.png" 
-                  alt="iPhone SMS Preview" 
-                  className="w-full max-w-xs mx-auto"
-                />
-              </div>
-              
-              <div className="mt-4 text-center">
-                <Button onClick={() => setShowPreview(false)} className="w-full">
-                  Close Preview
-                </Button>
-              </div>
+            <div className="bg-transparent p-4" onClick={(e) => e.stopPropagation()}>
+              <img 
+                src="/lovable-uploads/735f0723-47f3-498a-88a7-8bdef80978f9.png" 
+                alt="iPhone SMS Preview" 
+                className="max-h-[80vh] max-w-[90vw] object-contain"
+              />
             </div>
           </div>
         )}
