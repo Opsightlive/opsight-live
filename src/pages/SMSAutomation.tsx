@@ -56,10 +56,10 @@ const SMSAutomation = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h1 className="text-3xl font-bold text-black mb-2">SMS Alert Automation Engine</h1>
-          <p className="text-gray-600">Configure automated SMS alerts for red flag events</p>
+        {/* Enhanced Header with more height */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
+          <h1 className="text-4xl font-bold mb-4">SMS Alert Automation Engine</h1>
+          <p className="text-xl text-blue-100 max-w-3xl">Configure automated SMS alerts for red flag events and streamline property management communications</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -197,9 +197,9 @@ const SMSAutomation = () => {
 
         {/* Logs & History */}
         <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <History className="h-5 w-5 mr-2" />
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center text-xl">
+              <History className="h-6 w-6 mr-2" />
               SMS Logs & History
             </CardTitle>
           </CardHeader>

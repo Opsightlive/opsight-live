@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,16 +52,17 @@ const KPICommandCenter = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-black mb-2">KPI Command Center</h1>
-        <p className="text-gray-600">Monitor key performance indicators across all properties</p>
+      {/* Enhanced Header with more height */}
+      <div className="mb-8 py-8 px-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+        <h1 className="text-4xl font-bold text-black mb-4">KPI Command Center</h1>
+        <p className="text-lg text-gray-700 max-w-2xl">Monitor key performance indicators across all properties with real-time insights and actionable alerts</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-200 p-4 mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-black">Property:</label>
+      <div className="bg-white border border-gray-200 p-6 mb-8 rounded-lg shadow-sm">
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3">
+            <label className="text-base font-medium text-black">Property:</label>
             <Select value={selectedProperty} onValueChange={setSelectedProperty}>
               <SelectTrigger className="w-48">
                 <SelectValue />
@@ -73,8 +75,8 @@ const KPICommandCenter = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-black">Timeframe:</label>
+          <div className="flex items-center space-x-3">
+            <label className="text-base font-medium text-black">Timeframe:</label>
             <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
               <SelectTrigger className="w-32">
                 <SelectValue />
@@ -94,9 +96,9 @@ const KPICommandCenter = () => {
       <div className="space-y-8">
         {properties.map((property) => (
           <Card key={property.name} className="border-2 border-gray-200">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building2 className="h-5 w-5 text-blue-600" />
+            <CardHeader className="pb-6">
+              <CardTitle className="flex items-center space-x-2 text-xl">
+                <Building2 className="h-6 w-6 text-blue-600" />
                 <span>{property.name}</span>
               </CardTitle>
             </CardHeader>
@@ -147,8 +149,8 @@ const KPICommandCenter = () => {
 
       {/* Portfolio Summary */}
       <Card className="mt-8 border-2 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-xl">Portfolio Summary</CardTitle>
+        <CardHeader className="pb-6">
+          <CardTitle className="text-2xl">Portfolio Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
