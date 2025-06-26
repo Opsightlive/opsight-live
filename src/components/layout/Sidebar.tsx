@@ -28,6 +28,7 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
+  // Core Dashboard & Overview (Most Important)
   {
     icon: LayoutDashboard,
     label: 'Dashboard',
@@ -38,30 +39,29 @@ const sidebarItems: SidebarItem[] = [
     label: 'Portfolio Overview',
     path: '/portfolio'
   },
-  {
-    icon: BarChart3,
-    label: 'KPI Command Center',
-    path: '/kpi-center'
-  },
+  
+  // Critical Monitoring & Alerts
   {
     icon: AlertTriangle,
     label: 'Red Flag Alerts',
     path: '/red-flag-alerts'
   },
   {
+    icon: BarChart3,
+    label: 'KPI Command Center',
+    path: '/kpi-center'
+  },
+  {
+    icon: Calendar,
+    label: 'Red Flag Timeline',
+    path: '/timeline'
+  },
+  
+  // AI & Intelligence Tools
+  {
     icon: Bot,
     label: 'AI Reader',
     path: '/ai-reader'
-  },
-  {
-    icon: FileText,
-    label: 'LP Report Generator',
-    path: '/lp-reports'
-  },
-  {
-    icon: TrendingUp,
-    label: 'LP Dashboard',
-    path: '/lp-dashboard'
   },
   {
     icon: Bot,
@@ -73,11 +73,37 @@ const sidebarItems: SidebarItem[] = [
     label: 'Predictive Signals',
     path: '/predictive'
   },
+  
+  // Reports & Analytics
+  {
+    icon: FileText,
+    label: 'LP Report Generator',
+    path: '/lp-reports'
+  },
+  {
+    icon: TrendingUp,
+    label: 'LP Dashboard',
+    path: '/lp-dashboard'
+  },
+  {
+    icon: BarChart3,
+    label: 'PM Engagement Score',
+    path: '/pm-engagement'
+  },
+  
+  // Deal Management & Vetting
   {
     icon: FileText,
     label: 'Deal Vetting Toolkit',
     path: '/deal-vetting'
   },
+  {
+    icon: FileText,
+    label: 'Resolution Summary',
+    path: '/resolutions'
+  },
+  
+  // Communication & Automation
   {
     icon: Mail,
     label: 'Email Automation',
@@ -88,26 +114,8 @@ const sidebarItems: SidebarItem[] = [
     label: 'SMS Automation',
     path: '/sms-automation'
   },
-  {
-    icon: BarChart3,
-    label: 'PM Engagement Score',
-    path: '/pm-engagement'
-  },
-  {
-    icon: Calendar,
-    label: 'Red Flag Timeline',
-    path: '/timeline'
-  },
-  {
-    icon: FileText,
-    label: 'Resolution Summary',
-    path: '/resolutions'
-  },
-  {
-    icon: Bell,
-    label: 'Alert Delivery Logs',
-    path: '/delivery-logs'
-  },
+  
+  // Data & Notifications
   {
     icon: Database,
     label: 'Data Vault',
@@ -119,11 +127,20 @@ const sidebarItems: SidebarItem[] = [
     path: '/notifications'
   },
   {
+    icon: Bell,
+    label: 'Alert Delivery Logs',
+    path: '/delivery-logs'
+  },
+  
+  // Administration (Company Only)
+  {
     icon: Users,
     label: 'User Management',
     path: '/users',
     companyOnly: true
   },
+  
+  // Settings & Support (Least Priority)
   {
     icon: Settings,
     label: 'Settings',
