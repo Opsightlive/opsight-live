@@ -31,6 +31,10 @@ import LPDashboard from "./pages/LPDashboard";
 import LPReportGenerator from "./pages/LPReportGenerator";
 import AIIntelligence from "./pages/AIIntelligence";
 import PMEngagementScore from "./pages/PMEngagementScore";
+import PredictiveSignals from "./pages/PredictiveSignals";
+import DealVettingToolkit from "./pages/DealVettingToolkit";
+import RedFlagTimeline from "./pages/RedFlagTimeline";
+import ResolutionSummary from "./pages/ResolutionSummary";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -66,13 +70,13 @@ const DashboardRoutes = () => (
         <Route path="/lp-reports" element={<LPReportGenerator />} />
         <Route path="/lp-dashboard" element={<LPDashboard />} />
         <Route path="/ai-tools" element={<AIIntelligence />} />
-        <Route path="/predictive" element={<div className="p-6"><h1 className="text-2xl font-bold">Predictive Signals</h1><p className="text-gray-600">Coming Soon</p></div>} />
-        <Route path="/deal-vetting" element={<div className="p-6"><h1 className="text-2xl font-bold">Deal Vetting Toolkit</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/predictive" element={<PredictiveSignals />} />
+        <Route path="/deal-vetting" element={<DealVettingToolkit />} />
         <Route path="/email-automation" element={<EmailAutomation />} />
         <Route path="/sms-automation" element={<SMSAutomation />} />
         <Route path="/pm-engagement" element={<PMEngagementScore />} />
-        <Route path="/timeline" element={<div className="p-6"><h1 className="text-2xl font-bold">Red Flag Timeline</h1><p className="text-gray-600">Coming Soon</p></div>} />
-        <Route path="/resolutions" element={<div className="p-6"><h1 className="text-2xl font-bold">Resolution Summary</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/timeline" element={<RedFlagTimeline />} />
+        <Route path="/resolutions" element={<ResolutionSummary />} />
         <Route path="/delivery-logs" element={<AlertDeliveryLogs />} />
         <Route path="/data-vault" element={<DataVault />} />
         <Route path="/notifications" element={<AlertsNotifications />} />
