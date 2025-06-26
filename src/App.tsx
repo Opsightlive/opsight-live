@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,7 @@ import HelpCenter from "./pages/HelpCenter";
 import GettingStartedGuide from "./pages/help/GettingStartedGuide";
 import UserManagementGuide from "./pages/help/UserManagementGuide";
 import CompanyDashboard from "./pages/CompanyDashboard";
+import AlertDeliveryLogs from "./pages/AlertDeliveryLogs";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -65,7 +65,7 @@ const DashboardRoutes = () => (
         <Route path="/pm-engagement" element={<div className="p-6"><h1 className="text-2xl font-bold">PM Engagement Score</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/timeline" element={<div className="p-6"><h1 className="text-2xl font-bold">Red Flag Timeline</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/resolutions" element={<div className="p-6"><h1 className="text-2xl font-bold">Resolution Summary</h1><p className="text-gray-600">Coming Soon</p></div>} />
-        <Route path="/delivery-logs" element={<div className="p-6"><h1 className="text-2xl font-bold">Alert Delivery Logs</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/delivery-logs" element={<AlertDeliveryLogs />} />
         <Route path="/data-vault" element={<div className="p-6"><h1 className="text-2xl font-bold">Data Vault</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/settings" element={<Settings />} />
