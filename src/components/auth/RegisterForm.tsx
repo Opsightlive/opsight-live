@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import OnboardingSetup from './OnboardingSetup';
 import PaymentSetup from './PaymentSetup';
 
@@ -19,8 +19,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
-  const [currentStep, setCurrentStep] = useState('register'); // 'register', 'onboarding', 'payment'
+  const [currentStep, setCurrentStep] = useState('register');
   const { register, isLoading } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,30 +37,24 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       return;
     }
     
-    // Move to onboarding step
     setCurrentStep('onboarding');
   };
 
   const handleOnboardingComplete = () => {
-    // Move to payment step
     setCurrentStep('payment');
   };
 
   const handlePaymentComplete = async () => {
-    // Get the registration data from localStorage
     const pendingRegistration = localStorage.getItem('pendingRegistration');
     
     if (pendingRegistration) {
       const { email, password } = JSON.parse(pendingRegistration);
       
       try {
-        // Actually register the user
         const success = await register(email, password);
         
         if (success) {
-          // Clean up the pending registration data
           localStorage.removeItem('pendingRegistration');
-          // The AuthContext will handle showing the main app
         } else {
           setError('Registration failed. Please try again.');
           setCurrentStep('register');
@@ -69,7 +64,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
         setCurrentStep('register');
       }
     } else {
-      // Fallback to the form data if localStorage is empty
       const success = await register(email, password);
       if (!success) {
         setError('Registration failed. Please try again.');
@@ -88,10 +82,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className={`w-full ${isMobile ? 'max-w-md' : 'max-w-lg'}`}>
         <div className="text-center mb-8">
           <div className="mb-6">
-            <div className="w-20 h-20 mx-auto">
+            <div className={`${isMobile ? 'w-20 h-20' : 'w-28 h-28'} mx-auto`}>
               <img 
                 src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
                 alt="OPSIGHT Logo" 
@@ -99,27 +93,27 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
               />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">OPSIGHT</h1>
-          <p className="text-gray-400">Asset Performance OS</p>
+          <h1 className={`${isMobile ? 'text-4xl' : 'text-6xl'} font-bold text-white mb-2`}>OPSIGHT</h1>
+          <p className={`text-gray-400 ${isMobile ? 'text-base' : 'text-xl'}`}>Asset Performance OS</p>
         </div>
 
-        <div className="bg-white rounded-lg p-8 shadow-xl">
+        <div className={`bg-white rounded-lg shadow-xl ${isMobile ? 'p-6' : 'p-10'}`}>
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-            <p className="text-gray-600 mt-2">Get started with Opsight</p>
+            <h2 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-gray-900`}>Create Account</h2>
+            <p className={`text-gray-600 mt-2 ${isMobile ? 'text-sm' : 'text-base'}`}>Get started with Opsight</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <Label htmlFor="email" className="text-gray-700">Email Address</Label>
-              <div className="relative mt-1">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="email" className={`text-gray-700 ${isMobile ? 'text-sm' : 'text-base'}`}>Email Address</Label>
+              <div className="relative mt-2">
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                  className={`pl-12 border-gray-300 focus:border-blue-600 focus:ring-blue-600 ${isMobile ? 'h-10' : 'h-12 text-lg'}`}
                   placeholder="Enter your email"
                   required
                 />
@@ -127,15 +121,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-gray-700">Password</Label>
-              <div className="relative mt-1">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="password" className={`text-gray-700 ${isMobile ? 'text-sm' : 'text-base'}`}>Password</Label>
+              <div className="relative mt-2">
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                  className={`pl-12 pr-12 border-gray-300 focus:border-blue-600 focus:ring-blue-600 ${isMobile ? 'h-10' : 'h-12 text-lg'}`}
                   placeholder="Create a password"
                   required
                   minLength={6}
@@ -145,21 +139,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
-              <div className="relative mt-1">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="confirmPassword" className={`text-gray-700 ${isMobile ? 'text-sm' : 'text-base'}`}>Confirm Password</Label>
+              <div className="relative mt-2">
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 pr-10 border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                  className={`pl-12 pr-12 border-gray-300 focus:border-blue-600 focus:ring-blue-600 ${isMobile ? 'h-10' : 'h-12 text-lg'}`}
                   placeholder="Confirm your password"
                   required
                   minLength={6}
@@ -169,26 +163,26 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
+              <div className={`text-red-600 text-center ${isMobile ? 'text-sm' : 'text-base'}`}>{error}</div>
             )}
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
+              className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-medium ${isMobile ? 'py-2.5 text-base' : 'py-4 text-lg'}`}
             >
               {isLoading ? 'Creating Account...' : 'Continue'}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600">
+            <p className={`text-gray-600 ${isMobile ? 'text-sm' : 'text-base'}`}>
               Already have an account?{' '}
               <button
                 onClick={onLoginClick}
