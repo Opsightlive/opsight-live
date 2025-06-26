@@ -85,7 +85,7 @@ const sidebarItems: SidebarItem[] = [
     ]
   },
   
-  // Analytics & KPIs
+  // Analytics & KPIs (now includes Deal Vetting and Resolutions)
   {
     icon: BarChart3,
     label: 'Analytics & KPIs',
@@ -99,6 +99,16 @@ const sidebarItems: SidebarItem[] = [
         icon: BarChart3,
         label: 'PM Engagement Score',
         path: '/pm-engagement'
+      },
+      {
+        icon: FileText,
+        label: 'Deal Vetting Toolkit',
+        path: '/deal-vetting'
+      },
+      {
+        icon: FileText,
+        label: 'Resolution Summary',
+        path: '/resolutions'
       }
     ]
   },
@@ -126,21 +136,11 @@ const sidebarItems: SidebarItem[] = [
     ]
   },
   
-  // Reports & Analytics (with dropdown)
+  // LP Dashboard (new dropdown section)
   {
-    icon: FileText,
-    label: 'Reports & Analytics',
+    icon: TrendingUp,
+    label: 'LP Dashboard',
     children: [
-      {
-        icon: FileText,
-        label: 'Resolution Summary',
-        path: '/resolutions'
-      },
-      {
-        icon: FileText,
-        label: 'LP Report Generator',
-        path: '/lp-reports'
-      },
       {
         icon: TrendingUp,
         label: 'LP Dashboard',
@@ -148,8 +148,8 @@ const sidebarItems: SidebarItem[] = [
       },
       {
         icon: FileText,
-        label: 'Deal Vetting Toolkit',
-        path: '/deal-vetting'
+        label: 'LP Report Generator',
+        path: '/lp-reports'
       }
     ]
   },
