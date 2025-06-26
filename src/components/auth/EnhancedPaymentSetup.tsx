@@ -1,11 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check, CreditCard, Building2, FileText, Plus, X, ArrowLeft, Zap } from 'lucide-react';
+import { Check, CreditCard, Building2, FileText, Plus, X, ArrowLeft, Zap, Shield, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import DataSetup from './DataSetup';
+import PricingCalculator from '../pricing/PricingCalculator';
 
 interface EnhancedPaymentSetupProps {
   onComplete: () => void;
@@ -22,11 +24,16 @@ interface PaymentMethod {
 
 const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState({
+    tier: 'Professional',
+    billingPeriod: 'monthly' as 'monthly' | 'annual',
+    units: 1,
+    total: 4
+  });
   const [showDataSetup, setShowDataSetup] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('pricing');
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -49,6 +56,15 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
       const data = JSON.parse(stored);
       setRegistrationData(data);
       
+      // Calculate units from properties
+      const propertyCount = data.userData?.properties?.length || 1;
+      const totalUnits = data.userData?.properties?.reduce((sum: number, prop: any) => sum + (prop.units || 1), 0) || 1;
+      
+      setSelectedPlan(prev => ({
+        ...prev,
+        units: totalUnits
+      }));
+      
       // Initialize with one payment method covering all properties
       if (data.userData?.properties?.length > 0) {
         setPaymentMethods([{
@@ -59,6 +75,11 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
       }
     }
   }, []);
+
+  const handlePlanSelect = (tier: string, billingPeriod: 'monthly' | 'annual', units: number, total: number) => {
+    setSelectedPlan({ tier, billingPeriod, units, total });
+    setActiveTab('payment');
+  };
 
   const addPaymentMethod = () => {
     const newMethod: PaymentMethod = {
@@ -109,17 +130,12 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
 
   const { userData } = registrationData;
   const properties = userData?.properties || [];
-  const propertyCount = properties.length;
-  const monthlyTotal = propertyCount * 295;
-  const annualTotal = monthlyTotal * 12;
-  const annualSavings = monthlyTotal * 2;
-  const discountedAnnualTotal = annualTotal - annualSavings;
 
   // Calculate credit card discount (10% off)
   const creditCardDiscount = 0.10;
   const hasAllCardPayments = paymentMethods.every(method => method.type === 'card');
-  const discountAmount = hasAllCardPayments ? Math.round((selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal) * creditCardDiscount) : 0;
-  const finalTotal = (selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal) - discountAmount;
+  const discountAmount = hasAllCardPayments ? Math.round(selectedPlan.total * creditCardDiscount) : 0;
+  const finalTotal = selectedPlan.total - discountAmount;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -149,167 +165,66 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
           </div>
           <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
           <p className="text-blue-600 text-lg tracking-wider">OPERATIONAL INSIGHT</p>
-          <h2 className="text-3xl font-bold text-gray-900 mt-8">Payment Setup</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mt-8">Choose Your Plan</h2>
           <p className="text-gray-600 mt-2">
-            Configure billing for your {propertyCount} {propertyCount === 1 ? 'property' : 'properties'}
+            Start your 14-day free trial • No charges until day 15
           </p>
-          {hasAllCardPayments && discountAmount > 0 && (
-            <div className="mt-4 inline-flex items-center bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-              <Zap className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-green-700 font-medium">
-                Credit Card Discount: Save {formatCurrency(discountAmount)} (10% off)
-              </span>
-            </div>
-          )}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="overview">Overview & Plan</TabsTrigger>
-            <TabsTrigger value="payment">Payment Methods</TabsTrigger>
-            <TabsTrigger value="review">Review & Complete</TabsTrigger>
+            <TabsTrigger value="pricing">Plan Selection</TabsTrigger>
+            <TabsTrigger value="payment">Payment Setup</TabsTrigger>
+            <TabsTrigger value="review">Review & Start Trial</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
-            {/* Plan Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <Card 
-                className={`border-2 cursor-pointer transition-all duration-200 ${
-                  selectedPlan === 'monthly' 
-                    ? 'border-blue-600 shadow-lg ring-2 ring-blue-100' 
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
-                onClick={() => setSelectedPlan('monthly')}
-              >
-                <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl font-bold">Monthly</CardTitle>
-                    {selectedPlan === 'monthly' && (
-                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    )}
+          <TabsContent value="pricing">
+            {/* Free Trial Banner */}
+            <Card className="border-2 border-green-200 bg-green-50 mb-8">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center">
+                  <Shield className="h-8 w-8 text-green-600 mr-4" />
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-green-800 mb-2">14-Day Free Trial</h3>
+                    <p className="text-green-700">
+                      We won't charge your card during the trial period. On day 15, you'll be charged for your selected plan.
+                    </p>
                   </div>
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-4xl font-bold text-gray-900">{formatCurrency(monthlyTotal)}</span>
-                    <span className="text-gray-500 ml-1">/month</span>
-                  </div>
-                  <p className="text-sm text-gray-600">${295} per property</p>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Full platform access</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Real-time KPI tracking</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Predictive alerts</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className={`border-2 cursor-pointer transition-all duration-200 relative ${
-                  selectedPlan === 'annual' 
-                    ? 'border-blue-600 shadow-lg ring-2 ring-blue-100' 
-                    : 'border-blue-600 shadow-lg hover:shadow-xl'
-                }`}
-                onClick={() => setSelectedPlan('annual')}
-              >
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-                    Save {formatCurrency(annualSavings)}
-                  </span>
-                </div>
-                
-                <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl font-bold">Annual</CardTitle>
-                    {selectedPlan === 'annual' && (
-                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-4xl font-bold text-gray-900">{formatCurrency(discountedAnnualTotal)}</span>
-                    <span className="text-gray-500 ml-1">/year</span>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="line-through text-gray-400">{formatCurrency(annualTotal)}</span> 
-                    <span className="ml-2 text-green-600 font-medium">2 months free!</span>
-                  </p>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Everything in Monthly</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Priority support</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">Advanced analytics</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Property Summary */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Building2 className="h-6 w-6 text-blue-600 mr-2" />
-                  Your Portfolio ({propertyCount} {propertyCount === 1 ? 'Property' : 'Properties'})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {properties.map((property: any, index: number) => (
-                    <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                      <h4 className="font-semibold text-gray-900">{property.name}</h4>
-                      <p className="text-sm text-gray-600">{property.units} units</p>
-                      <p className="text-sm text-gray-500">{property.address}</p>
-                      <p className="text-sm text-blue-600 font-medium mt-2">
-                        ${295}/{selectedPlan === 'monthly' ? 'month' : 'year'}
-                      </p>
-                    </div>
-                  ))}
                 </div>
               </CardContent>
             </Card>
 
-            <div className="text-center">
-              <Button 
-                onClick={() => setActiveTab('payment')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
-              >
-                Continue to Payment Setup
-              </Button>
-            </div>
+            <PricingCalculator 
+              onPlanSelect={handlePlanSelect}
+              defaultUnits={selectedPlan.units}
+            />
           </TabsContent>
 
           <TabsContent value="payment">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-gray-900">Payment Methods</h3>
+                <h3 className="text-2xl font-bold text-gray-900">Payment Information</h3>
                 <Button onClick={addPaymentMethod} variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Payment Method
                 </Button>
               </div>
+
+              {/* Trial Information */}
+              <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <Calendar className="h-6 w-6 text-blue-600 mr-3" />
+                    <div>
+                      <h4 className="font-semibold text-blue-800">Payment Schedule</h4>
+                      <p className="text-sm text-blue-700">
+                        Your card will be securely stored but not charged during the 14-day trial. 
+                        First payment of {formatCurrency(finalTotal)} will occur on day 15.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Credit Card Promotion Banner */}
               <Card className="border-2 border-green-200 bg-green-50">
@@ -398,10 +313,9 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                           />
                         </div>
                         <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                          <p className="font-medium">✓ Instant account activation</p>
+                          <p className="font-medium">✓ Secure storage - no charges during trial</p>
                           <p className="font-medium">✓ 10% discount automatically applied</p>
-                          <p className="font-medium">✓ Secure processing with bank-level encryption</p>
-                          <p className="font-medium">✓ No delays - start using OPSIGHT immediately</p>
+                          <p className="font-medium">✓ First charge on day 15: {formatCurrency(finalTotal)}</p>
                         </div>
                       </div>
                     )}
@@ -432,34 +346,36 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                       </div>
                     )}
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Assign Properties to this Payment Method:
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {properties.map((property: any, propIndex: number) => (
-                          <label key={propIndex} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={method.propertyIds.includes(propIndex.toString())}
-                              onChange={() => assignPropertyToMethod(propIndex.toString(), method.id)}
-                              className="rounded"
-                            />
-                            <span className="text-sm">{property.name}</span>
-                          </label>
-                        ))}
+                    {properties.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Assign Properties to this Payment Method:
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {properties.map((property: any, propIndex: number) => (
+                            <label key={propIndex} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={method.propertyIds.includes(propIndex.toString())}
+                                onChange={() => assignPropertyToMethod(propIndex.toString(), method.id)}
+                                className="rounded"
+                              />
+                              <span className="text-sm">{property.name} ({property.units} units)</span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
 
               <div className="flex space-x-4">
-                <Button variant="outline" onClick={() => setActiveTab('overview')}>
-                  Back to Overview
+                <Button variant="outline" onClick={() => setActiveTab('pricing')}>
+                  Back to Pricing
                 </Button>
                 <Button onClick={() => setActiveTab('review')} className="bg-blue-600 hover:bg-blue-700">
-                  Review & Complete
+                  Review & Start Trial
                 </Button>
               </div>
             </div>
@@ -477,8 +393,10 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold">{selectedPlan === 'monthly' ? 'Monthly' : 'Annual'} Plan</p>
-                      <p className="text-gray-600">{propertyCount} {propertyCount === 1 ? 'property' : 'properties'}</p>
+                      <p className="font-semibold">{selectedPlan.tier} Plan</p>
+                      <p className="text-gray-600">
+                        {selectedPlan.units} {selectedPlan.units === 1 ? 'unit' : 'units'} • {selectedPlan.billingPeriod} billing
+                      </p>
                       {hasAllCardPayments && discountAmount > 0 && (
                         <p className="text-green-600 font-medium">Credit Card Discount Applied!</p>
                       )}
@@ -486,14 +404,14 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                     <div className="text-right">
                       {hasAllCardPayments && discountAmount > 0 && (
                         <p className="text-sm text-gray-500 line-through">
-                          {formatCurrency(selectedPlan === 'monthly' ? monthlyTotal : discountedAnnualTotal)}
+                          {formatCurrency(selectedPlan.total)}
                         </p>
                       )}
                       <p className="text-2xl font-bold">
                         {formatCurrency(finalTotal)}
                       </p>
                       <p className="text-gray-600">
-                        {selectedPlan === 'monthly' ? '/month' : '/year'}
+                        /{selectedPlan.billingPeriod}
                       </p>
                       {hasAllCardPayments && discountAmount > 0 && (
                         <p className="text-sm text-green-600 font-medium">
@@ -505,39 +423,28 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                 </CardContent>
               </Card>
 
-              {/* Payment Methods Summary */}
-              {paymentMethods.map((method, index) => (
-                <Card key={method.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      {method.type === 'card' ? (
-                        <CreditCard className="h-5 w-5 mr-2" />
-                      ) : (
-                        <FileText className="h-5 w-5 mr-2" />
-                      )}
-                      Payment Method {index + 1} - {method.type === 'card' ? 'Credit Card' : 'Invoice'}
-                      {method.type === 'card' && (
-                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                          10% DISCOUNT
-                        </span>
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-2">Properties covered:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {method.propertyIds.map(propId => {
-                        const property = properties[parseInt(propId)];
-                        return property ? (
-                          <span key={propId} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                            {property.name}
-                          </span>
-                        ) : null;
-                      })}
+              {/* Trial Information */}
+              <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <Shield className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-blue-800 mb-2">14-Day Free Trial</h3>
+                    <p className="text-blue-700 mb-4">
+                      Your trial starts immediately with full access to all features. 
+                      We'll charge your card {formatCurrency(finalTotal)} on day 15.
+                    </p>
+                    <div className="bg-white rounded-lg p-4 text-left">
+                      <h4 className="font-semibold text-gray-900 mb-2">What happens next:</h4>
+                      <ul className="space-y-1 text-sm text-gray-700">
+                        <li>✓ Immediate access to your OPSIGHT dashboard</li>
+                        <li>✓ Full platform features unlocked</li>
+                        <li>✓ 14 days to explore without any charges</li>
+                        <li>✓ First payment on {new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString()}</li>
+                      </ul>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                </CardContent>
+              </Card>
 
               <div className="flex space-x-4">
                 <Button variant="outline" onClick={() => setActiveTab('payment')}>
@@ -551,12 +458,12 @@ const EnhancedPaymentSetup: React.FC<EnhancedPaymentSetupProps> = ({ onComplete 
                   {isProcessing ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Processing...</span>
+                      <span>Starting Trial...</span>
                     </div>
                   ) : (
                     <>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Complete Setup
+                      <Shield className="w-4 h-4 mr-2" />
+                      Start 14-Day Free Trial
                     </>
                   )}
                 </Button>

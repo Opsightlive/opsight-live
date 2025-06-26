@@ -35,6 +35,7 @@ import PredictiveSignals from "./pages/PredictiveSignals";
 import DealVettingToolkit from "./pages/DealVettingToolkit";
 import RedFlagTimeline from "./pages/RedFlagTimeline";
 import ResolutionSummary from "./pages/ResolutionSummary";
+import SubscriptionSettings from "./pages/SubscriptionSettings";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -86,6 +87,7 @@ const DashboardRoutes = () => (
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/help/getting-started" element={<GettingStartedGuide />} />
         <Route path="/help/user-management" element={<UserManagementGuide />} />
+        <Route path="/subscription" element={<SubscriptionSettings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
