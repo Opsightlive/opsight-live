@@ -175,7 +175,7 @@ const LPReportGenerator = () => {
                       <Checkbox
                         id={section.key}
                         checked={section.checked}
-                        onCheckedChange={(checked) => handleSectionChange(section.key, checked as boolean)}
+                        onCheckedChange={(checked) => handleSectionChange(section.key, checked === true)}
                         className="w-5 h-5"
                       />
                       <Label htmlFor={section.key} className="text-base cursor-pointer">
@@ -209,7 +209,7 @@ const LPReportGenerator = () => {
                     <Checkbox
                       id="copyMyself"
                       checked={copyMyself}
-                      onCheckedChange={setCopyMyself}
+                      onCheckedChange={(checked) => setCopyMyself(checked === true)}
                       className="w-5 h-5"
                     />
                     <Label htmlFor="copyMyself" className="cursor-pointer">
@@ -221,7 +221,7 @@ const LPReportGenerator = () => {
                     <Checkbox
                       id="notifyWhenViewed"
                       checked={notifyWhenViewed}
-                      onCheckedChange={setNotifyWhenViewed}
+                      onCheckedChange={(checked) => setNotifyWhenViewed(checked === true)}
                       className="w-5 h-5"
                     />
                     <Label htmlFor="notifyWhenViewed" className="cursor-pointer">
