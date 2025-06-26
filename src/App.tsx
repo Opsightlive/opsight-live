@@ -29,6 +29,8 @@ import SMSAutomation from "./pages/SMSAutomation";
 import EmailAutomation from "./pages/EmailAutomation";
 import LPDashboard from "./pages/LPDashboard";
 import LPReportGenerator from "./pages/LPReportGenerator";
+import AIIntelligence from "./pages/AIIntelligence";
+import PMEngagementScore from "./pages/PMEngagementScore";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -63,12 +65,12 @@ const DashboardRoutes = () => (
         {/* All the modules from sidebar */}
         <Route path="/lp-reports" element={<LPReportGenerator />} />
         <Route path="/lp-dashboard" element={<LPDashboard />} />
-        <Route path="/ai-tools" element={<div className="p-6"><h1 className="text-2xl font-bold">AI Intelligence Tools</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/ai-tools" element={<AIIntelligence />} />
         <Route path="/predictive" element={<div className="p-6"><h1 className="text-2xl font-bold">Predictive Signals</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/deal-vetting" element={<div className="p-6"><h1 className="text-2xl font-bold">Deal Vetting Toolkit</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/email-automation" element={<EmailAutomation />} />
         <Route path="/sms-automation" element={<SMSAutomation />} />
-        <Route path="/pm-engagement" element={<div className="p-6"><h1 className="text-2xl font-bold">PM Engagement Score</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/pm-engagement" element={<PMEngagementScore />} />
         <Route path="/timeline" element={<div className="p-6"><h1 className="text-2xl font-bold">Red Flag Timeline</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/resolutions" element={<div className="p-6"><h1 className="text-2xl font-bold">Resolution Summary</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/delivery-logs" element={<AlertDeliveryLogs />} />
