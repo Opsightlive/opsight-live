@@ -78,7 +78,7 @@ const Sidebar = () => {
       <div className="p-6 border-b border-gray-200">
         <h1 className="text-2xl font-bold text-black">OPSIGHT</h1>
         <p className="text-sm text-gray-600 mt-1">
-          {user?.userType === 'company' ? 'Executive Dashboard' : 'Asset Performance OS'}
+          {user?.userType === 'company' ? 'Executive Dashboard' : 'Operational Insight'}
         </p>
       </div>
       
