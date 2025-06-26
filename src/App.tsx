@@ -28,6 +28,7 @@ import DataVault from "./pages/DataVault";
 import SMSAutomation from "./pages/SMSAutomation";
 import EmailAutomation from "./pages/EmailAutomation";
 import LPDashboard from "./pages/LPDashboard";
+import LPReportGenerator from "./pages/LPReportGenerator";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -60,7 +61,7 @@ const DashboardRoutes = () => (
           </CompanyProtectedRoute>
         } />
         {/* All the modules from sidebar */}
-        <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/lp-reports" element={<LPReportGenerator />} />
         <Route path="/lp-dashboard" element={<LPDashboard />} />
         <Route path="/ai-tools" element={<div className="p-6"><h1 className="text-2xl font-bold">AI Intelligence Tools</h1><p className="text-gray-600">Coming Soon</p></div>} />
         <Route path="/predictive" element={<div className="p-6"><h1 className="text-2xl font-bold">Predictive Signals</h1><p className="text-gray-600">Coming Soon</p></div>} />
