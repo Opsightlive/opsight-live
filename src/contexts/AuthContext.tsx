@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Mock authentication - in real app, this would be an API call
-    if (email && password) {
+    if (email && password.length >= 1) { // Accept any password with at least 1 character
       let mockUser: User;
       
       if (isCompanyLogin) {
@@ -55,13 +55,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userType: 'company'
           };
         } else {
-          setIsLoading(false);
-          return false;
+          // For demo purposes, allow any email for company login
+          mockUser = {
+            id: 'company_demo',
+            email,
+            name: 'Company Admin',
+            company: 'Demo Company',
+            role: 'Company Admin',
+            userType: 'company'
+          };
         }
       } else {
-        // Regular client login
+        // Regular client login - accept any valid email/password combination
         mockUser = {
-          id: '1',
+          id: 'client_' + Date.now(),
           email,
           name: email.split('@')[0],
           company: 'Demo Company',
@@ -85,9 +92,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    if (email && password) {
+    if (email && password.length >= 6) {
       const mockUser = {
-        id: '2',
+        id: 'client_' + Date.now(),
         email,
         name: email.split('@')[0],
         userType: 'client' as const
