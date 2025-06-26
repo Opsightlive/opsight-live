@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,8 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 const SMSAutomation = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
-    enableEmail: true,
-    emailAlerts: true,
     smsAlerts: true,
     redFlags: true,
     yellowFlags: true,
@@ -26,10 +25,10 @@ const SMSAutomation = () => {
   const { toast } = useToast();
 
   const logs = [
-    { date: 'Jun 11', property: 'Greenview', channel: 'Email', status: 'Opened' },
+    { date: 'Jun 11', property: 'Greenview', channel: 'SMS', status: 'Delivered' },
     { date: 'Jun 10', property: 'Lakewood', channel: 'SMS', status: 'Delivered' },
     { date: 'Jun 9', property: 'Sunset Gardens', channel: 'SMS', status: 'Delivered' },
-    { date: 'Jun 8', property: 'Cedar Point', channel: 'Email', status: 'Clicked' },
+    { date: 'Jun 8', property: 'Cedar Point', channel: 'SMS', status: 'Failed' },
   ];
 
   const handleConfigChange = (key: string, value: boolean | string) => {
@@ -59,8 +58,8 @@ const SMSAutomation = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h1 className="text-3xl font-bold text-black mb-2">Red Flag Alert Automation Engine</h1>
-          <p className="text-gray-600">Configure automated SMS and email alerts for red flag events</p>
+          <h1 className="text-3xl font-bold text-black mb-2">SMS Alert Automation Engine</h1>
+          <p className="text-gray-600">Configure automated SMS alerts for red flag events</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -69,41 +68,23 @@ const SMSAutomation = () => {
             <CardHeader className="bg-blue-600 text-white">
               <CardTitle className="flex items-center">
                 <Settings className="h-5 w-5 mr-2" />
-                Alert Configuration
+                SMS Alert Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="enable-email"
-                    checked={alertConfig.enableEmail}
-                    onCheckedChange={(checked) => handleConfigChange('enableEmail', checked)}
+                    id="sms-alerts"
+                    checked={alertConfig.smsAlerts}
+                    onCheckedChange={(checked) => handleConfigChange('smsAlerts', checked)}
                   />
-                  <Label htmlFor="enable-email" className="text-base font-medium">Enable Email</Label>
+                  <Label htmlFor="sms-alerts" className="text-base font-medium">Enable SMS Alerts</Label>
                 </div>
 
                 <div className="pl-6 space-y-3">
-                  <p className="text-sm font-medium text-gray-700">Triggers from</p>
+                  <p className="text-sm font-medium text-gray-700">Trigger SMS alerts for:</p>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="email-alerts"
-                      checked={alertConfig.emailAlerts}
-                      onCheckedChange={(checked) => handleConfigChange('emailAlerts', checked)}
-                    />
-                    <Label htmlFor="email-alerts">Email Alerts</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="sms-alerts"
-                      checked={alertConfig.smsAlerts}
-                      onCheckedChange={(checked) => handleConfigChange('smsAlerts', checked)}
-                    />
-                    <Label htmlFor="sms-alerts">SMS Alerts</Label>
-                  </div>
-
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="red-flags"
@@ -219,7 +200,7 @@ const SMSAutomation = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <History className="h-5 w-5 mr-2" />
-              Logs & History
+              SMS Logs & History
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -239,13 +220,13 @@ const SMSAutomation = () => {
                       <td className="py-3 px-4">{log.date}</td>
                       <td className="py-3 px-4">{log.property}</td>
                       <td className="py-3 px-4">
-                        <Badge variant={log.channel === 'SMS' ? 'default' : 'secondary'}>
+                        <Badge variant="default">
                           {log.channel}
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
                         <Badge 
-                          variant={log.status === 'Opened' || log.status === 'Clicked' ? 'default' : 'secondary'}
+                          variant={log.status === 'Delivered' ? 'default' : 'destructive'}
                           className={log.status === 'Delivered' ? 'bg-green-100 text-green-800' : ''}
                         >
                           {log.status}
