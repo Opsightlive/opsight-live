@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, CreditCard, Building2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import DataSetup from './DataSetup';
 
 interface PaymentSetupProps {
   onComplete: () => void;
@@ -13,6 +13,7 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('monthly');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [showDataSetup, setShowDataSetup] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const { register } = useAuth();
 
@@ -46,13 +47,23 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Complete the registration process
+    // Move to data setup instead of completing immediately
     setIsProcessing(false);
+    setShowDataSetup(true);
+  };
+
+  const handleDataSetupComplete = () => {
+    // Now complete the entire registration process
     onComplete();
   };
 
   if (!registrationData) {
     return <div>Loading...</div>;
+  }
+
+  // Show data setup step
+  if (showDataSetup) {
+    return <DataSetup onComplete={handleDataSetupComplete} />;
   }
 
   const { userData } = registrationData;

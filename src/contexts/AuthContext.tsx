@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, isCompanyLogin?: boolean) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
+  completeRegistration: (userData: any) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -109,15 +110,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   };
 
+  const completeRegistration = async (userData: any): Promise<boolean> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call for completing registration
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const registrationData = JSON.parse(localStorage.getItem('pendingRegistration') || '{}');
+      
+      const completeUser: User = {
+        id: 'client_' + Date.now(),
+        email: registrationData.email || userData.email,
+        name: userData.name || registrationData.email?.split('@')[0] || 'User',
+        company: userData.company,
+        phone: userData.phone,
+        role: userData.role || 'Asset Manager',
+        userType: 'client'
+      };
+      
+      setUser(completeUser);
+      localStorage.setItem('opsight_user', JSON.stringify(completeUser));
+      localStorage.removeItem('pendingRegistration');
+      
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error('Registration completion failed:', error);
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('opsight_user');
+    localStorage.removeItem('pendingRegistration');
   };
 
   const value = {
     user,
     login,
     register,
+    completeRegistration,
     logout,
     isLoading
   };
