@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Bot, Lightbulb, Target, Clock, CheckCircle } from 'lucide-react';
+import { Bot, Lightbulb, Target, Clock, CheckCircle, FileText } from 'lucide-react';
 
 interface AlertData {
   id: number;
@@ -26,9 +25,10 @@ interface AIAdvice {
 interface AIAdvisorProps {
   alert: AlertData;
   onResolve?: (resolution: string) => void;
+  onCreateActionPlan?: () => void;
 }
 
-const AIAdvisor: React.FC<AIAdvisorProps> = ({ alert, onResolve }) => {
+const AIAdvisor: React.FC<AIAdvisorProps> = ({ alert, onResolve, onCreateActionPlan }) => {
   const [advice, setAdvice] = useState<AIAdvice | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showResolution, setShowResolution] = useState(false);
@@ -114,6 +114,12 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ alert, onResolve }) => {
     if (advice && onResolve) {
       onResolve(advice.resolutionSummary);
       setShowResolution(true);
+    }
+  };
+
+  const handleCreateActionPlan = () => {
+    if (onCreateActionPlan) {
+      onCreateActionPlan();
     }
   };
 
@@ -210,7 +216,11 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ alert, onResolve }) => {
               <CheckCircle className="h-4 w-4 mr-2" />
               {showResolution ? 'Resolution Applied' : 'Apply AI Resolution'}
             </button>
-            <button className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+            <button 
+              onClick={handleCreateActionPlan}
+              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center"
+            >
+              <FileText className="h-4 w-4 mr-2" />
               Create Action Plan
             </button>
           </div>

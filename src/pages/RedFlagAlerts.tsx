@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar } from 'lucide-react';
+import { AlertTriangle, Filter, Clock, Send, CheckCircle, Calendar, Plus, Eye } from 'lucide-react';
 import AIAdvisor from '../components/ai/AIAdvisor';
 import SendToPMModal from '../components/modals/SendToPMModal';
+import { useToast } from '@/hooks/use-toast';
 
 const RedFlagAlerts = () => {
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
   const [expandedAlert, setExpandedAlert] = useState<number | null>(null);
   const [sendToPMModal, setSendToPMModal] = useState<{isOpen: boolean, alertData?: any}>({isOpen: false});
+  const [resolvedAlerts, setResolvedAlerts] = useState<Set<number>>(new Set());
+  const { toast } = useToast();
 
   const alerts = [
     {
@@ -92,6 +96,13 @@ const RedFlagAlerts = () => {
     }
   ];
 
+  const handleAddProperty = () => {
+    toast({
+      title: "Add Property",
+      description: "Property addition functionality coming soon",
+    });
+  };
+
   const handleSendToPM = (alert: any) => {
     setSendToPMModal({ 
       isOpen: true, 
@@ -104,8 +115,46 @@ const RedFlagAlerts = () => {
     });
   };
 
-  const handleResolveAlert = (alertId: number, resolution: string) => {
-    console.log(`Alert ${alertId} resolved with: ${resolution}`);
+  const handleResolveAlert = (alertId: number, resolution?: string) => {
+    setResolvedAlerts(prev => new Set([...prev, alertId]));
+    toast({
+      title: "Alert Resolved",
+      description: resolution || `Alert ${alertId} has been marked as resolved`,
+    });
+    console.log(`Alert ${alertId} resolved with: ${resolution || 'Manual resolution'}`);
+  };
+
+  const handleViewDetails = (alert: any) => {
+    toast({
+      title: "Alert Details",
+      description: `Viewing details for ${alert.metric} at ${alert.property}`,
+    });
+    console.log('Viewing alert details:', alert);
+  };
+
+  const handleTimeframeChange = (timeframe: string) => {
+    setSelectedTimeframe(timeframe);
+    toast({
+      title: "Timeframe Updated",
+      description: `Alert data filtered for ${timeframe}`,
+    });
+    console.log('Timeframe changed to:', timeframe);
+  };
+
+  const handleCreateActionPlan = (alert: any) => {
+    toast({
+      title: "Action Plan",
+      description: `Creating action plan for ${alert.metric || alert.property}`,
+    });
+    console.log('Creating action plan for:', alert);
+  };
+
+  const handleMonitorAlert = (alert: any) => {
+    toast({
+      title: "Monitoring Alert",
+      description: `Added ${alert.property} to monitoring list`,
+    });
+    console.log('Monitoring alert:', alert);
   };
 
   const getSeverityColor = (severity: string) => {
@@ -132,9 +181,18 @@ const RedFlagAlerts = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-black mb-2">Red Flag Alert System</h1>
-        <p className="text-gray-600">Monitor and resolve critical performance alerts</p>
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-black mb-2">Red Flag Alert System</h1>
+          <p className="text-gray-600">Monitor and resolve critical performance alerts</p>
+        </div>
+        <button
+          onClick={handleAddProperty}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Property
+        </button>
       </div>
 
       {/* Filters */}
@@ -181,6 +239,19 @@ const RedFlagAlerts = () => {
               <option value="financials">Financials</option>
             </select>
           </div>
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium text-black">Timeframe:</label>
+            <select 
+              value={selectedTimeframe}
+              onChange={(e) => handleTimeframeChange(e.target.value)}
+              className="border border-gray-300 px-3 py-1 text-sm"
+            >
+              <option value="7d">7 days</option>
+              <option value="30d">30 days</option>
+              <option value="90d">90 days</option>
+              <option value="1y">1 year</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -190,12 +261,12 @@ const RedFlagAlerts = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredAlerts.map((alert) => (
             <div key={alert.id} className="space-y-4">
-              <div className={`border-2 p-6 ${getSeverityColor(alert.severity)}`}>
+              <div className={`border-2 p-6 ${getSeverityColor(alert.severity)} ${resolvedAlerts.has(alert.id) ? 'opacity-50' : ''}`}>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center">
                     <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
                     <span className={`px-2 py-1 text-xs font-medium rounded ${getSeverityBadge(alert.severity)}`}>
-                      {alert.severity.toUpperCase()}
+                      {resolvedAlerts.has(alert.id) ? 'RESOLVED' : alert.severity.toUpperCase()}
                     </span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
@@ -227,29 +298,43 @@ const RedFlagAlerts = () => {
                   <button 
                     onClick={() => handleSendToPM(alert)}
                     className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700 flex items-center justify-center"
+                    disabled={resolvedAlerts.has(alert.id)}
                   >
                     <Send className="h-4 w-4 mr-1" />
                     Send to PM
                   </button>
-                  <button className="flex-1 bg-green-600 text-white py-2 px-4 text-sm font-medium hover:bg-green-700 flex items-center justify-center">
+                  <button 
+                    onClick={() => handleResolveAlert(alert.id)}
+                    className="flex-1 bg-green-600 text-white py-2 px-4 text-sm font-medium hover:bg-green-700 flex items-center justify-center"
+                    disabled={resolvedAlerts.has(alert.id)}
+                  >
                     <CheckCircle className="h-4 w-4 mr-1" />
-                    Resolve
+                    {resolvedAlerts.has(alert.id) ? 'Resolved' : 'Resolve'}
+                  </button>
+                  <button
+                    onClick={() => handleViewDetails(alert)}
+                    className="bg-gray-600 text-white py-2 px-4 text-sm font-medium hover:bg-gray-700 flex items-center"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    View Details
                   </button>
                 </div>
 
                 <button
                   onClick={() => setExpandedAlert(expandedAlert === alert.id ? null : alert.id)}
                   className="w-full bg-indigo-600 text-white py-2 px-4 text-sm font-medium hover:bg-indigo-700 rounded"
+                  disabled={resolvedAlerts.has(alert.id)}
                 >
                   {expandedAlert === alert.id ? 'Hide AI Advisor' : 'Get AI Advice & Resolution'}
                 </button>
               </div>
 
               {/* AI Advisor Component */}
-              {expandedAlert === alert.id && (
+              {expandedAlert === alert.id && !resolvedAlerts.has(alert.id) && (
                 <AIAdvisor 
                   alert={alert} 
                   onResolve={(resolution) => handleResolveAlert(alert.id, resolution)}
+                  onCreateActionPlan={() => handleCreateActionPlan(alert)}
                 />
               )}
             </div>
@@ -296,10 +381,16 @@ const RedFlagAlerts = () => {
               </div>
 
               <div className="flex space-x-2">
-                <button className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700">
+                <button 
+                  onClick={() => handleCreateActionPlan(alert)}
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 text-sm font-medium hover:bg-blue-700"
+                >
                   Create Action Plan
                 </button>
-                <button className="flex-1 bg-gray-600 text-white py-2 px-4 text-sm font-medium hover:bg-gray-700">
+                <button 
+                  onClick={() => handleMonitorAlert(alert)}
+                  className="flex-1 bg-gray-600 text-white py-2 px-4 text-sm font-medium hover:bg-gray-700"
+                >
                   Monitor
                 </button>
               </div>
