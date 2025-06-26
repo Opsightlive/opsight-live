@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock, Building2, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   onRegisterClick: () => void;
@@ -20,7 +22,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
   const [isCompanyLogin, setIsCompanyLogin] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [isSubmittingReset, setIsSubmittingReset] = useState(false);
   const { login, isLoading } = useAuth();
+  const { toast } = useToast();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -51,6 +57,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
       setRememberMe(!!rememberedClientEmail);
     }
   }, [isCompanyLogin]);
+
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordEmail) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmittingReset(true);
+    
+    // Simulate API call for password reset
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    toast({
+      title: "Reset Link Sent",
+      description: "If an account with that email exists, we've sent you a password reset link.",
+    });
+    
+    setIsSubmittingReset(false);
+    setShowForgotPassword(false);
+    setForgotPasswordEmail('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +115,55 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
       }
     }
   };
+
+  const ForgotPasswordDialog = () => (
+    <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Reset Your Password</DialogTitle>
+          <DialogDescription>
+            Enter your email address and we'll send you a link to reset your password.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="forgot-email">Email Address</Label>
+            <Input
+              id="forgot-email"
+              type="email"
+              value={forgotPasswordEmail}
+              onChange={(e) => setForgotPasswordEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="mt-2"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleForgotPassword}
+              disabled={isSubmittingReset}
+              className="flex-1"
+            >
+              {isSubmittingReset ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Sending...
+                </div>
+              ) : (
+                'Send Reset Link'
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowForgotPassword(false)}
+              disabled={isSubmittingReset}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   if (isMobile) {
     return (
@@ -180,17 +260,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                 </div>
               </div>
 
-              {/* Remember Me Checkbox */}
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="remember" 
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                  className="transition-all duration-200"
-                />
-                <Label htmlFor="remember" className="text-gray-700 cursor-pointer text-sm hover:text-gray-900 transition-colors duration-200">
-                  Remember me
-                </Label>
+              {/* Remember Me and Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="remember" 
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    className="transition-all duration-200"
+                  />
+                  <Label htmlFor="remember" className="text-gray-700 cursor-pointer text-sm hover:text-gray-900 transition-colors duration-200">
+                    Remember me
+                  </Label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors duration-200"
+                >
+                  Forgot password?
+                </button>
               </div>
 
               {error && (
@@ -228,6 +317,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
             )}
           </div>
         </div>
+        <ForgotPasswordDialog />
       </div>
     );
   }
@@ -344,17 +434,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
                 </div>
               </div>
 
-              {/* Remember Me Checkbox */}
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="remember" 
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                  className="transition-all duration-200"
-                />
-                <Label htmlFor="remember" className="text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200">
-                  Remember me
-                </Label>
+              {/* Remember Me and Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="remember" 
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    className="transition-all duration-200"
+                  />
+                  <Label htmlFor="remember" className="text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200">
+                    Remember me
+                  </Label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-blue-600 hover:text-blue-700 hover:underline transition-colors duration-200"
+                >
+                  Forgot password?
+                </button>
               </div>
 
               {error && (
@@ -393,6 +492,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
           </div>
         </div>
       </div>
+      <ForgotPasswordDialog />
     </div>
   );
 };
