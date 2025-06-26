@@ -52,6 +52,10 @@ const AIReader = () => {
     const savedMode = localStorage.getItem('aiReaderMode');
     if (savedMode) {
       setUploadMode(savedMode);
+    } else {
+      // Default to automatic if no saved preference
+      setUploadMode('automatic');
+      localStorage.setItem('aiReaderMode', 'automatic');
     }
   }, []);
 

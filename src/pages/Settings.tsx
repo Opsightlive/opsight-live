@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import SidebarImageManager from '@/components/sidebar/SidebarImageManager';
+import AISuggestionsPanel from '@/components/ai/AISuggestionsPanel';
 
 const Settings = () => {
   const { user, isCompanyUser } = useAuth();
@@ -34,6 +35,17 @@ const Settings = () => {
     reports: true
   });
   const [aiReaderMode, setAiReaderMode] = useState('automatic');
+
+  // Load AI Reader mode from localStorage on component mount
+  useEffect(() => {
+    const savedMode = localStorage.getItem('aiReaderMode');
+    if (savedMode) {
+      setAiReaderMode(savedMode);
+    } else {
+      // Default to automatic if no saved preference
+      setAiReaderMode('automatic');
+    }
+  }, []);
 
   const handleSaveSettings = () => {
     // Save AI Reader mode to localStorage
@@ -60,6 +72,9 @@ const Settings = () => {
             </Badge>
           </div>
         </div>
+
+        {/* AI Suggestions Panel */}
+        <AISuggestionsPanel />
 
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6">
