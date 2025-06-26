@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -124,11 +123,6 @@ const sidebarItems: SidebarItem[] = [
     label: 'User Management',
     path: '/users',
     companyOnly: true
-  },
-  {
-    icon: FileText,
-    label: 'Demo Reports',
-    path: '/demo'
   },
   {
     icon: Settings,
