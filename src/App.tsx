@@ -7,6 +7,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthWrapper from "./components/auth/AuthWrapper";
 import Layout from "./components/layout/Layout";
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import DemoPage from "./pages/DemoPage";
 import PortfolioOverview from "./pages/PortfolioOverview";
 import KPICommandCenter from "./pages/KPICommandCenter";
 import RedFlagAlerts from "./pages/RedFlagAlerts";
@@ -34,6 +38,46 @@ const CompanyProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Dashboard Routes - Protected by AuthWrapper
+const DashboardRoutes = () => (
+  <AuthWrapper>
+    <Layout>
+      <Routes>
+        <Route path="/dashboard" element={<PortfolioOverview />} />
+        <Route path="/kpi-center" element={<KPICommandCenter />} />
+        <Route path="/red-flags" element={<RedFlagAlerts />} />
+        <Route path="/ai-reader" element={<AIReader />} />
+        <Route path="/users" element={<UserManagement />} />
+        <Route path="/company-dashboard" element={
+          <CompanyProtectedRoute>
+            <CompanyDashboard />
+          </CompanyProtectedRoute>
+        } />
+        {/* Placeholder routes for remaining modules */}
+        <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/lp-dashboard" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Dashboard</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/ai-tools" element={<div className="p-6"><h1 className="text-2xl font-bold">AI Intelligence Tools</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/predictive" element={<div className="p-6"><h1 className="text-2xl font-bold">Predictive Signals</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/deal-vetting" element={<div className="p-6"><h1 className="text-2xl font-bold">Deal Vetting Toolkit</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/email-automation" element={<div className="p-6"><h1 className="text-2xl font-bold">Email Automation</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/sms-automation" element={<div className="p-6"><h1 className="text-2xl font-bold">SMS Automation</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/pm-engagement" element={<div className="p-6"><h1 className="text-2xl font-bold">PM Engagement Score</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/timeline" element={<div className="p-6"><h1 className="text-2xl font-bold">Red Flag Timeline</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/resolutions" element={<div className="p-6"><h1 className="text-2xl font-bold">Resolution Summary</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/delivery-logs" element={<div className="p-6"><h1 className="text-2xl font-bold">Alert Delivery Logs</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/data-vault" element={<div className="p-6"><h1 className="text-2xl font-bold">Data Vault</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/help" element={<HelpCenter />} />
+        <Route path="/help/getting-started" element={<GettingStartedGuide />} />
+        <Route path="/help/user-management" element={<UserManagementGuide />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Layout>
+  </AuthWrapper>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -41,42 +85,16 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <AuthWrapper>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<PortfolioOverview />} />
-                <Route path="/kpi-center" element={<KPICommandCenter />} />
-                <Route path="/red-flags" element={<RedFlagAlerts />} />
-                <Route path="/ai-reader" element={<AIReader />} />
-                <Route path="/users" element={<UserManagement />} />
-                <Route path="/company-dashboard" element={
-                  <CompanyProtectedRoute>
-                    <CompanyDashboard />
-                  </CompanyProtectedRoute>
-                } />
-                {/* Placeholder routes for remaining modules */}
-                <Route path="/lp-reports" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Report Generator</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/lp-dashboard" element={<div className="p-6"><h1 className="text-2xl font-bold">LP Dashboard</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/ai-tools" element={<div className="p-6"><h1 className="text-2xl font-bold">AI Intelligence Tools</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/predictive" element={<div className="p-6"><h1 className="text-2xl font-bold">Predictive Signals</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/deal-vetting" element={<div className="p-6"><h1 className="text-2xl font-bold">Deal Vetting Toolkit</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/email-automation" element={<div className="p-6"><h1 className="text-2xl font-bold">Email Automation</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/sms-automation" element={<div className="p-6"><h1 className="text-2xl font-bold">SMS Automation</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/pm-engagement" element={<div className="p-6"><h1 className="text-2xl font-bold">PM Engagement Score</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/timeline" element={<div className="p-6"><h1 className="text-2xl font-bold">Red Flag Timeline</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/resolutions" element={<div className="p-6"><h1 className="text-2xl font-bold">Resolution Summary</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/delivery-logs" element={<div className="p-6"><h1 className="text-2xl font-bold">Alert Delivery Logs</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/data-vault" element={<div className="p-6"><h1 className="text-2xl font-bold">Data Vault</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/notifications" element={<div className="p-6"><h1 className="text-2xl font-bold">Alerts & Notifications</h1><p className="text-gray-600">Coming Soon</p></div>} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/user-profile" element={<UserProfile />} />
-                <Route path="/help" element={<HelpCenter />} />
-                <Route path="/help/getting-started" element={<GettingStartedGuide />} />
-                <Route path="/help/user-management" element={<UserManagementGuide />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </AuthWrapper>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/demo" element={<DemoPage />} />
+            
+            {/* Protected Dashboard Routes */}
+            <Route path="/*" element={<DashboardRoutes />} />
+          </Routes>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
