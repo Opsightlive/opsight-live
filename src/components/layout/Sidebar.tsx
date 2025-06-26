@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -57,6 +58,28 @@ const sidebarItems: SidebarItem[] = [
     path: '/timeline'
   },
   
+  // High Priority Tools & Analytics
+  {
+    icon: TrendingUp,
+    label: 'Predictive Signals',
+    path: '/predictive'
+  },
+  {
+    icon: BarChart3,
+    label: 'PM Engagement Score',
+    path: '/pm-engagement'
+  },
+  {
+    icon: FileText,
+    label: 'Resolution Summary',
+    path: '/resolutions'
+  },
+  {
+    icon: FileText,
+    label: 'Deal Vetting Toolkit',
+    path: '/deal-vetting'
+  },
+  
   // AI & Intelligence Tools
   {
     icon: Bot,
@@ -67,11 +90,6 @@ const sidebarItems: SidebarItem[] = [
     icon: Bot,
     label: 'AI Intelligence Tools',
     path: '/ai-tools'
-  },
-  {
-    icon: TrendingUp,
-    label: 'Predictive Signals',
-    path: '/predictive'
   },
   
   // Reports & Analytics
@@ -84,23 +102,6 @@ const sidebarItems: SidebarItem[] = [
     icon: TrendingUp,
     label: 'LP Dashboard',
     path: '/lp-dashboard'
-  },
-  {
-    icon: BarChart3,
-    label: 'PM Engagement Score',
-    path: '/pm-engagement'
-  },
-  
-  // Deal Management & Vetting
-  {
-    icon: FileText,
-    label: 'Deal Vetting Toolkit',
-    path: '/deal-vetting'
-  },
-  {
-    icon: FileText,
-    label: 'Resolution Summary',
-    path: '/resolutions'
   },
   
   // Communication & Automation
