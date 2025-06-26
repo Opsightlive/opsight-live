@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building, Home, Mail, Database, Plus, Trash2 } from 'lucide-react';
+import { Building, Home, Database, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Property {
@@ -23,9 +23,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [formData, setFormData] = useState({
     companyName: '',
     role: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
     dataSource: 'connect-pm'
   });
 
@@ -58,16 +55,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    
-    if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters');
-      return;
-    }
-
     // Validate properties
     const validProperties = properties.filter(prop => 
       prop.name.trim() && prop.units.trim() && prop.address.trim()
@@ -78,10 +65,12 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       return;
     }
     
+    // Get existing registration data and merge with new data
+    const existingRegistration = JSON.parse(localStorage.getItem('pendingRegistration') || '{}');
+    
     // Store the registration data for use after payment
     localStorage.setItem('pendingRegistration', JSON.stringify({
-      email: formData.email,
-      password: formData.password,
+      ...existingRegistration,
       userData: {
         companyName: formData.companyName,
         role: formData.role,
@@ -130,91 +119,38 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Company & Role Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-              <div className="flex items-center mb-4">
-                <Building className="h-6 w-6 text-blue-600 mr-2" />
-                <h3 className="text-xl font-bold">Company & Role</h3>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="companyName">Company Name:</Label>
-                  <Input
-                    id="companyName"
-                    value={formData.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    placeholder="Enter your company name"
-                    className="mt-1"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="role">Role</Label>
-                  <Select onValueChange={(value) => handleInputChange('role', value)} required>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="gp">GP</SelectItem>
-                      <SelectItem value="lp">LP</SelectItem>
-                      <SelectItem value="asset-manager">Asset Manager</SelectItem>
-                      <SelectItem value="property-manager">Property Manager</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+          <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
+            <div className="flex items-center mb-4">
+              <Building className="h-6 w-6 text-blue-600 mr-2" />
+              <h3 className="text-xl font-bold">Company & Role</h3>
             </div>
-
-            {/* Login Setup */}
-            <div className="bg-white p-6 rounded-lg border-2 border-gray-200">
-              <div className="flex items-center mb-4">
-                <Mail className="h-6 w-6 text-blue-600 mr-2" />
-                <h3 className="text-xl font-bold">Login Setup</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="companyName">Company Name:</Label>
+                <Input
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => handleInputChange('companyName', e.target.value)}
+                  placeholder="Enter your company name"
+                  className="mt-1"
+                  required
+                />
               </div>
               
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="Enter your email address"
-                    className="mt-1"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder="Create a secure password"
-                    className="mt-1"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    placeholder="Confirm your password"
-                    className="mt-1"
-                    required
-                    minLength={6}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="role">Role</Label>
+                <Select onValueChange={(value) => handleInputChange('role', value)} required>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gp">GP</SelectItem>
+                    <SelectItem value="lp">LP</SelectItem>
+                    <SelectItem value="asset-manager">Asset Manager</SelectItem>
+                    <SelectItem value="property-manager">Property Manager</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
