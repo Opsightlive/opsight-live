@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +22,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   // Load remembered credentials on component mount
   useEffect(() => {
@@ -72,6 +73,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
           localStorage.removeItem('opsight_remember_client_email');
         }
       }
+      
+      // Navigate to dashboard after successful login
+      navigate('/dashboard');
     } else {
       if (isCompanyLogin) {
         setError('Invalid company credentials. Use opsightlive@gmail.com');
