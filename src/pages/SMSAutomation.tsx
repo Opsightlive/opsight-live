@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -239,15 +240,80 @@ const SMSAutomation = () => {
           </CardContent>
         </Card>
 
-        {/* SMS Preview Modal - Only iPhone Image */}
+        {/* SMS Preview Modal - Custom iPhone Design */}
         {showPreview && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPreview(false)}>
             <div className="bg-transparent p-4" onClick={(e) => e.stopPropagation()}>
-              <img 
-                src="/lovable-uploads/735f0723-47f3-498a-88a7-8bdef80978f9.png" 
-                alt="iPhone SMS Preview" 
-                className="max-h-[80vh] max-w-[90vw] object-contain"
-              />
+              {/* iPhone Frame */}
+              <div className="relative w-80 h-[600px] bg-black rounded-[60px] p-3">
+                {/* iPhone Screen */}
+                <div className="w-full h-full bg-white rounded-[50px] overflow-hidden relative">
+                  {/* Status Bar */}
+                  <div className="flex justify-between items-center px-6 py-3 bg-white text-black text-sm font-medium">
+                    <div>9:41</div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-4 h-2 border border-black rounded-sm">
+                        <div className="w-3 h-1 bg-black rounded-sm m-0.5"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Messages Header */}
+                  <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                        O
+                      </div>
+                      <div>
+                        <div className="font-semibold text-black">Opsight Alerts</div>
+                        <div className="text-sm text-gray-500">Online</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Messages Content */}
+                  <div className="flex-1 bg-white p-4 space-y-4">
+                    {/* SMS Message Bubble */}
+                    <div className="flex justify-start">
+                      <div className="max-w-xs bg-gray-100 rounded-2xl rounded-bl-md p-3">
+                        <div className="text-sm text-black leading-relaxed">
+                          <div className="font-semibold mb-1">Opsight Alert – Greenview Apts</div>
+                          <div className="mb-2">Red Flag: Delinquency 8.24%</div>
+                          <div className="mb-2">Action: Reprice 2BRs, test art follow hip</div>
+                          <div className="text-blue-500">→ View: opsightapp/flag/21204</div>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-2">2:34 PM</div>
+                      </div>
+                    </div>
+                    
+                    {/* Second Message */}
+                    <div className="flex justify-start">
+                      <div className="max-w-xs bg-gray-100 rounded-2xl rounded-bl-md p-3">
+                        <div className="text-sm text-black leading-relaxed">
+                          <div className="font-semibold mb-1">Opsight Alert – Lakewood</div>
+                          <div className="mb-2">Yellow Flag: Occupancy 94.2%</div>
+                          <div className="mb-2">Action: Monitor trends</div>
+                          <div className="text-blue-500">→ View: opsightapp/flag/21205</div>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-2">3:15 PM</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Message Input Area */}
+                  <div className="bg-white border-t border-gray-200 p-4">
+                    <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                      <div className="flex-1 text-gray-500 text-sm">Message</div>
+                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 border-l-2 border-b-2 border-white transform rotate-45 -translate-x-0.5"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Home Indicator */}
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white rounded-full"></div>
+              </div>
             </div>
           </div>
         )}
