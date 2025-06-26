@@ -1,229 +1,154 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+import Layout from '@/components/layout/Layout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Bot, Brain, TrendingUp, AlertTriangle, FileText, Search, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Bot, Brain, MessageSquare, FileText, TrendingUp, Zap, AlertCircle, CheckCircle } from 'lucide-react';
 
 const AIIntelligence = () => {
-  const [selectedProperty, setSelectedProperty] = useState('');
-  const [analysisType, setAnalysisType] = useState('');
-  const [query, setQuery] = useState('');
-
-  const properties = [
-    { value: 'greenview', label: 'Greenview Apartments' },
-    { value: 'oakwood', label: 'Oakwood Commons' },
-    { value: 'cedar', label: 'Cedar Ridge Complex' }
-  ];
-
-  const analysisTypes = [
-    { value: 'performance', label: 'Performance Analysis' },
-    { value: 'risk', label: 'Risk Assessment' },
-    { value: 'predictive', label: 'Predictive Modeling' },
-    { value: 'market', label: 'Market Comparison' }
-  ];
-
-  const aiInsights = [
+  const aiTools = [
     {
-      type: 'Risk Alert',
-      icon: AlertTriangle,
-      color: 'text-red-600',
-      title: 'High Delinquency Pattern Detected',
-      description: 'Units 201-205 show consistent late payments. Recommend immediate intervention.',
-      confidence: 94
+      title: 'Smart Document Analysis',
+      description: 'AI-powered analysis of lease agreements, financial reports, and property documents',
+      icon: FileText,
+      status: 'active',
+      accuracy: '96%'
     },
     {
-      type: 'Opportunity',
+      title: 'Predictive Market Intelligence',
+      description: 'Forecast market trends and property performance using machine learning',
       icon: TrendingUp,
-      color: 'text-green-600',
-      title: 'Rent Optimization Potential',
-      description: '12% below market rate. Projected $2,400/month additional revenue.',
+      status: 'active',
+      accuracy: '89%'
+    },
+    {
+      title: 'Automated Risk Assessment',
+      description: 'Real-time evaluation of portfolio risks and opportunities',
+      icon: AlertCircle,
+      status: 'active',
+      accuracy: '93%'
+    },
+    {
+      title: 'Intelligent Tenant Screening',
+      description: 'AI-enhanced tenant evaluation and risk scoring',
+      icon: Brain,
+      status: 'beta',
+      accuracy: '91%'
+    }
+  ];
+
+  const insights = [
+    {
+      title: 'Market Opportunity Detected',
+      description: 'AI identified 3 properties in your area with rent increase potential of 8-12%',
+      priority: 'high',
       confidence: 87
     },
     {
-      type: 'Prediction',
-      icon: Brain,
-      color: 'text-blue-600',
-      title: 'Maintenance Cost Forecast',
-      description: 'HVAC systems likely to need replacement in Q3. Budget $45K.',
+      title: 'Maintenance Cost Optimization',
+      description: 'Predictive model suggests preventive maintenance could reduce costs by 15%',
+      priority: 'medium',
+      confidence: 92
+    },
+    {
+      title: 'Lease Renewal Strategy',
+      description: 'AI recommends targeted retention offers for 12 high-value tenants',
+      priority: 'medium',
       confidence: 78
     }
   ];
 
-  const quickActions = [
-    { label: 'Generate Risk Report', icon: FileText },
-    { label: 'Market Analysis', icon: TrendingUp },
-    { label: 'Predictive Dashboard', icon: Brain },
-    { label: 'Query Builder', icon: Search }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <Bot className="h-8 w-8 text-blue-600 mr-3" />
-            AI Intelligence Tools
-          </h1>
-          <p className="text-gray-600">Advanced AI-powered analytics and insights for your property portfolio.</p>
+    <Layout>
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
+          <h1 className="text-2xl font-bold mb-2">AI Intelligence Tools</h1>
+          <p className="text-blue-100">
+            Advanced AI-powered analytics and insights for smarter property management decisions
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* AI Query Interface */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="border-2 border-blue-200">
+        {/* AI Tools Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {aiTools.map((tool, index) => (
+            <Card key={index} className="border-l-4 border-l-blue-500">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Brain className="h-6 w-6 text-blue-600 mr-2" />
-                  AI Analysis Engine
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <tool.icon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{tool.title}</CardTitle>
+                      <Badge variant={tool.status === 'active' ? 'default' : 'secondary'}>
+                        {tool.status}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600">Accuracy</div>
+                    <div className="font-bold text-green-600">{tool.accuracy}</div>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-base font-medium">Property</Label>
-                    <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-                      <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Select Property" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {properties.map((property) => (
-                          <SelectItem key={property.value} value={property.value}>
-                            {property.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-base font-medium">Analysis Type</Label>
-                    <Select value={analysisType} onValueChange={setAnalysisType}>
-                      <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Select Analysis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {analysisTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-base font-medium">AI Query</Label>
-                  <Input
-                    placeholder="Ask AI anything about your properties... (e.g., What are the top risks for Q3?)"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="h-12"
-                  />
-                </div>
-
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg">
-                  <Zap className="h-5 w-5 mr-2" />
-                  Analyze with AI
+              <CardContent>
+                <CardDescription className="mb-4">{tool.description}</CardDescription>
+                <Button variant="outline" size="sm">
+                  <Zap className="h-4 w-4 mr-2" />
+                  Configure Tool
                 </Button>
               </CardContent>
             </Card>
-
-            {/* AI Insights */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Latest AI Insights</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {aiInsights.map((insight, index) => (
-                    <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-3">
-                          <insight.icon className={`h-6 w-6 ${insight.color} mt-1`} />
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-sm font-medium text-gray-500">{insight.type}</span>
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                                {insight.confidence}% confidence
-                              </span>
-                            </div>
-                            <h4 className="font-semibold text-gray-900 mb-1">{insight.title}</h4>
-                            <p className="text-gray-600 text-sm">{insight.description}</p>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {quickActions.map((action, index) => (
-                  <Button key={index} variant="outline" className="w-full justify-start h-12">
-                    <action.icon className="h-5 w-5 mr-2" />
-                    {action.label}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* AI Performance Metrics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Performance</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Prediction Accuracy</span>
-                    <span className="text-sm font-medium">89%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '89%' }}></div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Risk Detection Rate</span>
-                    <span className="text-sm font-medium">94%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '94%' }}></div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Response Time</span>
-                    <span className="text-sm font-medium">1.2s</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '75%' }}></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          ))}
         </div>
+
+        {/* AI Insights */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Brain className="h-5 w-5 mr-2" />
+              Latest AI Insights
+            </CardTitle>
+            <CardDescription>
+              Recent discoveries and recommendations from our AI analysis
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {insights.map((insight, index) => (
+                <div key={index} className="flex items-start space-x-4 p-4 border rounded-lg">
+                  <div className={`p-2 rounded-full ${
+                    insight.priority === 'high' ? 'bg-red-100' : 'bg-yellow-100'
+                  }`}>
+                    {insight.priority === 'high' ? (
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 text-yellow-600" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{insight.title}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{insight.description}</p>
+                    <div className="flex items-center mt-2 space-x-4">
+                      <Badge variant={insight.priority === 'high' ? 'destructive' : 'secondary'}>
+                        {insight.priority} priority
+                      </Badge>
+                      <span className="text-sm text-gray-500">
+                        {insight.confidence}% confidence
+                      </span>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    View Details
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,328 +1,275 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Layout from '@/components/layout/Layout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Download, FileText, RefreshCw } from 'lucide-react';
-
-interface DeliveryLog {
-  id: string;
-  date: string;
-  property: string;
-  recipient: string;
-  channel: 'Email' | 'SMS' | 'Push';
-  status: 'Delivered' | 'Opened' | 'Escalated' | 'Failed' | 'Pending';
-  timestamp: string;
-  alertType?: string;
-}
+import { Input } from '@/components/ui/input';
+import { Mail, MessageSquare, Bell, CheckCircle, XCircle, Clock, Search, Filter, Download } from 'lucide-react';
 
 const AlertDeliveryLogs = () => {
-  const [selectedProperty, setSelectedProperty] = useState<string>('all');
-  const [selectedChannel, setSelectedChannel] = useState<string>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<string>('');
-  const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  // Mock data - replace with actual API call
-  const deliveryLogs: DeliveryLog[] = [
+  const deliveryLogs = [
     {
-      id: '1',
-      date: 'Jun 11',
-      property: 'Greenview Apt',
-      recipient: 'Sarah Jones',
-      channel: 'Email',
-      status: 'Opened',
-      timestamp: '2024-06-11T09:30:00Z',
-      alertType: 'Financial Risk'
+      id: 1,
+      timestamp: '2024-01-15 14:32:15',
+      alertType: 'Critical Red Flag',
+      recipient: 'john.doe@company.com',
+      channel: 'email',
+      status: 'delivered',
+      subject: 'URGENT: Multiple tenant complaints at Sunset Gardens',
+      retryCount: 0,
+      deliveryTime: '2.3s'
     },
     {
-      id: '2',
-      date: 'Jun 10',
-      property: 'Lakewood Villas',
-      recipient: 'PM Team',
-      channel: 'SMS',
-      status: 'Escalated',
-      timestamp: '2024-06-10T14:22:00Z',
-      alertType: 'Performance Issue'
+      id: 2,
+      timestamp: '2024-01-15 14:32:16',
+      alertType: 'Critical Red Flag',
+      recipient: '+1-555-0123',
+      channel: 'sms',
+      status: 'delivered',
+      subject: 'URGENT: Multiple tenant complaints at Sunset Gardens',
+      retryCount: 0,
+      deliveryTime: '1.8s'
     },
     {
-      id: '3',
-      date: 'Jun 09',
-      property: 'Edgewater Lofts',
-      recipient: 'Ops Manager',
-      channel: 'Email',
-      status: 'Delivered',
-      timestamp: '2024-06-09T11:15:00Z',
-      alertType: 'Maintenance Alert'
+      id: 3,
+      timestamp: '2024-01-15 09:15:22',
+      alertType: 'Performance Warning',
+      recipient: 'sarah.manager@company.com',
+      channel: 'email',
+      status: 'failed',
+      subject: 'Rent collection below threshold - Metro Plaza',
+      retryCount: 2,
+      deliveryTime: 'N/A',
+      error: 'Recipient mailbox full'
     },
     {
-      id: '4',
-      date: 'Jun 08',
-      property: 'Sunset Commons',
-      recipient: 'John Smith',
-      channel: 'Push',
-      status: 'Failed',
-      timestamp: '2024-06-08T16:45:00Z',
-      alertType: 'Budget Alert'
-    },
-    {
-      id: '5',
-      date: 'Jun 07',
-      property: 'Harbor View',
-      recipient: 'Lisa Chen',
-      channel: 'Email',
-      status: 'Pending',
-      timestamp: '2024-06-07T10:30:00Z',
-      alertType: 'KPI Warning'
+      id: 4,
+      timestamp: '2024-01-15 09:15:45',
+      alertType: 'Performance Warning',
+      recipient: 'sarah.manager@company.com',
+      channel: 'push',
+      status: 'delivered',
+      subject: 'Rent collection below threshold - Metro Plaza',
+      retryCount: 0,
+      deliveryTime: '0.9s'
     }
   ];
 
-  const properties = ['Greenview Apt', 'Lakewood Villas', 'Edgewater Lofts', 'Sunset Commons', 'Harbor View'];
-  const channels = ['Email', 'SMS', 'Push'];
-  const statuses = ['Delivered', 'Opened', 'Escalated', 'Failed', 'Pending'];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Delivered':
-        return 'bg-green-100 text-green-800';
-      case 'Opened':
-        return 'bg-blue-100 text-blue-800';
-      case 'Escalated':
-        return 'bg-orange-100 text-orange-800';
-      case 'Failed':
-        return 'bg-red-100 text-red-800';
-      case 'Pending':
-        return 'bg-yellow-100 text-yellow-800';
+  const getChannelIcon = (channel: string) => {
+    switch (channel) {
+      case 'email':
+        return <Mail className="h-4 w-4" />;
+      case 'sms':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'push':
+        return <Bell className="h-4 w-4" />;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return <Bell className="h-4 w-4" />;
     }
   };
 
-  const getChannelColor = (channel: string) => {
-    switch (channel) {
-      case 'Email':
-        return 'bg-purple-100 text-purple-800';
-      case 'SMS':
-        return 'bg-green-100 text-green-800';
-      case 'Push':
-        return 'bg-blue-100 text-blue-800';
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'delivered':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return <Clock className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'delivered':
+        return 'border-l-green-500';
+      case 'failed':
+        return 'border-l-red-500';
+      case 'pending':
+        return 'border-l-yellow-500';
+      default:
+        return 'border-l-gray-500';
     }
   };
 
   const filteredLogs = deliveryLogs.filter(log => {
-    if (selectedProperty !== 'all' && log.property !== selectedProperty) return false;
-    if (selectedChannel !== 'all' && log.channel !== selectedChannel) return false;
-    if (selectedStatus !== 'all' && log.status !== selectedStatus) return false;
-    return true;
+    const matchesSearch = log.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         log.recipient.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || log.status === filterStatus;
+    return matchesSearch && matchesFilter;
   });
 
-  const handleSelectLog = (logId: string) => {
-    setSelectedLogs(prev => 
-      prev.includes(logId) 
-        ? prev.filter(id => id !== logId)
-        : [...prev, logId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedLogs.length === filteredLogs.length) {
-      setSelectedLogs([]);
-    } else {
-      setSelectedLogs(filteredLogs.map(log => log.id));
-    }
-  };
-
-  const handleDownloadLog = () => {
-    console.log('Downloading full log...');
-    // Implement download functionality
-  };
-
-  const handleExportCSV = () => {
-    console.log('Exporting as CSV...');
-    // Implement CSV export functionality
-  };
-
-  const handleResendSelected = () => {
-    if (selectedLogs.length === 0) return;
-    console.log('Resending selected logs:', selectedLogs);
-    // Implement resend functionality
-  };
-
-  const handleViewDetails = (logId: string) => {
-    console.log('Viewing details for log:', logId);
-    // Implement view details functionality
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-blue-500 text-white p-8 rounded-lg shadow-sm">
-          <h1 className="text-3xl font-bold">Alert Delivery Logs + Escalation Tracker</h1>
+    <Layout>
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
+          <h1 className="text-2xl font-bold mb-2">Alert Delivery Logs</h1>
+          <p className="text-blue-100">
+            Track and monitor the delivery status of all alert notifications
+          </p>
         </div>
 
-        {/* Filters */}
-        <Card className="shadow-sm">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Property" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Properties</SelectItem>
-                  {properties.map(property => (
-                    <SelectItem key={property} value={property}>
-                      {property}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Channel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Channels</SelectItem>
-                  {channels.map(channel => (
-                    <SelectItem key={channel} value={channel}>
-                      {channel}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  {statuses.map(status => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <div className="relative">
-                <Input
-                  placeholder="Date Range"
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className="h-10 pr-10"
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Data Table */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-4">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-xl">Delivery Logs ({filteredLogs.length})</CardTitle>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={handleSelectAll} className="h-9">
-                  {selectedLogs.length === filteredLogs.length ? 'Deselect All' : 'Select All'}
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader className="bg-blue-500">
-                  <TableRow className="border-0">
-                    <TableHead className="text-white font-semibold w-12">
-                      <input
-                        type="checkbox"
-                        checked={selectedLogs.length === filteredLogs.length && filteredLogs.length > 0}
-                        onChange={handleSelectAll}
-                        className="rounded"
-                      />
-                    </TableHead>
-                    <TableHead className="text-white font-semibold">Date</TableHead>
-                    <TableHead className="text-white font-semibold">Property</TableHead>
-                    <TableHead className="text-white font-semibold">Recipient</TableHead>
-                    <TableHead className="text-white font-semibold">Channel</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold w-20">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLogs.map((log) => (
-                    <TableRow key={log.id} className="hover:bg-gray-50 border-b">
-                      <TableCell className="py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedLogs.includes(log.id)}
-                          onChange={() => handleSelectLog(log.id)}
-                          className="rounded"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium py-3">{log.date}</TableCell>
-                      <TableCell className="py-3">{log.property}</TableCell>
-                      <TableCell className="py-3">{log.recipient}</TableCell>
-                      <TableCell className="py-3">
-                        <Badge className={getChannelColor(log.channel)}>
-                          {log.channel}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <Badge className={getStatusColor(log.status)}>
-                          {log.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewDetails(log.id)}
-                          className="h-8"
-                        >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" onClick={handleDownloadLog} className="flex items-center gap-2 h-10">
-            <Download className="h-4 w-4" />
-            Download Log
-          </Button>
+        {/* Search and Filters */}
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="relative flex-1 min-w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search by recipient or subject..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
           
-          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2 h-10">
-            <FileText className="h-4 w-4" />
-            Export as CSV
-          </Button>
-          
-          <Button 
-            onClick={handleResendSelected}
-            disabled={selectedLogs.length === 0}
-            className="flex items-center gap-2 h-10 bg-blue-500 hover:bg-blue-600"
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm"
           >
-            <RefreshCw className="h-4 w-4" />
-            Resend Selected
+            <option value="all">All Status</option>
+            <option value="delivered">Delivered</option>
+            <option value="failed">Failed</option>
+            <option value="pending">Pending</option>
+          </select>
+
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            More Filters
+          </Button>
+          
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export Logs
           </Button>
         </div>
+
+        {/* Delivery Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total Alerts</p>
+                  <p className="text-2xl font-bold">1,247</p>
+                </div>
+                <Bell className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Delivered</p>
+                  <p className="text-2xl font-bold text-green-600">1,198</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Failed</p>
+                  <p className="text-2xl font-bold text-red-600">23</p>
+                </div>
+                <XCircle className="h-8 w-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Success Rate</p>
+                  <p className="text-2xl font-bold">96.2%</p>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <span className="text-green-600 font-bold">✓</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Delivery Logs */}
+        <div className="space-y-4">
+          {filteredLogs.map((log) => (
+            <Card key={log.id} className={`border-l-4 ${getStatusColor(log.status)}`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(log.status)}
+                    <div>
+                      <CardTitle className="text-base">{log.subject}</CardTitle>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-gray-600">{log.timestamp}</span>
+                        <span className="text-sm text-gray-400">•</span>
+                        <span className="text-sm text-gray-600">{log.recipient}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline" className="flex items-center space-x-1">
+                      {getChannelIcon(log.channel)}
+                      <span>{log.channel.toUpperCase()}</span>
+                    </Badge>
+                    <Badge 
+                      variant={
+                        log.status === 'delivered' ? 'default' :
+                        log.status === 'failed' ? 'destructive' : 'secondary'
+                      }
+                    >
+                      {log.status}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Delivery Time: </span>
+                    <span className="font-medium">{log.deliveryTime}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Retry Count: </span>
+                    <span className="font-medium">{log.retryCount}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Alert Type: </span>
+                    <span className="font-medium">{log.alertType}</span>
+                  </div>
+                </div>
+                {log.error && (
+                  <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded">
+                    <span className="text-red-600 text-sm">Error: {log.error}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {filteredLogs.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-8">
+              <Bell className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-500">No delivery logs found</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
-    </div>
+    </Layout>
   );
 };
 

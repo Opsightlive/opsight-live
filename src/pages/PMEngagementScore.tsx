@@ -1,299 +1,302 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Layout from '@/components/layout/Layout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Users, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Clock, MessageSquare } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, TrendingDown, Users, MessageSquare, Clock, Star, AlertTriangle, CheckCircle } from 'lucide-react';
 
 const PMEngagementScore = () => {
-  const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState('30days');
 
-  const properties = [
-    { value: 'greenview', label: 'Greenview Apartments' },
-    { value: 'oakwood', label: 'Oakwood Commons' },
-    { value: 'cedar', label: 'Cedar Ridge Complex' }
-  ];
-
-  const timeframes = [
-    { value: '7days', label: 'Last 7 Days' },
-    { value: '30days', label: 'Last 30 Days' },
-    { value: '90days', label: 'Last 90 Days' },
-    { value: 'ytd', label: 'Year to Date' }
-  ];
-
-  const pmPerformance = [
+  // Sample data for PM engagement scores
+  const pmScores = [
     {
       name: 'Sarah Johnson',
-      property: 'Greenview Apartments',
+      property: 'Sunset Gardens',
       score: 92,
       trend: 'up',
+      change: '+5',
       responseTime: '2.3 hrs',
-      completionRate: 94,
-      tenantSatisfaction: 4.7,
-      status: 'excellent'
+      satisfaction: 4.8,
+      issues: 3
     },
     {
       name: 'Mike Chen',
-      property: 'Oakwood Commons',
-      score: 78,
-      trend: 'down',
-      responseTime: '4.1 hrs',
-      completionRate: 87,
-      tenantSatisfaction: 4.2,
-      status: 'good'
+      property: 'Metro Plaza',
+      score: 87,
+      trend: 'up',
+      change: '+2',
+      responseTime: '3.1 hrs',
+      satisfaction: 4.6,
+      issues: 1
     },
     {
       name: 'Lisa Rodriguez',
-      property: 'Cedar Ridge Complex',
+      property: 'Riverside Towers',
+      score: 78,
+      trend: 'down',
+      change: '-4',
+      responseTime: '4.7 hrs',
+      satisfaction: 4.2,
+      issues: 8
+    },
+    {
+      name: 'David Kim',
+      property: 'Oak Street Commons',
       score: 85,
       trend: 'up',
-      responseTime: '3.2 hrs',
-      completionRate: 91,
-      tenantSatisfaction: 4.5,
-      status: 'good'
+      change: '+1',
+      responseTime: '2.8 hrs',
+      satisfaction: 4.5,
+      issues: 2
     }
   ];
 
-  const engagementMetrics = [
-    { label: 'Response Time', value: '3.2 hrs', target: '<4 hrs', status: 'good' },
-    { label: 'Work Order Completion', value: '91%', target: '>90%', status: 'excellent' },
-    { label: 'Tenant Communication', value: '4.5/5', target: '>4.0', status: 'excellent' },
-    { label: 'Proactive Actions', value: '78%', target: '>75%', status: 'good' },
-    { label: 'Documentation Quality', value: '82%', target: '>80%', status: 'good' },
-    { label: 'Follow-up Rate', value: '67%', target: '>70%', status: 'warning' }
+  const engagementTrends = [
+    { month: 'Jul', score: 82 },
+    { month: 'Aug', score: 85 },
+    { month: 'Sep', score: 83 },
+    { month: 'Oct', score: 87 },
+    { month: 'Nov', score: 89 },
+    { month: 'Dec', score: 86 }
+  ];
+
+  const scoreDistribution = [
+    { range: '90-100', count: 12, color: '#10B981' },
+    { range: '80-89', count: 18, color: '#3B82F6' },
+    { range: '70-79', count: 8, color: '#F59E0B' },
+    { range: '60-69', count: 3, color: '#EF4444' }
   ];
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600';
-    if (score >= 75) return 'text-yellow-600';
+    if (score >= 80) return 'text-blue-600';
+    if (score >= 70) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'excellent': return 'bg-green-100 text-green-800';
-      case 'good': return 'bg-blue-100 text-blue-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'poor': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getScoreBadge = (score: number) => {
+    if (score >= 90) return { variant: 'default' as const, label: 'Excellent' };
+    if (score >= 80) return { variant: 'secondary' as const, label: 'Good' };
+    if (score >= 70) return { variant: 'outline' as const, label: 'Fair' };
+    return { variant: 'destructive' as const, label: 'Needs Improvement' };
+  };
+
+  const overallMetrics = {
+    averageScore: 86,
+    totalPMs: 41,
+    topPerformers: 12,
+    needsAttention: 3
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <Users className="h-8 w-8 text-blue-600 mr-3" />
-            Property Management Engagement Score
-          </h1>
-          <p className="text-gray-600">Monitor and improve property manager performance across all properties.</p>
+    <Layout>
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
+          <h1 className="text-2xl font-bold mb-2">PM Engagement Score</h1>
+          <p className="text-blue-100">
+            Monitor and analyze property manager performance and tenant engagement metrics
+          </p>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Property</label>
-                <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Properties" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Properties</SelectItem>
-                    {properties.map((property) => (
-                      <SelectItem key={property.value} value={property.value}>
-                        {property.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Timeframe</label>
-                <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeframes.map((timeframe) => (
-                      <SelectItem key={timeframe.value} value={timeframe.value}>
-                        {timeframe.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-end">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Generate Report
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* PM Performance Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Property Manager Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {pmPerformance.map((pm, index) => (
-                    <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h3 className="font-semibold text-lg">{pm.name}</h3>
-                          <p className="text-gray-600 text-sm">{pm.property}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className={`text-2xl font-bold ${getScoreColor(pm.score)}`}>
-                            {pm.score}
-                            {pm.trend === 'up' ? (
-                              <TrendingUp className="inline h-5 w-5 ml-1" />
-                            ) : (
-                              <TrendingDown className="inline h-5 w-5 ml-1" />
-                            )}
-                          </div>
-                          <Badge className={getStatusColor(pm.status)}>
-                            {pm.status}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-500">Response Time</span>
-                          <p className="font-medium">{pm.responseTime}</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Completion Rate</span>
-                          <p className="font-medium">{pm.completionRate}%</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Tenant Rating</span>
-                          <p className="font-medium">{pm.tenantSatisfaction}/5.0</p>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-3">
-                        <Progress value={pm.score} className="h-2" />
-                      </div>
-                    </div>
-                  ))}
+        {/* Overview Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Average Score</p>
+                  <p className="text-2xl font-bold text-blue-600">{overallMetrics.averageScore}</p>
                 </div>
-              </CardContent>
-            </Card>
+                <Star className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total PMs</p>
+                  <p className="text-2xl font-bold">{overallMetrics.totalPMs}</p>
+                </div>
+                <Users className="h-8 w-8 text-gray-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Top Performers</p>
+                  <p className="text-2xl font-bold text-green-600">{overallMetrics.topPerformers}</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Needs Attention</p>
+                  <p className="text-2xl font-bold text-red-600">{overallMetrics.needsAttention}</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Engagement Metrics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Key Engagement Metrics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {engagementMetrics.map((metric, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{metric.label}</span>
-                        <Badge className={getStatusColor(metric.status)}>
-                          {metric.status}
+        <Tabs defaultValue="individual" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="individual">Individual Scores</TabsTrigger>
+            <TabsTrigger value="trends">Trends</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="individual" className="space-y-4">
+            {pmScores.map((pm, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">{pm.name}</CardTitle>
+                      <CardDescription>{pm.property}</CardDescription>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="text-right">
+                        <div className={`text-3xl font-bold ${getScoreColor(pm.score)}`}>
+                          {pm.score}
+                        </div>
+                        <Badge {...getScoreBadge(pm.score)}>
+                          {getScoreBadge(pm.score).label}
                         </Badge>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold">{metric.value}</span>
-                        <span className="text-sm text-gray-500">Target: {metric.target}</span>
+                      <div className={`flex items-center ${pm.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                        {pm.trend === 'up' ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                        <span className="ml-1 font-medium">{pm.change}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Avg Response</p>
+                        <p className="font-medium">{pm.responseTime}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Star className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Satisfaction</p>
+                        <p className="font-medium">{pm.satisfaction}/5.0</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-600">Open Issues</p>
+                        <p className="font-medium">{pm.issues}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button size="sm" variant="outline">View Details</Button>
+                      <Button size="sm">Send Feedback</Button>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Performance Score</span>
+                      <span>{pm.score}/100</span>
+                    </div>
+                    <Progress value={pm.score} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Overall Score */}
+          <TabsContent value="trends">
             <Card>
               <CardHeader>
-                <CardTitle>Portfolio Average</CardTitle>
+                <CardTitle>Engagement Score Trends</CardTitle>
+                <CardDescription>Average PM engagement scores over time</CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="text-4xl font-bold text-blue-600 mb-2">85</div>
-                <p className="text-gray-600 mb-4">Engagement Score</p>
-                <Progress value={85} className="h-3 mb-4" />
-                <div className="flex items-center justify-center text-green-600">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span className="text-sm">+3% from last month</span>
-                </div>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={engagementTrends}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[70, 95]} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="score" stroke="#3B82F6" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Action Items */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Action Items</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">Follow-up Rate Below Target</p>
-                    <p className="text-xs text-gray-600">Mike Chen needs improvement</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">Excellent Performance</p>
-                    <p className="text-xs text-gray-600">Sarah Johnson exceeded targets</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">Quarterly Review Due</p>
-                    <p className="text-xs text-gray-600">Schedule performance reviews</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="analytics">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Score Distribution</CardTitle>
+                  <CardDescription>Distribution of PM engagement scores</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={scoreDistribution}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="range" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="#3B82F6" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Send Feedback
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Training Plan
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="h-4 w-4 mr-2" />
-                  Team Meeting
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Performance Categories</CardTitle>
+                  <CardDescription>PM performance breakdown</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        data={scoreDistribution}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                        label={({ range, count }) => `${range}: ${count}`}
+                      >
+                        {scoreDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </Layout>
   );
 };
 

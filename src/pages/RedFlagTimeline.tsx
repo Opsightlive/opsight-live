@@ -1,244 +1,190 @@
 
 import React, { useState } from 'react';
+import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, AlertTriangle, CheckCircle, XCircle, Filter } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Filter, Clock, AlertTriangle, TrendingUp, TrendingDown, Building2 } from 'lucide-react';
 
 const RedFlagTimeline = () => {
-  const [filterSeverity, setFilterSeverity] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('30days');
+  const [selectedProperty, setSelectedProperty] = useState('all');
 
   const timelineEvents = [
     {
-      id: 1,
       date: '2024-01-15',
-      time: '09:30 AM',
-      property: 'Sunset Gardens Apartments',
-      event: 'Occupancy Rate Drop',
-      description: 'Occupancy dropped from 94% to 87% in past 30 days',
-      severity: 'High',
-      status: 'Active',
-      category: 'Occupancy',
-      actionTaken: null
+      time: '14:30',
+      property: 'Sunset Gardens',
+      type: 'critical',
+      title: 'Multiple Tenant Complaints',
+      description: 'Received 5 maintenance requests and 2 noise complaints within 24 hours',
+      status: 'active',
+      impact: 'high'
     },
     {
-      id: 2,
-      date: '2024-01-14',
-      time: '02:15 PM',
-      property: 'Metro Plaza Complex',
-      event: 'Maintenance Cost Spike',
-      description: 'Monthly maintenance costs exceeded budget by 35%',
-      severity: 'Medium',
-      status: 'Resolved',
-      category: 'Financial',
-      actionTaken: 'Negotiated new vendor contracts'
-    },
-    {
-      id: 3,
       date: '2024-01-12',
-      time: '11:45 AM',
-      property: 'Riverside Towers',
-      event: 'Tenant Satisfaction Drop',
-      description: 'Average satisfaction score dropped to 3.2/5',
-      severity: 'Medium',
-      status: 'In Progress',
-      category: 'Tenant Relations',
-      actionTaken: 'Tenant survey deployed'
+      time: '09:15',
+      property: 'Metro Plaza',
+      type: 'warning',
+      title: 'Rent Collection Below Target',
+      description: 'Monthly collection rate at 78% - below 85% threshold',
+      status: 'monitoring',
+      impact: 'medium'
     },
     {
-      id: 4,
       date: '2024-01-10',
-      time: '04:20 PM',
-      property: 'Oak Street Residences',
-      event: 'Late Rent Payments Increase',
-      description: '23% increase in late rent payments this month',
-      severity: 'High',
-      status: 'Active',
-      category: 'Collections',
-      actionTaken: null
+      time: '16:45',
+      property: 'Riverside Towers',
+      type: 'resolved',
+      title: 'HVAC System Failure',
+      description: 'Complete system failure affecting 12 units - emergency repair completed',
+      status: 'resolved',
+      impact: 'high'
     },
     {
-      id: 5,
       date: '2024-01-08',
-      time: '08:10 AM',
-      property: 'Pine Hill Apartments',
-      event: 'Energy Cost Anomaly',
-      description: 'Utility costs 45% higher than historical average',
-      severity: 'Low',
-      status: 'Resolved',
-      category: 'Operations',
-      actionTaken: 'HVAC system optimized'
+      time: '11:20',
+      property: 'Oak Street Commons',
+      type: 'warning',
+      title: 'Vacancy Rate Increase',
+      description: 'Vacancy increased from 5% to 12% over past month',
+      status: 'monitoring',
+      impact: 'medium'
     }
   ];
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'High': return 'destructive';
-      case 'Medium': return 'secondary';
-      case 'Low': return 'outline';
-      default: return 'outline';
+  const getEventIcon = (type: string) => {
+    switch (type) {
+      case 'critical':
+        return <AlertTriangle className="h-5 w-5 text-red-600" />;
+      case 'warning':
+        return <TrendingDown className="h-5 w-5 text-yellow-600" />;
+      case 'resolved':
+        return <TrendingUp className="h-5 w-5 text-green-600" />;
+      default:
+        return <Clock className="h-5 w-5 text-gray-600" />;
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Active': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'In Progress': return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'Resolved': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      default: return <XCircle className="h-4 w-4 text-gray-500" />;
+  const getEventColor = (type: string) => {
+    switch (type) {
+      case 'critical':
+        return 'border-l-red-500 bg-red-50';
+      case 'warning':
+        return 'border-l-yellow-500 bg-yellow-50';
+      case 'resolved':
+        return 'border-l-green-500 bg-green-50';
+      default:
+        return 'border-l-gray-500 bg-gray-50';
     }
   };
-
-  const filteredEvents = timelineEvents.filter(event => {
-    if (filterSeverity !== 'all' && event.severity !== filterSeverity) return false;
-    if (filterStatus !== 'all' && event.status !== filterStatus) return false;
-    return true;
-  });
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Red Flag Timeline</h1>
-          <p className="text-gray-600 mt-2">Chronological view of all portfolio alerts and resolutions</p>
+    <Layout>
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
+          <h1 className="text-2xl font-bold mb-2">Red Flag Timeline</h1>
+          <p className="text-blue-100">
+            Chronological view of all red flag events and their resolution status
+          </p>
         </div>
-        <div className="flex space-x-2">
-          <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Severity" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Severity</SelectItem>
-              <SelectItem value="High">High</SelectItem>
-              <SelectItem value="Medium">Medium</SelectItem>
-              <SelectItem value="Low">Low</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="In Progress">In Progress</SelectItem>
-              <SelectItem value="Resolved">Resolved</SelectItem>
-            </SelectContent>
-          </Select>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-4 w-4 text-gray-600" />
+            <select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="7days">Last 7 days</option>
+              <option value="30days">Last 30 days</option>
+              <option value="90days">Last 90 days</option>
+              <option value="6months">Last 6 months</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Building2 className="h-4 w-4 text-gray-600" />
+            <select
+              value={selectedProperty}
+              onChange={(e) => setSelectedProperty(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="all">All Properties</option>
+              <option value="sunset">Sunset Gardens</option>
+              <option value="metro">Metro Plaza</option>
+              <option value="riverside">Riverside Towers</option>
+              <option value="oak">Oak Street Commons</option>
+            </select>
+          </div>
+
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            More Filters
+          </Button>
         </div>
-      </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">24</span>
-            <p className="text-sm text-gray-500">This month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Active Issues</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-red-600">8</span>
-            <p className="text-sm text-gray-500">Requiring attention</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Avg Resolution Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">3.2</span>
-            <p className="text-sm text-gray-500">Days</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Resolution Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-green-600">87%</span>
-            <p className="text-sm text-gray-500">Within SLA</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Calendar className="h-5 w-5 mr-2" />
-            Alert Timeline
-          </CardTitle>
-          <CardDescription>Recent red flag events across your portfolio</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {filteredEvents.map((event, index) => (
-              <div key={event.id} className="relative">
-                {/* Timeline line */}
-                {index < filteredEvents.length - 1 && (
-                  <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gray-200"></div>
-                )}
-                
-                <div className="flex items-start space-x-4">
-                  {/* Timeline dot */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center">
-                    {getStatusIcon(event.status)}
-                  </div>
-                  
-                  {/* Event content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <h3 className="text-lg font-semibold text-gray-900">{event.event}</h3>
-                        <Badge variant={getSeverityColor(event.severity)}>
-                          {event.severity}
-                        </Badge>
-                        <Badge variant="outline">{event.category}</Badge>
-                      </div>
-                      <div className="text-right text-sm text-gray-500">
-                        <p>{event.date}</p>
-                        <p>{event.time}</p>
+        {/* Timeline */}
+        <div className="space-y-4">
+          {timelineEvents.map((event, index) => (
+            <Card key={index} className={`border-l-4 ${getEventColor(event.type)}`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    {getEventIcon(event.type)}
+                    <div>
+                      <CardTitle className="text-lg">{event.title}</CardTitle>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-gray-600">{event.property}</span>
+                        <span className="text-sm text-gray-400">•</span>
+                        <span className="text-sm text-gray-600">{event.date} at {event.time}</span>
                       </div>
                     </div>
-                    
-                    <p className="text-gray-600 mt-1">{event.property}</p>
-                    <p className="text-gray-700 mt-2">{event.description}</p>
-                    
-                    {event.actionTaken && (
-                      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-800">
-                          <strong>Action Taken:</strong> {event.actionTaken}
-                        </p>
-                      </div>
-                    )}
-                    
-                    {event.status === 'Active' && (
-                      <div className="mt-3 flex space-x-2">
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                        <Button size="sm">
-                          Take Action
-                        </Button>
-                      </div>
-                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge 
+                      variant={
+                        event.status === 'active' ? 'destructive' :
+                        event.status === 'monitoring' ? 'secondary' : 'default'
+                      }
+                    >
+                      {event.status}
+                    </Badge>
+                    <Badge variant="outline">
+                      {event.impact} impact
+                    </Badge>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-base mb-4">
+                  {event.description}
+                </CardDescription>
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="outline">
+                    View Details
+                  </Button>
+                  {event.status === 'active' && (
+                    <Button size="sm">
+                      Take Action
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Load More */}
+        <div className="text-center mt-8">
+          <Button variant="outline">
+            Load More Events
+          </Button>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
