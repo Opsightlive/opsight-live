@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,7 +36,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       setError('Password must be at least 6 characters');
       return;
     }
+
+    // Store the email and password for later use
+    localStorage.setItem('pendingRegistration', JSON.stringify({
+      email,
+      password
+    }));
     
+    // Move to onboarding step
     setCurrentStep('onboarding');
   };
 
@@ -61,12 +67,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
           setCurrentStep('register');
         }
       } catch (err) {
-        setError('Registration failed. Please try again.');
-        setCurrentStep('register');
-      }
-    } else {
-      const success = await register(email, password);
-      if (!success) {
         setError('Registration failed. Please try again.');
         setCurrentStep('register');
       }
