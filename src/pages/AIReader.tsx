@@ -1,6 +1,8 @@
+
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, Download, Trash2, Eye, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
