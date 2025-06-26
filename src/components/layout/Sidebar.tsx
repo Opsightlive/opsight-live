@@ -19,12 +19,14 @@ import {
   Bell,
   X,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Lightbulb
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import AISuggestionsPanel from '@/components/ai/AISuggestionsPanel';
 
 interface SidebarItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -32,6 +34,7 @@ interface SidebarItem {
   path?: string;
   companyOnly?: boolean;
   children?: SidebarItem[];
+  component?: React.ComponentType;
 }
 
 interface SidebarProps {
@@ -87,16 +90,22 @@ const sidebarItems: SidebarItem[] = [
   // Analytics & KPIs
   {
     icon: BarChart3,
-    label: 'KPI Command Center',
-    path: '/kpi-center'
-  },
-  {
-    icon: BarChart3,
-    label: 'PM Engagement Score',
-    path: '/pm-engagement'
+    label: 'Analytics & KPIs',
+    children: [
+      {
+        icon: BarChart3,
+        label: 'KPI Command Center',
+        path: '/kpi-center'
+      },
+      {
+        icon: BarChart3,
+        label: 'PM Engagement Score',
+        path: '/pm-engagement'
+      }
+    ]
   },
   
-  // AI Tools (with dropdown)
+  // AI Tools (with dropdown including AI Suggestions)
   {
     icon: Bot,
     label: 'AI Tools',
@@ -110,6 +119,11 @@ const sidebarItems: SidebarItem[] = [
         icon: Bot,
         label: 'AI Intelligence Tools',
         path: '/ai-tools'
+      },
+      {
+        icon: Lightbulb,
+        label: 'AI Suggestions',
+        component: AISuggestionsPanel
       }
     ]
   },
@@ -192,7 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const location = useLocation();
   const { isCompanyUser } = useAuth();
   const { isMobile } = useDeviceDetection();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(['AI Tools']); // Default expand AI Tools to show suggestions
 
   const filteredItems = sidebarItems.filter(item => 
     !item.companyOnly || isCompanyUser
@@ -248,7 +262,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             </button>
             {isExpanded && (
               <ul className="ml-4 mt-1 space-y-1">
-                {item.children.map(child => renderSidebarItem(child, level + 1))}
+                {item.children.map(child => {
+                  if (child.component) {
+                    const Component = child.component;
+                    return (
+                      <li key={child.label} className="px-4 py-2">
+                        <Component />
+                      </li>
+                    );
+                  }
+                  return renderSidebarItem(child, level + 1);
+                })}
               </ul>
             )}
           </>
