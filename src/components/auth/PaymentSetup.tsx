@@ -16,6 +16,16 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
   const [registrationData, setRegistrationData] = useState<any>(null);
   const { register } = useAuth();
 
+  // Move formatCurrency function to the top to avoid hoisting issues
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   useEffect(() => {
     const stored = localStorage.getItem('pendingRegistration');
     if (stored) {
@@ -174,15 +184,6 @@ const PaymentSetup: React.FC<PaymentSetupProps> = ({ onComplete }) => {
       </div>
     );
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
