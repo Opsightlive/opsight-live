@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Building, Home, Database, Plus, Trash2 } from 'lucide-react';
+import { Building, Home, Database, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Property {
   id: string;
@@ -21,6 +21,7 @@ interface OnboardingSetupProps {
 
 const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     companyName: '',
     role: '',
@@ -35,6 +36,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [properties, setProperties] = useState<Property[]>([
     { id: '1', name: '', units: '', address: '' }
   ]);
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
   const addProperty = () => {
     const newProperty: Property = {
@@ -137,6 +142,18 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl">
+        {/* Header with Back Button */}
+        <div className="flex items-center mb-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackClick}
+            className="mr-4 hover:bg-gray-100"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Logo and Title */}
         <div className="text-center mb-12">
           <div className="mb-6">
@@ -317,6 +334,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                         <SelectItem value="rent-manager">Rent Manager</SelectItem>
                         <SelectItem value="property-solutions">Property Solutions</SelectItem>
                         <SelectItem value="voyager">Voyager</SelectItem>
+                        <SelectItem value="greystar">Greystar</SelectItem>
+                        <SelectItem value="camden">Camden</SelectItem>
+                        <SelectItem value="aimco">AIMCO</SelectItem>
+                        <SelectItem value="bozzuto">Bozzuto</SelectItem>
+                        <SelectItem value="lincoln">Lincoln Property Company</SelectItem>
+                        <SelectItem value="equity">Equity Residential</SelectItem>
+                        <SelectItem value="avalon">AvalonBay Communities</SelectItem>
+                        <SelectItem value="essex">Essex Property Trust</SelectItem>
+                        <SelectItem value="mid-america">Mid-America Apartment Communities</SelectItem>
+                        <SelectItem value="uli">ULI</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -407,7 +434,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               type="submit" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
             >
-              Complete Setup
+              Continue to Payment
             </Button>
           </div>
         </form>

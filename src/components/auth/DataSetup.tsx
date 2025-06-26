@@ -1,165 +1,82 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, Key, FileText, Globe, Check } from 'lucide-react';
+import { CheckCircle, Upload, Database, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface DataSetupProps {
   onComplete: () => void;
 }
 
 const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
-  const [setupType, setSetupType] = useState<'manual' | 'automatic' | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [credentials, setCredentials] = useState({
-    platform: '',
-    username: '',
-    password: ''
-  });
-  const { completeRegistration } = useAuth();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [registrationData, setRegistrationData] = useState<any>(null);
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setUploadedFiles(prev => [...prev, ...files]);
-  };
-
-  const handleComplete = async () => {
-    setIsProcessing(true);
-    
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Complete the registration process
-    const success = await completeRegistration({
-      setupType,
-      uploadedFiles: uploadedFiles.map(f => f.name),
-      credentials: setupType === 'automatic' ? credentials : null
-    });
-    
-    if (success) {
-      onComplete();
+  useEffect(() => {
+    const stored = localStorage.getItem('pendingRegistration');
+    if (stored) {
+      setRegistrationData(JSON.parse(stored));
     }
-    
-    setIsProcessing(false);
+  }, []);
+
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
-  const canProceed = setupType === 'manual' 
-    ? uploadedFiles.length > 0 
-    : setupType === 'automatic' 
-      ? credentials.platform && credentials.username && credentials.password
-      : false;
+  const handleDataSetupComplete = async () => {
+    if (!registrationData) return;
 
-  if (!setupType) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
-          {/* Logo and Title */}
-          <div className="text-center mb-12">
-            <div className="mb-6">
-              <div className="w-20 h-20 mx-auto">
-                <img 
-                  src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-                  alt="OPSIGHT Logo" 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
-            <p className="text-blue-600 text-lg tracking-wider">OPERATIONAL INSIGHT</p>
-            <h2 className="text-3xl font-bold text-gray-900 mt-8">Setup Your Data Source</h2>
-            <p className="text-gray-600 mt-2">
-              Choose how you'd like to connect your property data to get realistic insights
-            </p>
-          </div>
+    setIsConnecting(true);
 
-          {/* Setup Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {/* Manual Upload */}
-            <Card 
-              className="border-2 border-gray-200 hover:border-blue-300 cursor-pointer transition-all duration-200"
-              onClick={() => setSetupType('manual')}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <Upload className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">Manual Upload</CardTitle>
-                <p className="text-gray-600">Upload your existing reports and documents</p>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Upload financial statements</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Import property reports</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Add maintenance records</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Quick setup process</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+    try {
+      // Simulate connection process
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-            {/* Automatic Connection */}
-            <Card 
-              className="border-2 border-blue-600 shadow-lg cursor-pointer transition-all duration-200 relative"
-              onClick={() => setSetupType('automatic')}
-            >
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Recommended
-                </span>
-              </div>
-              
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <Globe className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">Automatic Connection</CardTitle>
-                <p className="text-gray-600">Connect directly to your property platforms</p>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Real-time data sync</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Automatic updates</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Connect multiple platforms</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700">Enhanced AI insights</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
+      // Complete the registration
+      const success = await register(
+        registrationData.email,
+        registrationData.password,
+        registrationData.userData
+      );
+
+      if (success) {
+        localStorage.removeItem('pendingRegistration');
+        onComplete();
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+      alert('Registration failed. Please try again.');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  if (!registrationData) {
+    return <div>Loading...</div>;
   }
+
+  const { userData } = registrationData;
+  const isConnectPM = userData?.dataSource === 'connect-pm';
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
+        {/* Header with Back Button */}
+        <div className="flex items-center mb-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackClick}
+            className="mr-4 hover:bg-gray-100"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Logo and Title */}
         <div className="text-center mb-12">
           <div className="mb-6">
@@ -174,154 +91,100 @@ const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
           <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
           <p className="text-blue-600 text-lg tracking-wider">OPERATIONAL INSIGHT</p>
           <h2 className="text-3xl font-bold text-gray-900 mt-8">
-            {setupType === 'manual' ? 'Upload Your Reports' : 'Connect Your Platforms'}
+            {isConnectPM ? 'Connecting Your Data' : 'Setup Complete'}
           </h2>
           <p className="text-gray-600 mt-2">
-            {setupType === 'manual' 
-              ? 'Upload your property reports and financial documents' 
-              : 'Provide your platform credentials for automatic data sync'
+            {isConnectPM 
+              ? 'We\'re connecting to your property management system to sync your data.'
+              : 'Your account is ready! You can start uploading reports manually.'
             }
           </p>
         </div>
 
-        <Card className="border-2 border-blue-200">
-          <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center space-x-2">
-              {setupType === 'manual' ? (
-                <>
-                  <FileText className="h-6 w-6 text-blue-600" />
-                  <span>Document Upload</span>
-                </>
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              {isConnectPM ? (
+                <Database className="h-6 w-6 text-blue-600 mr-2" />
               ) : (
-                <>
-                  <Key className="h-6 w-6 text-blue-600" />
-                  <span>Platform Credentials</span>
-                </>
+                <Upload className="h-6 w-6 text-blue-600 mr-2" />
               )}
+              {isConnectPM ? 'PM System Connection' : 'Manual Upload Setup'}
             </CardTitle>
           </CardHeader>
-          
           <CardContent className="space-y-6">
-            {setupType === 'manual' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Documents (PDF, Excel, Word)
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    accept=".pdf,.xlsx,.xls,.docx,.doc"
-                    onChange={handleFileUpload}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={isProcessing}
-                  />
-                </div>
-                
-                {uploadedFiles.length > 0 && (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-900 mb-2">Uploaded Files:</h4>
-                    <ul className="space-y-1">
-                      {uploadedFiles.map((file, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-center">
-                          <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                          {file.name}
-                        </li>
-                      ))}
-                    </ul>
+            {isConnectPM ? (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Payment processed successfully</span>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Property Management Platform
-                  </label>
-                  <select
-                    value={credentials.platform}
-                    onChange={(e) => setCredentials(prev => ({ ...prev, platform: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={isProcessing}
-                  >
-                    <option value="">Select Platform</option>
-                    <option value="appfolio">AppFolio</option>
-                    <option value="buildium">Buildium</option>
-                    <option value="propertyware">Propertyware</option>
-                    <option value="rentmanager">Rent Manager</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Credentials verified and encrypted</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Properties configured: {userData?.properties?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>PM Software: {userData?.pmSoftware || 'Not specified'}</span>
+                  </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username/Email
-                  </label>
-                  <input
-                    type="text"
-                    value={credentials.username}
-                    onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
-                    placeholder="your@email.com"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={isProcessing}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={credentials.password}
-                    onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                    placeholder="••••••••"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={isProcessing}
-                  />
-                </div>
-                
+
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <strong>Secure Connection:</strong> Your credentials are encrypted and used only to sync your property data. We never store your passwords.
+                  <p className="text-blue-800 font-medium">🔄 Syncing your data...</p>
+                  <p className="text-blue-700 text-sm mt-1">
+                    This process may take a few minutes. We're importing your properties, 
+                    units, tenants, and financial data.
                   </p>
                 </div>
-              </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Payment processed successfully</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Account setup complete</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Properties configured: {userData?.properties?.length || 0}</span>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <p className="text-orange-800 font-medium">📄 Manual Upload Setup</p>
+                  <p className="text-orange-700 text-sm mt-1">
+                    You can start uploading your property reports manually once your 
+                    account is activated.
+                  </p>
+                </div>
+              </>
             )}
 
-            <div className="flex space-x-4 pt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setSetupType(null)}
-                className="flex-1"
-                disabled={isProcessing}
-              >
-                Back to Options
-              </Button>
-              <Button 
-                onClick={handleComplete}
-                disabled={!canProceed || isProcessing}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isProcessing ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Setting up...</span>
-                  </div>
-                ) : (
-                  'Complete Setup'
-                )}
-              </Button>
-            </div>
+            <Button 
+              onClick={handleDataSetupComplete}
+              disabled={isConnecting}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {isConnecting ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{isConnectPM ? 'Connecting...' : 'Setting up...'}</span>
+                </div>
+              ) : (
+                'Complete Setup & Access Dashboard'
+              )}
+            </Button>
           </CardContent>
         </Card>
-
-        <p className="text-gray-500 mt-4 text-sm text-center">
-          {setupType === 'manual' 
-            ? 'Supported formats: PDF, Excel, Word documents'
-            : 'Your credentials are securely encrypted and never stored'
-          }
-        </p>
       </div>
     </div>
   );
