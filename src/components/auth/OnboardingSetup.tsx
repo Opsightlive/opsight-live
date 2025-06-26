@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Building, Home, Database, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,7 +24,9 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [formData, setFormData] = useState({
     companyName: '',
     role: '',
-    dataSource: 'connect-pm'
+    dataSource: 'connect-pm',
+    pmSoftware: '',
+    otherSoftware: ''
   });
 
   const [properties, setProperties] = useState<Property[]>([
@@ -64,6 +67,24 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
       alert('Please add at least one complete property');
       return;
     }
+
+    // Validate required fields
+    if (!formData.companyName.trim() || !formData.role) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // If connecting PM system, validate software selection
+    if (formData.dataSource === 'connect-pm') {
+      if (!formData.pmSoftware) {
+        alert('Please select your property management software');
+        return;
+      }
+      if (formData.pmSoftware === 'other' && !formData.otherSoftware.trim()) {
+        alert('Please specify your property management software');
+        return;
+      }
+    }
     
     // Get existing registration data and merge with new data
     const existingRegistration = JSON.parse(localStorage.getItem('pendingRegistration') || '{}');
@@ -76,6 +97,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
         role: formData.role,
         properties: validProperties,
         dataSource: formData.dataSource,
+        pmSoftware: formData.pmSoftware === 'other' ? formData.otherSoftware : formData.pmSoftware,
         propertyCount: validProperties.length,
         totalCost: validProperties.length * 295
       }
@@ -254,6 +276,39 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   Connect My PM System <span className="text-sm text-gray-500">(recommended)</span>
                 </label>
               </div>
+
+              {formData.dataSource === 'connect-pm' && (
+                <div className="ml-6 space-y-4">
+                  <div>
+                    <Label htmlFor="pmSoftware">Property Management Software</Label>
+                    <Select onValueChange={(value) => handleInputChange('pmSoftware', value)} required>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select your PM software" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="onesite">OneSite</SelectItem>
+                        <SelectItem value="yardi">Yardi</SelectItem>
+                        <SelectItem value="resman">RESMan</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {formData.pmSoftware === 'other' && (
+                    <div>
+                      <Label htmlFor="otherSoftware">Specify Your PM Software</Label>
+                      <Input
+                        id="otherSoftware"
+                        value={formData.otherSoftware}
+                        onChange={(e) => handleInputChange('otherSoftware', e.target.value)}
+                        placeholder="Enter your PM software name"
+                        className="mt-1"
+                        required
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
               
               <div className="flex items-center space-x-2">
                 <input 
@@ -271,17 +326,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               </div>
             </div>
           </div>
-        </form>
 
-        <div className="text-center mt-8">
-          <Button 
-            type="submit" 
-            onClick={handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
-          >
-            Continue to Payment
-          </Button>
-        </div>
+          <div className="text-center">
+            <Button 
+              type="submit" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
+            >
+              Complete Setup
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
