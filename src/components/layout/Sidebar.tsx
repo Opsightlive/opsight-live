@@ -83,10 +83,22 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
 
   const setupItems = [
     { 
+      name: 'Owner Onboarding', 
+      href: '/owner-onboarding', 
+      icon: Target,
+      description: 'Customize your owner experience'
+    },
+    { 
       name: 'Data Integration', 
       href: '/data-integration', 
       icon: Database,
       description: 'Connect your PM systems'
+    },
+    { 
+      name: 'Integration Status', 
+      href: '/integration-status', 
+      icon: CheckCircle,
+      description: 'Monitor data sync health'
     },
     { 
       name: 'Demo Mode', 

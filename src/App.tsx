@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,8 @@ import SignupPage from "./pages/SignupPage";
 import DemoPage from "./pages/DemoPage";
 import DataIntegration from "./pages/DataIntegration";
 import DemoMode from "./pages/DemoMode";
+import OwnerOnboardingPage from "./pages/OwnerOnboarding";
+import IntegrationStatus from "./pages/IntegrationStatus";
 import PortfolioOverview from "./pages/PortfolioOverview";
 import KPICommandCenter from "./pages/KPICommandCenter";
 import RedFlagAlerts from "./pages/RedFlagAlerts";
@@ -67,6 +68,8 @@ const DashboardRoutes = () => (
         <Route path="/users" element={<UserManagement />} />
         <Route path="/data-integration" element={<DataIntegration />} />
         <Route path="/demo-mode" element={<DemoMode />} />
+        <Route path="/owner-onboarding" element={<OwnerOnboardingPage />} />
+        <Route path="/integration-status" element={<IntegrationStatus />} />
         <Route path="/company-dashboard" element={
           <CompanyProtectedRoute>
             <CompanyDashboard />
