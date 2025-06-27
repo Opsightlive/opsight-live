@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import RegisterForm from '@/components/auth/RegisterForm';
 
@@ -25,7 +25,7 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/* Registration Form */}
+      {/* Register Form */}
       <div className="flex-1 flex items-center justify-center py-12">
         <RegisterForm onLoginClick={() => window.location.href = '/login'} />
       </div>

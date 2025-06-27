@@ -21,10 +21,10 @@ const Index: React.FC = () => {
               <h1 className="text-2xl font-bold text-gray-900">OPSIGHT</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/auth">
+              <Link to="/login">
                 <Button variant="outline">Sign In</Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
               </Link>
             </div>
@@ -44,7 +44,7 @@ const Index: React.FC = () => {
             and comprehensive KPI tracking. Make data-driven decisions that maximize your portfolio performance.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link to="/auth">
+            <Link to="/signup">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -124,7 +124,7 @@ const Index: React.FC = () => {
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of property professionals who trust OPSIGHT to manage their portfolios
           </p>
-          <Link to="/auth">
+          <Link to="/signup">
             <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
               Get Started Today
               <ArrowRight className="ml-2 h-5 w-5" />
