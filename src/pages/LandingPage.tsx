@@ -86,100 +86,175 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-20">
+      <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              Unlock the Future of Property Management
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              OPSIGHT provides real-time insights and predictive analytics to optimize your property portfolio.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Link to="/demo">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
-                  Schedule Your Demo
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-                  Start Free Trial
-                </Button>
-              </Link>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Content */}
+            <div>
+              <div className="mb-4">
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                  Trusted by Leading Real Estate Professionals
+                </Badge>
+              </div>
+              
+              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                Transform Your{' '}
+                <span className="text-blue-600">Portfolio</span>{' '}
+                <span className="text-blue-600">Performance</span>
+              </h1>
+              
+              <p className="text-xl text-gray-600 mb-8 max-w-lg">
+                Property management software wasn't built for owners. OPSIGHT flips the power to you - Real-time red flags, KPI enforcement, and full operational visibility.
+              </p>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
+                <blockquote className="text-gray-700 italic mb-2">
+                  "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. Legacy tools manage units. OPSIGHT manages outcomes."
+                </blockquote>
+                <p className="text-blue-600 font-medium">- Built for ownership, not operations</p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Link to="/demo">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
+                    Get Your Demo
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-4">
+                    Start Free Trial
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="flex items-center space-x-6 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                  No credit card required
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                  Setup in minutes
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                  Cancel anytime
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Live Dashboard */}
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 border">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gray-900">Live Portfolio Dashboard</h3>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    LIVE
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Building className="h-5 w-5 text-gray-600" />
+                      <span className="text-green-600 text-sm font-medium">+23</span>
+                    </div>
+                    <div className="text-xs text-gray-600 mb-1">Properties Monitored</div>
+                    <div className="text-2xl font-bold text-gray-900">2,856</div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <AlertTriangle className="h-5 w-5 text-gray-600" />
+                      <span className="text-green-600 text-sm font-medium">+12</span>
+                    </div>
+                    <div className="text-xs text-gray-600 mb-1">Issues Predicted</div>
+                    <div className="text-2xl font-bold text-gray-900">160</div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <DollarSign className="h-5 w-5 text-gray-600" />
+                      <span className="text-green-600 text-sm font-medium">+$45K</span>
+                    </div>
+                    <div className="text-xs text-gray-600 mb-1">Cost Savings</div>
+                    <div className="text-2xl font-bold text-gray-900">$1.4M</div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Users className="h-5 w-5 text-purple-600" />
+                      <span className="text-green-600 text-sm font-medium">+8</span>
+                    </div>
+                    <div className="text-xs text-gray-600 mb-1">Active Users</div>
+                    <div className="text-2xl font-bold text-purple-600">1,213</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div className="flex items-center">
+                      <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-red-800">3 Predictive Alerts</div>
+                        <div className="text-xs text-red-600">Immediate attention required</div>
+                      </div>
+                    </div>
+                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+                      Review
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center">
+                      <TrendingUp className="h-4 w-4 text-green-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-green-800">NOI Up 18%</div>
+                        <div className="text-xs text-green-600">This quarter vs last</div>
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" className="border-green-300 text-green-700 hover:bg-green-50">
+                      View Report
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center">
+                      <Eye className="h-4 w-4 text-blue-600 mr-2" />
+                      <div>
+                        <div className="text-sm font-medium text-blue-800">AI Recommendations</div>
+                        <div className="text-xs text-blue-600">5 new insights available</div>
+                      </div>
+                    </div>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                      See All
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center text-xs text-gray-500">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    Live updates every 2.5 seconds
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Live Dashboard Preview */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="md:flex md:items-center md:justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 md:mb-0">
-              Live Dashboard Preview
-            </h2>
-            <div className="flex items-center text-gray-600">
-              <span className={`mr-2 w-3 h-3 rounded-full ${isLive ? 'bg-green-500' : 'bg-red-500'}`}></span>
-              {isLive ? 'Real-Time Data' : 'Data Stale'}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Overview Card */}
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-blue-600" />
-                  Property Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-gray-900">
-                  {occupancyRate.toFixed(1)}%
-                </div>
-                <p className="text-gray-600">Current Occupancy Rate</p>
-              </CardContent>
-            </Card>
-
-            {/* Key Metrics Card */}
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                  Key Metrics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-2">
-                  <span className="text-gray-600">{metrics[currentMetric].label}:</span>
-                  <div className="text-2xl font-bold text-gray-900">{metrics[currentMetric].value}</div>
-                  <Badge className={`text-xs ${metrics[currentMetric].trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {metrics[currentMetric].change}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Security & Compliance Card */}
-            <Card className="bg-white shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-yellow-600" />
-                  Security & Compliance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-green-600 mb-2">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  All systems operational
-                </div>
-                <p className="text-gray-600">
-                  Regular security audits and compliance checks ensure your data is safe.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Solutions Section */}
+      <div className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Solutions Built for Real Estate Excellence
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-16">
+            From portfolio management to predictive analytics, OPSIGHT delivers the intelligence
+          </p>
         </div>
       </div>
 
@@ -266,255 +341,6 @@ const LandingPage = () => {
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Trusted By Section */}
-      <div className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-2xl font-bold text-gray-900">
-              Trusted by Leading Real Estate Professionals
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60">
-            <div className="bg-gray-100 h-12 w-32 rounded flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Company 1</span>
-            </div>
-            <div className="bg-gray-100 h-12 w-32 rounded flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Company 2</span>
-            </div>
-            <div className="bg-gray-100 h-12 w-32 rounded flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Company 3</span>
-            </div>
-            <div className="bg-gray-100 h-12 w-32 rounded flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Company 4</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Key Features */}
-      <div className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900">
-              Key Features
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore the features that make OPSIGHT the leading property management solution.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Real-Time Analytics */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Real-Time Analytics</h3>
-              <p className="text-gray-600">
-                Get instant insights into your property performance with our real-time analytics dashboard.
-              </p>
-            </div>
-
-            {/* Automated Alerts */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="h-8 w-8 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Automated Alerts</h3>
-              <p className="text-gray-600">
-                Receive automated alerts for critical issues, ensuring you never miss a beat.
-              </p>
-            </div>
-
-            {/* Tenant Management */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Tenant Management</h3>
-              <p className="text-gray-600">
-                Streamline tenant communication and management with our integrated tools.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Problem Statement */}
-      <div className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900">
-              The Problem
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Traditional property management is complex, inefficient, and lacks transparency.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Inefficient Processes */}
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-center mb-4">
-                <Clock className="h-6 w-6 text-blue-600 mr-3" />
-                <h3 className="text-xl font-bold text-gray-900">Inefficient Processes</h3>
-              </div>
-              <p className="text-gray-600">
-                Manual tasks and outdated systems lead to wasted time and resources.
-              </p>
-            </div>
-
-            {/* Lack of Transparency */}
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-center mb-4">
-                <Eye className="h-6 w-6 text-purple-600 mr-3" />
-                <h3 className="text-xl font-bold text-gray-900">Lack of Transparency</h3>
-              </div>
-              <p className="text-gray-600">
-                Owners are often left in the dark, with limited visibility into their property performance.
-              </p>
-            </div>
-
-            {/* Financial Challenges */}
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-center mb-4">
-                <DollarSign className="h-6 w-6 text-green-600 mr-3" />
-                <h3 className="text-xl font-bold text-gray-900">Financial Challenges</h3>
-              </div>
-              <p className="text-gray-600">
-                Unexpected expenses and poor financial management can impact profitability.
-              </p>
-            </div>
-
-            {/* Communication Gaps */}
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-center mb-4">
-                <Building className="h-6 w-6 text-orange-600 mr-3" />
-                <h3 className="text-xl font-bold text-gray-900">Communication Gaps</h3>
-              </div>
-              <p className="text-gray-600">
-                Poor communication between owners, managers, and tenants leads to frustration and delays.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Solution Showcase */}
-      <div className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900">
-              The Solution: OPSIGHT
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              OPSIGHT provides a comprehensive solution to streamline property management and maximize your ROI.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Real-Time Insights */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Real-Time Insights</h3>
-              <p className="text-gray-600">
-                Access real-time data and analytics to make informed decisions and optimize your property performance.
-              </p>
-            </div>
-
-            {/* Automated Workflows */}
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Automated Workflows</h3>
-              <p className="text-gray-600">
-                Automate routine tasks and streamline your workflows, saving time and reducing errors.
-              </p>
-            </div>
-
-            {/* Predictive Analytics */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Predictive Analytics</h3>
-              <p className="text-gray-600">
-                Leverage predictive analytics to anticipate future trends and proactively address potential issues.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Video Demo Section */}
-      <div className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Watch Our Demo
-          </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            See OPSIGHT in action and discover how it can transform your property management operations.
-          </p>
-          <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 hover:text-blue-700 text-lg px-8 py-4">
-            <Play className="mr-2 h-5 w-5" />
-            Play Video
-          </Button>
-        </div>
-      </div>
-
-      {/* Benefits Grid */}
-      <div className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900">
-              Key Benefits
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the benefits of using OPSIGHT for your property management needs.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Increased Efficiency */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Increased Efficiency</h3>
-              <p className="text-gray-600">
-                Streamline your operations and automate routine tasks, saving time and resources.
-              </p>
-            </div>
-
-            {/* Improved Transparency */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Improved Transparency</h3>
-              <p className="text-gray-600">
-                Gain real-time visibility into your property performance and financial data.
-              </p>
-            </div>
-
-            {/* Enhanced Profitability */}
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-yellow-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Enhanced Profitability</h3>
-              <p className="text-gray-600">
-                Optimize your property management strategies and maximize your return on investment.
-              </p>
             </div>
           </div>
         </div>
