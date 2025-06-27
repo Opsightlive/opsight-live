@@ -69,11 +69,11 @@ const CompanyPage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
               <div className="lg:flex">
-                <div className="lg:w-2/5 flex items-end">
+                <div className="lg:w-2/5">
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
-                    className="w-full h-64 lg:h-96 object-cover object-top"
+                    className="w-full h-64 lg:h-96 object-cover object-center"
                   />
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
