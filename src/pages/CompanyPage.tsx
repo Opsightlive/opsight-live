@@ -72,10 +72,12 @@ const CompanyPage = () => {
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
-                    className="w-full h-64 lg:h-80 object-cover object-center mt-8"
+                    className="w-full h-64 lg:h-96 object-cover object-top"
                   />
-                  <div className="text-center py-4 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <p className="text-lg font-semibold text-gray-900">Proven Track Record</p>
+                  <div className="text-center py-6 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <p className="text-lg font-semibold text-gray-900 mb-2">Proven Track Record</p>
+                    <div className="text-2xl font-bold text-blue-600">$20M+</div>
+                    <p className="text-sm text-gray-600">Assets Under Management</p>
                   </div>
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
