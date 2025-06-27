@@ -59,6 +59,15 @@ const CompanyPage = () => {
               OPSIGHT was founded by someone who's been in your shoes. From managing thousands of units 
               to building a multi-million dollar portfolio, we understand what owners really need.
             </p>
+
+            {/* Add prominent $20M callout */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 max-w-md mx-auto mb-8">
+              <div className="text-center text-white">
+                <div className="text-4xl font-bold mb-2">$20M+</div>
+                <div className="text-lg">Assets Under Management</div>
+                <div className="text-sm text-blue-100 mt-1">Proven Track Record</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -95,12 +104,12 @@ const CompanyPage = () => {
                         <p className="text-gray-600">Units Managed Throughout Career</p>
                       </div>
                       
-                      <div className="bg-white p-6 rounded-xl shadow-md">
+                      <div className="bg-white p-6 rounded-xl shadow-md border-2 border-green-200">
                         <div className="flex items-center mb-3">
                           <TrendingUp className="h-6 w-6 text-green-600 mr-2" />
-                          <span className="font-bold text-2xl text-gray-900">$20M</span>
+                          <span className="font-bold text-3xl text-green-600">$20M+</span>
                         </div>
-                        <p className="text-gray-600">Assets Under Management</p>
+                        <p className="text-gray-600 font-semibold">Assets Under Management</p>
                       </div>
                     </div>
                     
