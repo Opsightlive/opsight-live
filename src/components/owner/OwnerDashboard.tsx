@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,17 +15,24 @@ import {
   MessageSquare,
   CheckCircle,
   Clock,
-  Zap
+  Zap,
+  Plus
 } from 'lucide-react';
 import { useOwnerInsights } from '@/hooks/useOwnerInsights';
 import DashboardTutorial from '../dashboard/DashboardTutorial';
+import { useNavigate } from 'react-router-dom';
 
 const OwnerDashboard = () => {
   const { insights, isLoading } = useOwnerInsights();
   const [showTutorial, setShowTutorial] = useState(false);
+  const navigate = useNavigate();
 
   const startTutorial = () => {
     setShowTutorial(true);
+  };
+
+  const handleAddProperty = () => {
+    navigate('/owner-onboarding');
   };
 
   const portfolioMetrics = {
@@ -116,16 +122,22 @@ const OwnerDashboard = () => {
         <DashboardTutorial onClose={() => setShowTutorial(false)} />
       )}
 
-      {/* Header with Tutorial Button */}
+      {/* Header with Tutorial Button and Add Property */}
       <div className="flex items-center justify-between" data-tutorial="sidebar">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Portfolio Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's what's happening with your properties.</p>
+          <p className="text-gray-600">Welcome back! Here's what's happening with your multifamily properties.</p>
         </div>
-        <Button onClick={startTutorial} variant="outline" size="sm">
-          <Eye className="h-4 w-4 mr-2" />
-          Take Tour
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button onClick={handleAddProperty} className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Property
+          </Button>
+          <Button onClick={startTutorial} variant="outline" size="sm">
+            <Eye className="h-4 w-4 mr-2" />
+            Take Tour
+          </Button>
+        </div>
       </div>
 
       {/* Portfolio Overview Cards */}

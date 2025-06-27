@@ -4,10 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, TrendingUp, TrendingDown, DollarSign, Users, AlertTriangle } from 'lucide-react';
+import { Building2, TrendingUp, TrendingDown, DollarSign, Users, AlertTriangle, Plus } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 
 const PortfolioOverview = () => {
+  const navigate = useNavigate();
+
   const portfolioMetrics = [
     { name: 'Total Properties', value: '24', change: '+2', trend: 'up' },
     { name: 'Total Units', value: '1,847', change: '+45', trend: 'up' },
@@ -16,10 +19,10 @@ const PortfolioOverview = () => {
   ];
 
   const performanceData = [
-    { property: 'Sunset Gardens', occupancy: 96, revenue: 285000, noi: 68 },
-    { property: 'Metro Plaza', occupancy: 92, revenue: 320000, noi: 71 },
-    { property: 'Riverside Towers', occupancy: 89, revenue: 195000, noi: 65 },
-    { property: 'Oak Street Commons', occupancy: 97, revenue: 410000, noi: 74 }
+    { property: 'Sunset Gardens', occupancy: 96, revenue: 285000, noi: 68, units: 248 },
+    { property: 'Metro Plaza', occupancy: 92, revenue: 320000, noi: 71, units: 156 },
+    { property: 'Riverside Towers', occupancy: 89, revenue: 195000, noi: 65, units: 184 },
+    { property: 'Oak Street Commons', occupancy: 97, revenue: 410000, noi: 74, units: 312 }
   ];
 
   const monthlyTrends = [
@@ -31,12 +34,16 @@ const PortfolioOverview = () => {
     { month: 'Dec', revenue: 2500, expenses: 1520, noi: 980 }
   ];
 
-  const assetAllocation = [
-    { type: 'Multifamily', value: 65, color: '#3B82F6' },
-    { type: 'Mixed Use', value: 20, color: '#10B981' },
-    { type: 'Retail', value: 10, color: '#F59E0B' },
-    { type: 'Office', value: 5, color: '#EF4444' }
+  const unitMixData = [
+    { type: 'Studio', percentage: 15, color: '#3B82F6' },
+    { type: '1BR', percentage: 35, color: '#10B981' },
+    { type: '2BR', percentage: 40, color: '#F59E0B' },
+    { type: '3BR', percentage: 10, color: '#EF4444' }
   ];
+
+  const handleAddProperty = () => {
+    navigate('/owner-onboarding');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,9 +52,9 @@ const PortfolioOverview = () => {
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-4">Portfolio Overview</h1>
+              <h1 className="text-4xl font-bold mb-4">Multifamily Portfolio Overview</h1>
               <p className="text-xl text-blue-100 max-w-3xl">
-                Complete portfolio performance summary with key metrics and property insights
+                Complete multifamily portfolio performance summary with key metrics and property insights
               </p>
               <div className="flex items-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
@@ -68,6 +75,13 @@ const PortfolioOverview = () => {
                 </div>
               </div>
             </div>
+            <Button
+              onClick={handleAddProperty}
+              className="bg-white text-blue-600 hover:bg-blue-50 flex items-center gap-2"
+            >
+              <Plus className="h-5 w-5" />
+              Add Property
+            </Button>
           </div>
         </div>
         
@@ -116,22 +130,22 @@ const PortfolioOverview = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Asset Allocation</CardTitle>
-                <CardDescription>Portfolio composition by property type</CardDescription>
+                <CardTitle>Unit Mix Distribution</CardTitle>
+                <CardDescription>Portfolio composition by unit type</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={assetAllocation}
+                      data={unitMixData}
                       cx="50%"
                       cy="50%"
                       outerRadius={100}
                       fill="#8884d8"
-                      dataKey="value"
-                      label={({ type, value }) => `${type}: ${value}%`}
+                      dataKey="percentage"
+                      label={({ type, percentage }) => `${type}: ${percentage}%`}
                     >
-                      {assetAllocation.map((entry, index) => (
+                      {unitMixData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -142,19 +156,26 @@ const PortfolioOverview = () => {
             </Card>
           </div>
 
-          {/* Property Performance Table */}
+          {/* Multifamily Property Performance Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Top Performing Properties</CardTitle>
-              <CardDescription>Key metrics for your best performing assets</CardDescription>
+              <CardTitle>Top Performing Multifamily Properties</CardTitle>
+              <CardDescription>Key metrics for your best performing multifamily assets</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {performanceData.map((property, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex-1">
-                      <h3 className="font-semibold">{property.property}</h3>
-                      <div className="flex items-center space-x-4 mt-2">
+                      <div className="flex items-center gap-3">
+                        <Building2 className="h-5 w-5 text-blue-600" />
+                        <h3 className="font-semibold">{property.property}</h3>
+                      </div>
+                      <div className="flex items-center space-x-6 mt-2">
+                        <div>
+                          <span className="text-sm text-gray-600">Units: </span>
+                          <span className="font-medium">{property.units}</span>
+                        </div>
                         <div>
                           <span className="text-sm text-gray-600">Occupancy: </span>
                           <span className="font-medium">{property.occupancy}%</span>
