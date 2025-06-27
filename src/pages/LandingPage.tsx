@@ -62,9 +62,9 @@ const LandingPage = () => {
       }));
     }, 2000);
     return () => clearInterval(interval);
-  }, [liveMetrics.length]);
+  }, []);
 
-  const IconComponent = liveMetrics[currentMetric].icon;
+  const currentIcon = liveMetrics[currentMetric].icon;
 
   return (
     <div className="min-h-screen bg-white">
@@ -210,7 +210,9 @@ const LandingPage = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center">
-                        <IconComponent className={`h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`} />
+                        {React.createElement(currentIcon, { 
+                          className: `h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin` 
+                        })}
                         <p className="text-sm font-bold text-blue-800">🔥 LIVE UPDATES</p>
                       </div>
                       <p className="text-3xl font-bold text-blue-900 animate-bounce">
@@ -617,7 +619,7 @@ const LandingPage = () => {
                 company: "Metro Holdings"
               }
             ].map((testimonial, index) => (
-              <div key={index} className="bg-gray-50 p-8 rounded-lg">
+              <div key={index} className="bg-white p-8 rounded-lg shadow-lg">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
