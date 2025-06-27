@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -59,15 +58,6 @@ const CompanyPage = () => {
               OPSIGHT was founded by someone who's been in your shoes. From managing thousands of units 
               to building a multi-million dollar portfolio, we understand what owners really need.
             </p>
-
-            {/* Add prominent $20M callout */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 max-w-md mx-auto mb-8">
-              <div className="text-center text-white">
-                <div className="text-4xl font-bold mb-2">$20M+</div>
-                <div className="text-lg">Assets Under Management</div>
-                <div className="text-sm text-blue-100 mt-1">Proven Track Record</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -78,12 +68,15 @@ const CompanyPage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
               <div className="lg:flex">
-                <div className="lg:w-2/5">
+                <div className="lg:w-2/5 flex flex-col">
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
-                    className="w-full h-64 lg:h-96 object-cover object-center"
+                    className="w-full h-64 lg:h-80 object-cover object-center mt-8"
                   />
+                  <div className="text-center py-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <p className="text-lg font-semibold text-gray-900">Proven Track Record</p>
+                  </div>
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
                   <div className="flex items-center mb-6">
