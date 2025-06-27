@@ -67,75 +67,78 @@ const CompanyPage = () => {
       <div className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
-              <div className="lg:flex">
-                <div className="lg:w-2/5">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden relative">
+              {/* Centered Profile Image */}
+              <div className="flex justify-center pt-8">
+                <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-xl">
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
-                    className="w-full h-64 lg:h-96 object-cover object-top"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
-                <div className="lg:w-3/5 p-8 lg:p-12">
-                  <div className="flex items-center mb-6">
-                    <User className="h-8 w-8 text-blue-600 mr-3" />
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Chief Executive Officer & Founder</h3>
-                      <p className="text-blue-600 font-semibold">Leading the Revolution in Property Intelligence</p>
+              </div>
+              
+              {/* Content Below Image */}
+              <div className="p-8 lg:p-12 text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <User className="h-8 w-8 text-blue-600 mr-3" />
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">Chief Executive Officer & Founder</h3>
+                    <p className="text-blue-600 font-semibold">Leading the Revolution in Property Intelligence</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                      <div className="flex items-center justify-center mb-3">
+                        <Building2 className="h-6 w-6 text-blue-600 mr-2" />
+                        <span className="font-bold text-2xl text-gray-900">5,000+</span>
+                      </div>
+                      <p className="text-gray-600">Units Managed Throughout Career</p>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                      <div className="flex items-center justify-center mb-3">
+                        <TrendingUp className="h-6 w-6 text-green-600 mr-2" />
+                        <span className="font-bold text-2xl text-gray-900">$20M</span>
+                      </div>
+                      <p className="text-gray-600">Assets Under Management</p>
                     </div>
                   </div>
                   
-                  <div className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="bg-white p-6 rounded-xl shadow-md">
-                        <div className="flex items-center mb-3">
-                          <Building2 className="h-6 w-6 text-blue-600 mr-2" />
-                          <span className="font-bold text-2xl text-gray-900">5,000+</span>
-                        </div>
-                        <p className="text-gray-600">Units Managed Throughout Career</p>
-                      </div>
-                      
-                      <div className="bg-white p-6 rounded-xl shadow-md">
-                        <div className="flex items-center mb-3">
-                          <TrendingUp className="h-6 w-6 text-green-600 mr-2" />
-                          <span className="font-bold text-2xl text-gray-900">$20M</span>
-                        </div>
-                        <p className="text-gray-600">Assets Under Management</p>
+                  <div className="space-y-4 max-w-2xl mx-auto">
+                    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+                      <Briefcase className="h-6 w-6 text-purple-600 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-1">From Ground Up Experience</h4>
+                        <p className="text-gray-600">Worked from porter to regional property manager, understanding every level of operations</p>
                       </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
-                        <Briefcase className="h-6 w-6 text-purple-600 mr-3 mt-1 flex-shrink-0" />
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-1">From Ground Up Experience</h4>
-                          <p className="text-gray-600">Worked from porter to regional property manager, understanding every level of operations</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
-                        <Mic className="h-6 w-6 text-orange-600 mr-3 mt-1 flex-shrink-0" />
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-1">Industry Recognition</h4>
-                          <p className="text-gray-600">Featured on multiple podcasts and interviews by top successful investors in the Dallas-Fort Worth market</p>
-                        </div>
+                    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+                      <Mic className="h-6 w-6 text-orange-600 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-1">Industry Recognition</h4>
+                        <p className="text-gray-600">Featured on multiple podcasts and interviews by top successful investors in the Dallas-Fort Worth market</p>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-xl text-white">
-                      <blockquote className="text-lg italic mb-4">
-                        "Having managed thousands of units and built my own portfolio, I've experienced firsthand 
-                        the frustration of being left in the dark by traditional property management systems. 
-                        OPSIGHT was born from the need to put real power back in the hands of property owners."
-                      </blockquote>
-                      <div className="flex items-center">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                          ))}
-                        </div>
-                        <span className="ml-2 text-sm">Trusted by Industry Leaders</span>
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-xl text-white max-w-2xl mx-auto">
+                    <blockquote className="text-lg italic mb-4">
+                      "Having managed thousands of units and built my own portfolio, I've experienced firsthand 
+                      the frustration of being left in the dark by traditional property management systems. 
+                      OPSIGHT was born from the need to put real power back in the hands of property owners."
+                    </blockquote>
+                    <div className="flex items-center justify-center">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                        ))}
                       </div>
+                      <span className="ml-2 text-sm">Trusted by Industry Leaders</span>
                     </div>
                   </div>
                 </div>
