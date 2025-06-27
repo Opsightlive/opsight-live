@@ -68,17 +68,12 @@ const CompanyPage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
               <div className="lg:flex">
-                <div className="lg:w-2/5 flex flex-col">
+                <div className="lg:w-2/5">
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
                     className="w-full h-64 lg:h-96 object-cover object-top"
                   />
-                  <div className="text-center py-6 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <p className="text-lg font-semibold text-gray-900 mb-2">Proven Track Record</p>
-                    <div className="text-2xl font-bold text-blue-600">$20M+</div>
-                    <p className="text-sm text-gray-600">Assets Under Management</p>
-                  </div>
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
                   <div className="flex items-center mb-6">
@@ -105,6 +100,7 @@ const CompanyPage = () => {
                           <span className="font-bold text-3xl text-green-600">$20M+</span>
                         </div>
                         <p className="text-gray-600 font-semibold">Assets Under Management</p>
+                        <p className="text-sm text-green-600 mt-1">Proven Track Record</p>
                       </div>
                     </div>
                     
