@@ -1,10 +1,25 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-import React, { createContext, useContext } from 'react';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  company?: string;
+  phone?: string;
+  role?: string;
+  userType?: 'client' | 'company';
+  avatar?: string;
+  bio?: string;
+  subscription?: {
+    status: 'trial' | 'active' | 'cancelled' | 'expired';
+    trialEnd?: string;
+    plan?: string;
+    tier?: 'starter' | 'professional' | 'enterprise';
+  };
+}
 
 interface AuthContextType {
-  user: any;
-  profile: any;
+  user: User | null;
   login: (email: string, password: string, isCompanyLogin?: boolean) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   completeRegistration: (userData: any) => Promise<boolean>;
@@ -16,46 +31,142 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const auth = useSupabaseAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Compatibility layer for existing components
+  // Derived property for company user check
+  const isCompanyUser = user?.userType === 'company';
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const savedUser = localStorage.getItem('opsight_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    setIsLoading(false);
+  }, []);
+
   const login = async (email: string, password: string, isCompanyLogin = false): Promise<boolean> => {
-    const { error } = await auth.signIn(email, password);
-    return !error;
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock authentication - in real app, this would be an API call
+    if (email && password.length >= 1) { // Accept any password with at least 1 character
+      let mockUser: User;
+      
+      if (isCompanyLogin) {
+        // Company login - check for specific company email
+        if (email === 'opsightlive@gmail.com') {
+          mockUser = {
+            id: 'company_1',
+            email,
+            name: 'OPSIGHT Admin',
+            company: 'OPSIGHT',
+            role: 'Company Admin',
+            userType: 'company'
+          };
+        } else {
+          // For demo purposes, allow any email for company login
+          mockUser = {
+            id: 'company_demo',
+            email,
+            name: 'Company Admin',
+            company: 'Demo Company',
+            role: 'Company Admin',
+            userType: 'company'
+          };
+        }
+      } else {
+        // Regular client login - accept any valid email/password combination
+        mockUser = {
+          id: 'client_' + Date.now(),
+          email,
+          name: email.split('@')[0],
+          company: 'Demo Company',
+          role: 'Asset Manager',
+          userType: 'client'
+        };
+      }
+      
+      setUser(mockUser);
+      localStorage.setItem('opsight_user', JSON.stringify(mockUser));
+      setIsLoading(false);
+      return true;
+    }
+    
+    setIsLoading(false);
+    return false;
   };
 
   const register = async (email: string, password: string): Promise<boolean> => {
-    const { error } = await auth.signUp(email, password);
-    return !error;
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    if (email && password.length >= 6) {
+      const mockUser = {
+        id: 'client_' + Date.now(),
+        email,
+        name: email.split('@')[0],
+        userType: 'client' as const
+      };
+      setUser(mockUser);
+      localStorage.setItem('opsight_user', JSON.stringify(mockUser));
+      setIsLoading(false);
+      return true;
+    }
+    
+    setIsLoading(false);
+    return false;
   };
 
   const completeRegistration = async (userData: any): Promise<boolean> => {
-    const { error } = await auth.updateProfile(userData);
-    return !error;
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call for completing registration
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const registrationData = JSON.parse(localStorage.getItem('pendingRegistration') || '{}');
+      
+      const completeUser: User = {
+        id: 'client_' + Date.now(),
+        email: registrationData.email || userData.email,
+        name: userData.name || registrationData.email?.split('@')[0] || 'User',
+        company: userData.company,
+        phone: userData.phone,
+        role: userData.role || 'Asset Manager',
+        userType: 'client'
+      };
+      
+      setUser(completeUser);
+      localStorage.setItem('opsight_user', JSON.stringify(completeUser));
+      localStorage.removeItem('pendingRegistration');
+      
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error('Registration completion failed:', error);
+      setIsLoading(false);
+      return false;
+    }
   };
 
-  const logout = async () => {
-    await auth.signOut();
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('opsight_user');
+    localStorage.removeItem('pendingRegistration');
   };
 
   const value = {
-    user: auth.user ? {
-      id: auth.user.id,
-      email: auth.user.email,
-      name: auth.profile?.full_name || auth.user.email?.split('@')[0],
-      company: auth.profile?.company,
-      phone: auth.profile?.phone,
-      role: auth.profile?.role,
-      userType: auth.profile?.role === 'admin' ? 'company' : 'client',
-      avatar: auth.profile?.avatar_url
-    } : null,
-    profile: auth.profile,
+    user,
     login,
     register,
     completeRegistration,
     logout,
-    isLoading: auth.isLoading,
-    isCompanyUser: auth.isCompanyUser
+    isLoading,
+    isCompanyUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
