@@ -230,7 +230,8 @@ const AlertDeliveryLogs = () => {
                     {log.status}
                   </Badge>
                 </div>
-              </CardHeader>
+              </div>
+            </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
