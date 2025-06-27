@@ -7,7 +7,7 @@ import SubscriptionManagement from '@/components/subscription/SubscriptionManage
 const SubscriptionSettings = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
           <div>
