@@ -160,7 +160,7 @@ const LandingPage = () => {
               {/* Trust Badge */}
               <div className="flex items-center">
                 <Shield className="h-6 w-6 text-blue-600 mr-2" />
-                <span className="text-blue-600 font-semibold">Trusted by Leading Real Estate Professionals</span>
+                <span className="text-blue-600 font-bold text-lg">Trusted by Leading Real Estate Professionals</span>
               </div>
               
               {/* Main Headline */}
@@ -217,13 +217,13 @@ const LandingPage = () => {
             </div>
             
             {/* Enhanced Live Portfolio Dashboard */}
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 relative overflow-hidden">
+            <div className="relative mt-8 lg:mt-0">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 relative overflow-hidden">
                 {/* Animated background gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-indigo-50/20 pointer-events-none"></div>
                 
                 <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-6">
                     <h3 className="font-bold text-gray-900 text-xl">Live Portfolio Dashboard</h3>
                     <div className="flex items-center space-x-2">
                       <div className="flex space-x-1">
@@ -236,14 +236,14 @@ const LandingPage = () => {
                   </div>
                   
                   {/* Enhanced Live Metrics Grid */}
-                  <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
                     {liveMetrics.map((metric, index) => {
                       const IconComponent = metric.icon;
                       const isActive = currentMetric === index;
                       return (
                         <div 
                           key={metric.label}
-                          className={`p-5 rounded-xl transition-all duration-700 transform ${
+                          className={`p-4 rounded-xl transition-all duration-700 transform ${
                             isActive 
                               ? `${metric.bgColor} ${metric.borderColor} border-2 scale-105 shadow-lg` 
                               : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
@@ -252,8 +252,8 @@ const LandingPage = () => {
                             transform: isActive ? 'scale(1.05)' : 'scale(1)',
                           }}
                         >
-                          <div className="flex items-center justify-between mb-3">
-                            <IconComponent className={`h-6 w-6 ${isActive ? metric.color : 'text-gray-400'} transition-colors duration-300`} />
+                          <div className="flex items-center justify-between mb-2">
+                            <IconComponent className={`h-5 w-5 ${isActive ? metric.color : 'text-gray-400'} transition-colors duration-300`} />
                             <span className={`text-xs font-bold px-2 py-1 rounded-full transition-all duration-300 ${
                               isActive 
                                 ? 'bg-green-100 text-green-700 animate-pulse' 
@@ -262,9 +262,9 @@ const LandingPage = () => {
                               {metric.change}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-600 mb-2">{metric.label}</p>
+                          <p className="text-xs text-gray-600 mb-1">{metric.label}</p>
                           <p className={`font-bold transition-all duration-300 ${
-                            isActive ? `${metric.color} text-xl` : 'text-gray-900 text-lg'
+                            isActive ? `${metric.color} text-lg` : 'text-gray-900 text-base'
                           }`}>
                             {metric.value}
                           </p>
@@ -277,11 +277,11 @@ const LandingPage = () => {
                   </div>
 
                   {/* Enhanced Action Items */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border border-red-200 shadow-sm">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border border-red-200 shadow-sm">
                       <div className="flex items-center">
                         <div className="bg-red-500 p-2 rounded-lg mr-3">
-                          <AlertTriangle className="h-5 w-5 text-white" />
+                          <AlertTriangle className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <span className="text-sm font-bold text-red-800">3 Predictive Alerts</span>
@@ -293,10 +293,10 @@ const LandingPage = () => {
                       </Button>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200 shadow-sm">
+                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200 shadow-sm">
                       <div className="flex items-center">
                         <div className="bg-green-500 p-2 rounded-lg mr-3">
-                          <TrendingUp className="h-5 w-5 text-white" />
+                          <TrendingUp className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <span className="text-sm font-bold text-green-800">NOI Up 18%</span>
@@ -308,10 +308,10 @@ const LandingPage = () => {
                       </Button>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm">
+                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm">
                       <div className="flex items-center">
                         <div className="bg-blue-500 p-2 rounded-lg mr-3">
-                          <Bot className="h-5 w-5 text-white" />
+                          <Bot className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <span className="text-sm font-bold text-blue-800">AI Recommendations</span>
@@ -325,7 +325,7 @@ const LandingPage = () => {
                   </div>
 
                   {/* Enhanced Live Update Indicator */}
-                  <div className="flex items-center justify-center mt-6 pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-100">
                     <div className="flex items-center text-xs text-gray-500">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                       <span className="animate-pulse">Live updates every 2.5 seconds</span>
