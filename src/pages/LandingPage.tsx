@@ -21,26 +21,46 @@ import {
   FileText,
   User,
   Briefcase,
-  Mic
+  Mic,
+  Zap,
+  Target,
+  Eye,
+  Clock,
+  DollarSign
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentMetric, setCurrentMetric] = useState(0);
+  const [liveStats, setLiveStats] = useState({
+    properties: 2847,
+    issues: 156,
+    savings: 1200000,
+    users: 1203
+  });
 
   // Live metrics animation
   const liveMetrics = [
-    { label: 'Properties Monitored', value: '2,847', change: '+23' },
-    { label: 'Issues Predicted', value: '156', change: '+12' },
-    { label: 'Cost Savings', value: '$1.2M', change: '+$45K' },
-    { label: 'Active Users', value: '1,203', change: '+8' }
+    { label: 'Properties Monitored', value: liveStats.properties.toLocaleString(), change: '+23', icon: Building2, color: 'text-blue-600' },
+    { label: 'Issues Predicted', value: liveStats.issues.toString(), change: '+12', icon: AlertTriangle, color: 'text-red-600' },
+    { label: 'Cost Savings', value: `$${(liveStats.savings / 1000000).toFixed(1)}M`, change: '+$45K', icon: DollarSign, color: 'text-green-600' },
+    { label: 'Active Users', value: liveStats.users.toLocaleString(), change: '+8', icon: Users, color: 'text-purple-600' }
   ];
 
+  // Live counter animation
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMetric((prev) => (prev + 1) % liveMetrics.length);
-    }, 3000);
+      
+      // Simulate live updates
+      setLiveStats(prev => ({
+        properties: prev.properties + Math.floor(Math.random() * 3),
+        issues: prev.issues + Math.floor(Math.random() * 2),
+        savings: prev.savings + Math.floor(Math.random() * 50000),
+        users: prev.users + Math.floor(Math.random() * 2)
+      }));
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -65,12 +85,12 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
-              <a href="#company" className="text-gray-600 hover:text-gray-900">Company</a>
+              <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
               <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
-                <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 animate-pulse">Try Free</Button>
               </Link>
             </div>
 
@@ -93,7 +113,7 @@ const LandingPage = () => {
                 <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
-                <a href="#company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</a>
+                <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
                 <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
@@ -114,22 +134,24 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center mb-6">
-                <Award className="h-6 w-6 text-blue-600 mr-2" />
-                <span className="text-blue-600 font-semibold">Trusted by Leading Real Estate Professionals</span>
+                <Award className="h-6 w-6 text-blue-600 mr-2 animate-bounce" />
+                <span className="text-blue-600 font-semibold animate-pulse">🔥 DISRUPTING PROPERTY MANAGEMENT 🔥</span>
               </div>
               
-              {/* Powerful Quote Section */}
-              <div className="bg-white p-6 rounded-lg shadow-lg mb-8 border-l-4 border-blue-600">
-                <blockquote className="text-lg text-gray-700 italic mb-4">
-                  "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
-                  Legacy tools manage units. OPSIGHT manages outcomes - We don't just show you data, we enforce results."
-                </blockquote>
-                <p className="text-sm text-gray-600">- The OPSIGHT Vision</p>
+              {/* Powerful Quote Section - Made More Prominent */}
+              <div className="bg-gradient-to-r from-red-500 to-orange-500 p-8 rounded-2xl shadow-2xl mb-8 border-4 border-yellow-400 animate-pulse">
+                <div className="bg-black/20 p-6 rounded-xl">
+                  <blockquote className="text-2xl text-white font-bold mb-4 leading-tight">
+                    "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
+                    Legacy tools manage units. OPSIGHT manages outcomes - We don't just show you data, we enforce results."
+                  </blockquote>
+                  <p className="text-yellow-200 font-semibold">- The OPSIGHT Revolution</p>
+                </div>
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-                Transform Your 
-                <span className="text-blue-600 block">Portfolio Performance</span>
+                🚀 TRANSFORM Your 
+                <span className="text-blue-600 block animate-bounce">Portfolio Performance</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Property management software wasn't built for owners. OPSIGHT flips the power to you - 
@@ -138,83 +160,111 @@ const LandingPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link to="/demo">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
-                    Get Your Demo
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-4 animate-pulse shadow-lg">
+                    🎯 GET YOUR DEMO NOW
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2">
-                    Start Free Trial
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white animate-bounce">
+                    ⚡ START FREE TRIAL
                   </Button>
                 </Link>
               </div>
 
               <div className="flex items-center space-x-6 text-sm text-gray-500">
-                <div className="flex items-center">
+                <div className="flex items-center animate-pulse">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  No credit card required
+                  💳 No credit card required
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center animate-pulse">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  Setup in minutes
+                  ⚡ Setup in minutes
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center animate-pulse">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  Cancel anytime
+                  🛡️ Cancel anytime
                 </div>
               </div>
             </div>
             
             <div className="relative">
-              {/* Live Metrics Dashboard */}
-              <div className="bg-white rounded-lg shadow-2xl p-6 border">
+              {/* Live Metrics Dashboard with More Energy */}
+              <div className="bg-white rounded-lg shadow-2xl p-6 border-4 border-blue-200 animate-pulse">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900">Live Portfolio Dashboard</h3>
+                  <h3 className="font-semibold text-gray-900 flex items-center">
+                    <Zap className="h-5 w-5 text-yellow-500 mr-2 animate-bounce" />
+                    🔴 LIVE Portfolio Dashboard
+                  </h3>
                   <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   </div>
                 </div>
                 
-                {/* Animated Live Metrics */}
-                <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+                {/* Animated Live Metrics with More Energy */}
+                <div className="mb-4 p-4 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl border-2 border-green-300 shadow-lg animate-pulse">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-800">Live Updates</p>
-                      <p className="text-xl font-bold text-blue-900">
+                      <div className="flex items-center">
+                        <liveMetrics[currentMetric].icon className={`h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`} />
+                        <p className="text-sm font-bold text-blue-800">🔥 LIVE UPDATES</p>
+                      </div>
+                      <p className="text-3xl font-bold text-blue-900 animate-bounce">
                         {liveMetrics[currentMetric].value}
                       </p>
                       <p className="text-xs text-blue-600">{liveMetrics[currentMetric].label}</p>
                     </div>
-                    <div className="text-green-600 font-semibold">
+                    <div className="text-green-600 font-bold text-lg animate-pulse">
                       {liveMetrics[currentMetric].change}
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg animate-pulse">
+                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg animate-pulse border-2 border-red-200">
                     <div className="flex items-center">
-                      <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                      <span className="text-sm font-medium">3 Predictive Alerts</span>
+                      <AlertTriangle className="h-5 w-5 text-red-500 mr-2 animate-bounce" />
+                      <span className="text-sm font-medium">🚨 3 Predictive Alerts</span>
                     </div>
-                    <Button size="sm" variant="outline">Review</Button>
+                    <Button size="sm" variant="outline" className="animate-pulse">Review</Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg animate-pulse border-2 border-green-200">
                     <div className="flex items-center">
-                      <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
-                      <span className="text-sm font-medium">NOI Up 18%</span>
+                      <TrendingUp className="h-5 w-5 text-green-500 mr-2 animate-bounce" />
+                      <span className="text-sm font-medium">📈 NOI Up 18%</span>
                     </div>
-                    <Button size="sm" variant="outline">View Report</Button>
+                    <Button size="sm" variant="outline" className="animate-pulse">View Report</Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg animate-pulse border-2 border-blue-200">
                     <div className="flex items-center">
-                      <Bot className="h-5 w-5 text-blue-500 mr-2" />
-                      <span className="text-sm font-medium">AI Recommendations</span>
+                      <Bot className="h-5 w-5 text-blue-500 mr-2 animate-spin" />
+                      <span className="text-sm font-medium">🤖 AI Recommendations</span>
                     </div>
-                    <Button size="sm" variant="outline">See All</Button>
+                    <Button size="sm" variant="outline" className="animate-pulse">See All</Button>
+                  </div>
+                </div>
+
+                {/* Live Activity Feed */}
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
+                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <Clock className="h-4 w-4 mr-2 animate-spin" />
+                    Live Activity Feed
+                  </h4>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center text-green-600 animate-pulse">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></div>
+                      New property added to monitoring
+                    </div>
+                    <div className="flex items-center text-blue-600 animate-pulse">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-ping"></div>
+                      KPI threshold updated automatically
+                    </div>
+                    <div className="flex items-center text-orange-600 animate-pulse">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-ping"></div>
+                      Predictive alert triggered
+                    </div>
                   </div>
                 </div>
               </div>
