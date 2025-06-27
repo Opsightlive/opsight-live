@@ -209,7 +209,9 @@ const LandingPage = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center">
-                        <liveMetrics[currentMetric].icon className={`h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`} />
+                        {React.createElement(liveMetrics[currentMetric].icon, { 
+                          className: `h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`
+                        })}
                         <p className="text-sm font-bold text-blue-800">🔥 LIVE UPDATES</p>
                       </div>
                       <p className="text-3xl font-bold text-blue-900 animate-bounce">
