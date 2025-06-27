@@ -122,16 +122,13 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
       {/* Highlight for current element */}
       {highlightElement && (
         <div
-          className="fixed z-50 pointer-events-none"
+          className="fixed z-50 pointer-events-none border-4 border-blue-500 rounded-lg animate-pulse"
           style={{
             top: highlightElement.offsetTop - 4,
             left: highlightElement.offsetLeft - 4,
             width: highlightElement.offsetWidth + 8,
             height: highlightElement.offsetHeight + 8,
-            border: '3px solid #3B82F6',
-            borderRadius: '8px',
             boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
-            animation: 'pulse 2s infinite'
           }}
         />
       )}
@@ -203,13 +200,6 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
           </div>
         </CardContent>
       </Card>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
-        }
-      `}</style>
     </>
   );
 };
