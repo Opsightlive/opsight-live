@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, Building2, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Building2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 
@@ -109,7 +110,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
       navigate('/dashboard');
     } else {
       if (isCompanyLogin) {
-        setError('Invalid company credentials. Use opsightlive@gmail.com');
+        setError('Invalid company credentials');
       } else {
         setError('Invalid email or password');
       }
@@ -210,15 +211,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               </span>
               <Building2 className={`h-4 w-4 transition-colors duration-200 ${isCompanyLogin ? 'text-blue-600' : 'text-gray-400'}`} />
             </div>
-
-            {isCompanyLogin && (
-              <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
-                <p className="text-blue-800 text-sm flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong> Use opsightlive@gmail.com
-                </p>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="group">
@@ -384,15 +376,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               </span>
               <Building2 className={`h-4 w-4 transition-colors duration-200 ${isCompanyLogin ? 'text-blue-600' : 'text-gray-400'}`} />
             </div>
-
-            {isCompanyLogin && (
-              <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
-                <p className="text-blue-800 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong> Use opsightlive@gmail.com
-                </p>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="group">
