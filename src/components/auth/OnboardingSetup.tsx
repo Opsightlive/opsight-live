@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Mail, Database, User, Plus, X, CreditCard, Check, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { supabaseService } from '@/services/supabaseService';
+import { toast } from 'sonner';
 
 interface OnboardingSetupProps {
   onComplete: () => void;
@@ -35,6 +36,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [properties, setProperties] = useState<Property[]>([
     { name: '', units: '', address: '', tier: 'basic', pmSoftware: '', paymentMethod: 'card' }
   ]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const pricingTiers = [
     { 
@@ -100,14 +102,12 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
     
     let discount = 0;
     
-    // 5% discount for ACH payments
     achProperties.forEach(property => {
       const units = parseInt(property.units || '0');
       const tierPrice = pricingTiers.find(t => t.id === property.tier)?.price || 3;
       discount += (units * tierPrice) * 0.05;
     });
     
-    // 3% discount for card payments
     cardProperties.forEach(property => {
       const units = parseInt(property.units || '0');
       const tierPrice = pricingTiers.find(t => t.id === property.tier)?.price || 3;
@@ -138,25 +138,54 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
     }).format(amount);
   };
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
     if (!passwordsMatch) {
+      toast.error('Passwords do not match');
       return;
     }
+
+    if (!companyName || !role || !email || !password) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (properties.some(p => !p.name || !p.units || !p.address)) {
+      toast.error('Please complete all property information');
+      return;
+    }
+
+    setIsSaving(true);
     
-    // Store the setup data
-    const setupData = {
-      companyName,
-      role,
-      email,
-      password,
-      dataSource,
-      properties,
-      totalCost: calculateTotalCost(),
-      discount: calculateDiscount()
-    };
-    
-    localStorage.setItem('onboardingData', JSON.stringify(setupData));
-    onComplete();
+    try {
+      // Store the setup data in localStorage for the payment step
+      const setupData = {
+        companyName,
+        role,
+        email,
+        password,
+        dataSource,
+        properties: properties.map(prop => ({
+          ...prop,
+          monthlyCost: (() => {
+            const units = parseInt(prop.units || '0');
+            const tierPrice = pricingTiers.find(t => t.id === prop.tier)?.price || 3;
+            return units * tierPrice;
+          })()
+        })),
+        totalCost: calculateTotalCost(),
+        discount: calculateDiscount()
+      };
+      
+      localStorage.setItem('onboardingData', JSON.stringify(setupData));
+      
+      toast.success('Setup data saved successfully!');
+      onComplete();
+    } catch (error) {
+      console.error('Error saving setup data:', error);
+      toast.error('Failed to save setup data');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const totalCost = calculateTotalCost();
@@ -166,7 +195,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="w-full max-w-7xl">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4">
             <img 
@@ -180,9 +208,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           <h2 className="text-2xl font-semibold text-gray-800">Let's get you set up.</h2>
         </div>
 
-        {/* Setup Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Company & Role Card */}
           <Card className="border-2">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -199,12 +225,13 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Jordan Equity Partners"
                   className="mt-1"
+                  required
                 />
               </div>
               
               <div>
                 <Label htmlFor="role" className="text-sm font-medium">Role</Label>
-                <Select value={role} onValueChange={setRole}>
+                <Select value={role} onValueChange={setRole} required>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="GP" />
                   </SelectTrigger>
@@ -219,7 +246,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             </CardContent>
           </Card>
 
-          {/* Login Setup Card */}
           <Card className="border-2">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -237,6 +263,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jordan@example.co"
                   className="mt-1"
+                  required
                 />
               </div>
               
@@ -250,6 +277,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     onChange={(e) => handlePasswordChange(e.target.value)}
                     placeholder="••••••••••"
                     className="pr-10"
+                    required
+                    minLength={6}
                   />
                   <button
                     type="button"
@@ -271,6 +300,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                     placeholder="••••••••••"
                     className={`pr-10 ${!passwordsMatch && confirmPassword ? 'border-red-500' : ''}`}
+                    required
+                    minLength={6}
                   />
                   <button
                     type="button"
@@ -291,7 +322,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </Card>
         </div>
 
-        {/* Properties Section */}
         <Card className="border-2 mb-6">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
@@ -330,6 +360,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                       onChange={(e) => updateProperty(index, { name: e.target.value })}
                       placeholder="Greenview Apts"
                       className="mt-1"
+                      required
                     />
                   </div>
                   
@@ -341,6 +372,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                       onChange={(e) => updateProperty(index, { units: e.target.value })}
                       placeholder="100"
                       className="mt-1"
+                      required
                     />
                   </div>
                   
@@ -351,6 +383,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                       onChange={(e) => updateProperty(index, { address: e.target.value })}
                       placeholder="123 Main St, City, State"
                       className="mt-1"
+                      required
                     />
                   </div>
                 </div>
@@ -402,7 +435,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   </div>
                 </div>
 
-                {/* Tier Selection */}
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Pricing Tier</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -443,7 +475,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </CardContent>
         </Card>
 
-        {/* Data Source Setup Card */}
         <Card className="border-2 mb-6">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -467,7 +498,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </CardContent>
         </Card>
 
-        {/* Pricing Summary */}
         {totalCost > 0 && (
           <Card className="border-2 border-blue-200 bg-blue-50 mb-6">
             <CardContent className="p-6">
@@ -492,14 +522,20 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </Card>
         )}
 
-        {/* Get Started Button */}
         <div className="text-center">
           <Button 
             onClick={handleGetStarted}
-            disabled={!passwordsMatch || !password || !confirmPassword}
+            disabled={!passwordsMatch || !password || !confirmPassword || isSaving}
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Continue to Payment
+            {isSaving ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Saving Setup...
+              </div>
+            ) : (
+              'Continue to Payment'
+            )}
           </Button>
         </div>
       </div>

@@ -73,6 +73,57 @@ export type Database = {
           },
         ]
       }
+      kpi_updates: {
+        Row: {
+          alert_level: string | null
+          change_percentage: number | null
+          created_at: string | null
+          current_value: number | null
+          id: string
+          kpi_type: string
+          previous_value: number | null
+          property_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_level?: string | null
+          change_percentage?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          kpi_type: string
+          previous_value?: number | null
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_level?: string | null
+          change_percentage?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          kpi_type?: string
+          previous_value?: number | null
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_updates_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "user_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kpi_updates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kpis: {
         Row: {
           created_at: string | null
@@ -113,6 +164,56 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_data: {
+        Row: {
+          company_name: string | null
+          created_at: string | null
+          data_source: string | null
+          discount: number | null
+          id: string
+          payment_completed: boolean | null
+          role: string | null
+          setup_completed: boolean | null
+          total_cost: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          discount?: number | null
+          id?: string
+          payment_completed?: boolean | null
+          role?: string | null
+          setup_completed?: boolean | null
+          total_cost?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          discount?: number | null
+          id?: string
+          payment_completed?: boolean | null
+          role?: string | null
+          setup_completed?: boolean | null
+          total_cost?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -212,6 +313,168 @@ export type Database = {
             columns: ["property_manager_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_activity_logs: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          success: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string | null
+          dashboard_settings: Json | null
+          id: string
+          preferences: Json | null
+          saved_filters: Json | null
+          saved_views: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dashboard_settings?: Json | null
+          id?: string
+          preferences?: Json | null
+          saved_filters?: Json | null
+          saved_views?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dashboard_settings?: Json | null
+          id?: string
+          preferences?: Json | null
+          saved_filters?: Json | null
+          saved_views?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          company_name: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_properties: {
+        Row: {
+          address: string
+          created_at: string | null
+          id: string
+          monthly_cost: number | null
+          name: string
+          payment_method: string | null
+          pm_software: string | null
+          tier: string
+          units: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string | null
+          id?: string
+          monthly_cost?: number | null
+          name: string
+          payment_method?: string | null
+          pm_software?: string | null
+          tier: string
+          units: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string | null
+          id?: string
+          monthly_cost?: number | null
+          name?: string
+          payment_method?: string | null
+          pm_software?: string | null
+          tier?: string
+          units?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_properties_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]

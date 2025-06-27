@@ -20,7 +20,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState('register');
-  const { register, isLoading } = useAuth();
+  const { register, completeRegistration, isLoading } = useAuth();
   const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +37,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       return;
     }
 
-    // Store the email and password for later use
+    // Store the credentials for later use after onboarding
     localStorage.setItem('pendingRegistration', JSON.stringify({
       email,
       password
@@ -58,15 +58,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       const { email, password } = JSON.parse(pendingRegistration);
       
       try {
+        // Register the user with Supabase
         const success = await register(email, password);
         
         if (success) {
+          // Clean up pending registration
           localStorage.removeItem('pendingRegistration');
+          
+          // Complete registration will be handled by the auth context
+          // after the user is successfully created and authenticated
         } else {
           setError('Registration failed. Please try again.');
           setCurrentStep('register');
         }
       } catch (err) {
+        console.error('Registration error:', err);
         setError('Registration failed. Please try again.');
         setCurrentStep('register');
       }
