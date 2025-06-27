@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -45,18 +44,24 @@ const Sidebar = () => {
       ]
     },
     {
-      title: 'Intelligence',
+      title: 'Alerts & Monitoring',
       items: [
         { name: 'Red Flag Alerts', href: '/red-flag-alerts', icon: AlertTriangle },
         { name: 'Predictive Signals', href: '/predictive', icon: TrendingUp },
+        { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
+      ]
+    },
+    {
+      title: 'AI Tools',
+      items: [
         { name: 'AI Intelligence', href: '/ai-tools', icon: Bot },
         { name: 'AI Reader', href: '/ai-reader', icon: FileText },
+        { name: 'Deal Vetting Toolkit', href: '/deal-vetting', icon: Target },
       ]
     },
     {
       title: 'Communications',
       items: [
-        { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
         { name: 'Email Automation', href: '/email-automation', icon: Mail },
         { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare },
         { name: 'PM Engagement Score', href: '/pm-engagement', icon: Users },
@@ -68,7 +73,6 @@ const Sidebar = () => {
         { name: 'Data Integration', href: '/data-integration', icon: Database },
         { name: 'Integration Status', href: '/integration-status', icon: Activity },
         { name: 'Data Vault', href: '/data-vault', icon: Shield },
-        { name: 'Deal Vetting Toolkit', href: '/deal-vetting', icon: Target },
       ]
     },
     {
