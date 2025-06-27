@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -19,12 +18,31 @@ import {
   Play,
   Check,
   CreditCard,
-  FileText
+  FileText,
+  User,
+  Briefcase,
+  Mic
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentMetric, setCurrentMetric] = useState(0);
+
+  // Live metrics animation
+  const liveMetrics = [
+    { label: 'Properties Monitored', value: '2,847', change: '+23' },
+    { label: 'Issues Predicted', value: '156', change: '+12' },
+    { label: 'Cost Savings', value: '$1.2M', change: '+$45K' },
+    { label: 'Active Users', value: '1,203', change: '+8' }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMetric((prev) => (prev + 1) % liveMetrics.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -47,6 +65,7 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
+              <a href="#company" className="text-gray-600 hover:text-gray-900">Company</a>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
               <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
@@ -74,6 +93,7 @@ const LandingPage = () => {
                 <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
+                <a href="#company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</a>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
                 <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
@@ -97,13 +117,23 @@ const LandingPage = () => {
                 <Award className="h-6 w-6 text-blue-600 mr-2" />
                 <span className="text-blue-600 font-semibold">Trusted by Leading Real Estate Professionals</span>
               </div>
+              
+              {/* Powerful Quote Section */}
+              <div className="bg-white p-6 rounded-lg shadow-lg mb-8 border-l-4 border-blue-600">
+                <blockquote className="text-lg text-gray-700 italic mb-4">
+                  "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
+                  Legacy tools manage units. OPSIGHT manages outcomes - We don't just show you data, we enforce results."
+                </blockquote>
+                <p className="text-sm text-gray-600">- The OPSIGHT Vision</p>
+              </div>
+
               <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
                 Transform Your 
                 <span className="text-blue-600 block">Portfolio Performance</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                The world's most advanced real estate intelligence platform. Automate operations, 
-                predict issues before they happen, and maximize returns with AI-powered insights.
+                Property management software wasn't built for owners. OPSIGHT flips the power to you - 
+                Real-time red flags, KPI enforcement, and full operational visibility. Built for ownership, not operations.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -135,18 +165,37 @@ const LandingPage = () => {
                 </div>
               </div>
             </div>
+            
             <div className="relative">
+              {/* Live Metrics Dashboard */}
               <div className="bg-white rounded-lg shadow-2xl p-6 border">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900">Live Portfolio Dashboard</h3>
                   <div className="flex space-x-1">
                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   </div>
                 </div>
+                
+                {/* Animated Live Metrics */}
+                <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">Live Updates</p>
+                      <p className="text-xl font-bold text-blue-900">
+                        {liveMetrics[currentMetric].value}
+                      </p>
+                      <p className="text-xs text-blue-600">{liveMetrics[currentMetric].label}</p>
+                    </div>
+                    <div className="text-green-600 font-semibold">
+                      {liveMetrics[currentMetric].change}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg animate-pulse">
                     <div className="flex items-center">
                       <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
                       <span className="text-sm font-medium">3 Predictive Alerts</span>
@@ -174,37 +223,68 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Quick Demo Video Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">See OPSIGHT in Action</h2>
-            <p className="text-lg text-gray-600">Watch this 2-minute demo to see how OPSIGHT transforms portfolio management</p>
+      {/* Company Section */}
+      <div id="company" className="py-16 lg:py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Meet Our Leadership
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Built by property management professionals who understand the challenges you face every day.
+            </p>
           </div>
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-              <div className="text-center">
-                <div className="bg-blue-600 rounded-full p-6 mx-auto mb-4 hover:bg-blue-700 transition-colors cursor-pointer">
-                  <Play className="h-12 w-12 text-white" />
+
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              <div className="md:flex">
+                <div className="md:w-1/3">
+                  <img 
+                    src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
+                    alt="CEO & Founder" 
+                    className="w-full h-64 md:h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Quick Platform Demo</h3>
-                <p className="text-gray-600">See real-time analytics and predictive insights</p>
+                <div className="md:w-2/3 p-8">
+                  <div className="flex items-center mb-4">
+                    <User className="h-6 w-6 text-blue-600 mr-2" />
+                    <span className="text-blue-600 font-semibold">Chief Executive Officer & Founder</span>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">About Our Founder</h3>
+                  
+                  <div className="space-y-4 text-gray-700">
+                    <div className="flex items-start">
+                      <Building2 className="h-5 w-5 text-blue-600 mr-3 mt-1 flex-shrink-0" />
+                      <p>Over <strong>5,000 units</strong> managed throughout career, providing deep operational expertise</p>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <TrendingUp className="h-5 w-5 text-green-600 mr-3 mt-1 flex-shrink-0" />
+                      <p>Currently owns <strong>$20,000,000</strong> in assets under management (AUM)</p>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <Briefcase className="h-5 w-5 text-purple-600 mr-3 mt-1 flex-shrink-0" />
+                      <p>Worked from <strong>porter to regional property manager</strong>, understanding every level of operations</p>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <Mic className="h-5 w-5 text-orange-600 mr-3 mt-1 flex-shrink-0" />
+                      <p>Featured on <strong>multiple podcasts and interviews</strong> by top successful investors in the Dallas-Fort Worth market</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <blockquote className="text-blue-800 italic">
+                      "Having managed thousands of units and worked at every level of property management, 
+                      I've seen firsthand how owners are left in the dark. OPSIGHT was born from the frustration 
+                      of not having the real-time insights needed to protect and grow your investments."
+                    </blockquote>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Social Proof */}
-      <div className="bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-gray-500 font-medium">Trusted by industry leaders worldwide</p>
-          </div>
-          <div className="flex items-center justify-center space-x-8 opacity-60">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-gray-300 h-8 w-24 rounded"></div>
-            ))}
           </div>
         </div>
       </div>
@@ -634,7 +714,7 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">About</a></li>
+                <li><a href="#company" className="hover:text-white">About</a></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
                 <li><a href="#" className="hover:text-white">Support</a></li>
                 <li><a href="#" className="hover:text-white">Privacy</a></li>

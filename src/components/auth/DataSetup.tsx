@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Database, Zap, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DataSetupProps {
   onComplete: () => void;
@@ -11,6 +11,7 @@ interface DataSetupProps {
 const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionComplete, setConnectionComplete] = useState(false);
+  const navigate = useNavigate();
 
   const handleConnect = async () => {
     setIsConnecting(true);
@@ -21,8 +22,10 @@ const DataSetup: React.FC<DataSetupProps> = ({ onComplete }) => {
     setIsConnecting(false);
     setConnectionComplete(true);
     
-    // Complete the setup after showing success
+    // Complete the setup and redirect to dashboard
     setTimeout(() => {
+      localStorage.removeItem('pendingRegistration');
+      navigate('/dashboard');
       onComplete();
     }, 2000);
   };
