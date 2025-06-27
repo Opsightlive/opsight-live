@@ -1,398 +1,344 @@
 
 import React, { useState } from 'react';
-import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Download, Calendar, Users, TrendingUp, DollarSign, BarChart3, Settings } from 'lucide-react';
+import { FileText, Download, Calendar, Building2, DollarSign, Users, TrendingUp, Settings, Eye, Send } from 'lucide-react';
 
 const LPReportGenerator = () => {
-  const [selectedTemplate, setSelectedTemplate] = useState('quarterly');
-  const [reportName, setReportName] = useState('');
-  const [selectedLPs, setSelectedLPs] = useState<string[]>([]);
+  const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
+  const [reportPeriod, setReportPeriod] = useState('quarterly');
+  const [reportSections, setReportSections] = useState({
+    executiveSummary: true,
+    financialPerformance: true,
+    propertyUpdates: true,
+    marketAnalysis: true,
+    distributions: true,
+    futureOutlook: true
+  });
+
+  const properties = [
+    { id: '1', name: 'Sunset Gardens', units: 45, type: 'Multifamily' },
+    { id: '2', name: 'Metro Plaza', units: 32, type: 'Mixed Use' },
+    { id: '3', name: 'Oak Ridge Apartments', units: 68, type: 'Multifamily' },
+    { id: '4', name: 'Riverside Commons', units: 52, type: 'Multifamily' }
+  ];
 
   const reportTemplates = [
     {
-      id: 'quarterly',
-      name: 'Quarterly Performance Report',
-      description: 'Comprehensive quarterly update with financial metrics and portfolio performance',
-      sections: ['Executive Summary', 'Financial Performance', 'Portfolio Updates', 'Market Analysis', 'Future Outlook']
+      name: 'Standard Quarterly Report',
+      description: 'Comprehensive quarterly report with all key metrics',
+      sections: ['Executive Summary', 'Financial Performance', 'Property Updates', 'Market Analysis'],
+      duration: '~15 minutes to generate'
     },
     {
-      id: 'annual',
-      name: 'Annual Investor Report',
-      description: 'Detailed annual review with complete financial statements and strategic updates',
-      sections: ['Year in Review', 'Financial Statements', 'Portfolio Performance', 'Market Conditions', 'Strategic Initiatives']
+      name: 'Financial Summary',
+      description: 'Focus on financial metrics and distributions',
+      sections: ['Financial Performance', 'Cash Flow Analysis', 'Distributions'],
+      duration: '~8 minutes to generate'
     },
     {
-      id: 'monthly',
-      name: 'Monthly Update',
-      description: 'Brief monthly summary highlighting key metrics and recent developments',
-      sections: ['Performance Highlights', 'Property Updates', 'Financial Summary', 'Upcoming Events']
-    },
-    {
-      id: 'custom',
-      name: 'Custom Report',
-      description: 'Build your own report with selected sections and customized content',
-      sections: ['Customizable Sections']
+      name: 'Property Performance',
+      description: 'Detailed property-by-property analysis',
+      sections: ['Property Updates', 'Occupancy Trends', 'Maintenance Updates'],
+      duration: '~12 minutes to generate'
     }
   ];
 
-  const limitedPartners = [
-    { id: 'lp1', name: 'Pension Fund Alpha', email: 'contact@pensionfundalpha.com', investment: '$2.5M' },
-    { id: 'lp2', name: 'Family Office Beta', email: 'invest@familyofficebeta.com', investment: '$1.8M' },
-    { id: 'lp3', name: 'Institutional Investor Gamma', email: 'reports@invgamma.com', investment: '$3.2M' },
-    { id: 'lp4', name: 'Private Wealth Delta', email: 'info@pwdelta.com', investment: '$900K' },
-    { id: 'lp5', name: 'Endowment Fund Epsilon', email: 'admin@endowmenteps.org', investment: '$1.5M' }
-  ];
-
-  const reportHistory = [
-    {
-      name: 'Q4 2023 Performance Report',
-      date: '2024-01-15',
-      recipients: 12,
-      status: 'delivered',
-      downloads: 45
-    },
-    {
-      name: 'Annual Report 2023',
-      date: '2024-01-01',
-      recipients: 18,
-      status: 'delivered',
-      downloads: 72
-    },
-    {
-      name: 'Q3 2023 Update',
-      date: '2023-10-15',
-      recipients: 12,
-      status: 'delivered',
-      downloads: 38
-    }
-  ];
-
-  const handleLPSelection = (lpId: string, checked: boolean) => {
+  const handlePropertySelection = (propertyId: string, checked: boolean) => {
     if (checked) {
-      setSelectedLPs([...selectedLPs, lpId]);
+      setSelectedProperties([...selectedProperties, propertyId]);
     } else {
-      setSelectedLPs(selectedLPs.filter(id => id !== lpId));
+      setSelectedProperties(selectedProperties.filter(id => id !== propertyId));
     }
   };
 
+  const handleSectionToggle = (section: string, checked: boolean) => {
+    setReportSections(prev => ({
+      ...prev,
+      [section]: checked
+    }));
+  };
+
+  const generateReport = () => {
+    console.log('Generating report with:', {
+      properties: selectedProperties,
+      period: reportPeriod,
+      sections: reportSections
+    });
+  };
+
   return (
-    <Layout>
-      <div className="p-6">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
-          <h1 className="text-2xl font-bold mb-2">LP Report Generator</h1>
-          <p className="text-blue-100">
-            Create and distribute professional reports for your limited partners
-          </p>
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Blue Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-4">LP Report Generator</h1>
+            <p className="text-xl text-blue-100 max-w-3xl">
+              Create professional limited partner reports with automated data analysis and insights
+            </p>
+            <div className="flex items-center gap-6 mt-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                <span>Automated Reports</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                <span>Performance Analytics</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                <span>Quarterly & Annual</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Send className="h-5 w-5" />
+                <span>Direct Distribution</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <Tabs defaultValue="create" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="create">Create Report</TabsTrigger>
-            <TabsTrigger value="templates">Templates</TabsTrigger>
-            <TabsTrigger value="history">Report History</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="create">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Report Configuration */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <FileText className="h-5 w-5 mr-2" />
-                      Report Configuration
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Report Name</label>
-                      <Input
-                        placeholder="Q1 2024 Performance Report"
-                        value={reportName}
-                        onChange={(e) => setReportName(e.target.value)}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Report Template</label>
-                      <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {reportTemplates.map(template => (
-                            <SelectItem key={template.id} value={template.id}>
-                              {template.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Reporting Period</label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Input type="date" />
-                        <Input type="date" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Report Sections</label>
-                      <div className="space-y-2">
-                        {reportTemplates.find(t => t.id === selectedTemplate)?.sections.map((section, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            <Checkbox id={`section-${index}`} defaultChecked />
-                            <label htmlFor={`section-${index}`} className="text-sm">{section}</label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Users className="h-5 w-5 mr-2" />
-                      Select Recipients
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {limitedPartners.map(lp => (
-                        <div key={lp.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <Checkbox
-                              id={lp.id}
-                              checked={selectedLPs.includes(lp.id)}
-                              onCheckedChange={(checked) => handleLPSelection(lp.id, checked as boolean)}
-                            />
-                            <div>
-                              <p className="font-medium">{lp.name}</p>
-                              <p className="text-sm text-gray-600">{lp.email}</p>
-                            </div>
-                          </div>
-                          <Badge variant="outline">{lp.investment}</Badge>
-                        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Report Configuration */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Report Templates */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Start Templates</CardTitle>
+              <CardDescription>Choose a pre-configured report template or customize your own</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {reportTemplates.map((template, index) => (
+                  <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                    <h3 className="font-semibold mb-2">{template.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                    <div className="space-y-2">
+                      {template.sections.map((section, sectionIndex) => (
+                        <Badge key={sectionIndex} variant="outline" className="mr-1 mb-1">
+                          {section}
+                        </Badge>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
+                    <p className="text-xs text-blue-600 mt-2">{template.duration}</p>
+                  </div>
+                ))}
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Preview & Actions */}
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Report Preview</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
-                        <FileText className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">Report preview will appear here</p>
+          {/* Property Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Select Properties</CardTitle>
+              <CardDescription>Choose which properties to include in the report</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {properties.map((property) => (
+                  <div key={property.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                    <Checkbox
+                      id={property.id}
+                      checked={selectedProperties.includes(property.id)}
+                      onCheckedChange={(checked) => handlePropertySelection(property.id, checked as boolean)}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <Building2 className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{property.name}</span>
+                        <Badge variant="outline">{property.type}</Badge>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Button className="w-full">
-                          <BarChart3 className="h-4 w-4 mr-2" />
-                          Generate Preview
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download Draft
-                        </Button>
-                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{property.units} units</p>
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Distribution Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm">Selected Recipients:</span>
-                        <span className="font-medium">{selectedLPs.length}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Report Sections:</span>
-                        <span className="font-medium">5</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Estimated Size:</span>
-                        <span className="font-medium">2.4 MB</span>
-                      </div>
-                    </div>
-                    
-                    <Button className="w-full mt-4" disabled={selectedLPs.length === 0}>
-                      <FileText className="h-4 w-4 mr-2" />
-                      Generate & Send Report
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="templates">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {reportTemplates.map(template => (
-                <Card key={template.id} className={selectedTemplate === template.id ? 'border-blue-500' : ''}>
-                  <CardHeader>
-                    <CardTitle>{template.name}</CardTitle>
-                    <CardDescription>{template.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-sm mb-2">Included Sections:</h4>
-                        <div className="space-y-1">
-                          {template.sections.map((section, index) => (
-                            <div key={index} className="text-sm text-gray-600">• {section}</div>
-                          ))}
-                        </div>
-                      </div>
-                      <Button
-                        variant={selectedTemplate === template.id ? 'default' : 'outline'}
-                        className="w-full"
-                        onClick={() => setSelectedTemplate(template.id)}
-                      >
-                        {selectedTemplate === template.id ? 'Selected' : 'Use Template'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="history">
-            <Card>
-              <CardHeader>
-                <CardTitle>Report History</CardTitle>
-                <CardDescription>Previously generated and distributed reports</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {reportHistory.map((report, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">{report.name}</h4>
-                        <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                          <span className="flex items-center">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {report.date}
-                          </span>
-                          <span className="flex items-center">
-                            <Users className="h-3 w-3 mr-1" />
-                            {report.recipients} recipients
-                          </span>
-                          <span className="flex items-center">
-                            <Download className="h-3 w-3 mr-1" />
-                            {report.downloads} downloads
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline">{report.status}</Badge>
-                        <Button size="sm" variant="outline">
-                          <Download className="h-3 w-3 mr-1" />
-                          Download
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                  </div>
+                ))}
+                <div className="flex items-center space-x-2 mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedProperties(properties.map(p => p.id))}
+                  >
+                    Select All
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedProperties([])}
+                  >
+                    Clear All
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="settings">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Settings className="h-5 w-5 mr-2" />
-                    Report Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Default Report Template</label>
-                    <Select defaultValue="quarterly">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="quarterly">Quarterly Performance Report</SelectItem>
-                        <SelectItem value="annual">Annual Investor Report</SelectItem>
-                        <SelectItem value="monthly">Monthly Update</SelectItem>
-                      </SelectContent>
-                    </Select>
+          {/* Report Sections */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Sections</CardTitle>
+              <CardDescription>Customize which sections to include in your report</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(reportSections).map(([key, checked]) => (
+                  <div key={key} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={key}
+                      checked={checked}
+                      onCheckedChange={(checked) => handleSectionToggle(key, checked as boolean)}
+                    />
+                    <Label htmlFor={key} className="text-sm capitalize cursor-pointer">
+                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    </Label>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Branding</label>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="logo" defaultChecked />
-                      <label htmlFor="logo" className="text-sm">Include company logo</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="branding" defaultChecked />
-                      <label htmlFor="branding" className="text-sm">Apply brand colors</label>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribution Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Auto-send Schedule</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select schedule" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="manual">Manual only</SelectItem>
-                        <SelectItem value="quarterly">Quarterly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                      </SelectContent>
-                    </Select>
+          {/* Report Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Settings</CardTitle>
+              <CardDescription>Configure report period and formatting options</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="period" className="text-sm font-medium">Report Period</Label>
+                  <Select value={reportPeriod} onValueChange={setReportPeriod}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="annual">Annual</SelectItem>
+                      <SelectItem value="custom">Custom Period</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="format" className="text-sm font-medium">Output Format</Label>
+                  <Select defaultValue="pdf">
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdf">PDF Document</SelectItem>
+                      <SelectItem value="excel">Excel Workbook</SelectItem>
+                      <SelectItem value="powerpoint">PowerPoint Presentation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="title" className="text-sm font-medium">Report Title</Label>
+                <Input
+                  id="title"
+                  placeholder="Q4 2024 Limited Partner Report"
+                  className="mt-1"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Report Preview & Actions */}
+        <div className="space-y-6">
+          {/* Report Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Eye className="h-5 w-5 mr-2" />
+                Report Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Properties:</span>
+                  <span className="font-medium">{selectedProperties.length} selected</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Period:</span>
+                  <span className="font-medium capitalize">{reportPeriod}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Sections:</span>
+                  <span className="font-medium">{Object.values(reportSections).filter(Boolean).length} sections</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Est. Generation Time:</span>
+                  <span className="font-medium">~12 minutes</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Reports */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium text-sm">Q3 2024 Report</p>
+                    <p className="text-xs text-gray-600">Generated Dec 15, 2024</p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="notifications" defaultChecked />
-                      <label htmlFor="notifications" className="text-sm">Send delivery notifications</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tracking" defaultChecked />
-                      <label htmlFor="tracking" className="text-sm">Enable download tracking</label>
-                    </div>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium text-sm">Q2 2024 Report</p>
+                    <p className="text-xs text-gray-600">Generated Sep 15, 2024</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Generate Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Generate Report</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button 
+                className="w-full" 
+                onClick={generateReport}
+                disabled={selectedProperties.length === 0}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Generate Report
+              </Button>
+              <Button variant="outline" className="w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Preview Report
+              </Button>
+              <Button variant="outline" className="w-full">
+                <Settings className="h-4 w-4 mr-2" />
+                Save as Template
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

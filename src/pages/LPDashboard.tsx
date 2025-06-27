@@ -198,7 +198,7 @@ const LPDashboard = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -207,6 +207,18 @@ const LPDashboard = () => {
                   <p className="text-sm text-gray-600">Get quarterly investor reports</p>
                 </div>
                 <Button>Download</Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold">Generate New Report</h3>
+                  <p className="text-sm text-gray-600">Create custom LP reports</p>
+                </div>
+                <Button variant="outline">Generate</Button>
               </div>
             </CardContent>
           </Card>
