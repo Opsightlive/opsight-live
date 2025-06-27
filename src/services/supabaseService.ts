@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -39,7 +38,12 @@ class SupabaseService {
         return [];
       }
 
-      return data || [];
+      // Properly cast the tier to the correct type
+      return (data || []).map(item => ({
+        ...item,
+        tier: item.tier as 'basic' | 'professional' | 'enterprise',
+        payment_method: item.payment_method as 'card' | 'ach'
+      }));
     } catch (error) {
       console.error('Error fetching properties:', error);
       toast.error('Failed to load properties');

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -11,10 +10,20 @@ interface UserProfile {
   company_name: string | null;
   role: string | null;
   phone: string | null;
+  avatar_url?: string;
+}
+
+interface AuthUser extends User {
+  name?: string;
+  avatar?: string;
+  company?: string;
+  bio?: string;
+  phone?: string;
+  role?: string;
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   profile: UserProfile | null;
   session: Session | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -29,7 +38,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,6 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Enhance user object with profile data
+  const enhanceUser = (baseUser: User, profileData: UserProfile | null): AuthUser => {
+    return {
+      ...baseUser,
+      name: profileData?.full_name || baseUser.email?.split('@')[0] || 'User',
+      avatar: profileData?.avatar_url,
+      company: profileData?.company_name,
+      role: profileData?.role,
+      phone: profileData?.phone,
+      bio: '' // Default empty bio
+    };
+  };
+
   // Initialize auth state
   useEffect(() => {
     // Set up auth state listener
@@ -85,12 +107,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Auth state change:', event, session?.user?.email);
         
         setSession(session);
-        setUser(session?.user ?? null);
         
         if (session?.user) {
           // Load user profile when authenticated
-          setTimeout(() => {
-            loadUserProfile(session.user.id);
+          setTimeout(async () => {
+            const profileData = await loadUserProfile(session.user.id);
+            const enhancedUser = enhanceUser(session.user, profileData);
+            setUser(enhancedUser);
           }, 0);
           
           // Log successful authentication
@@ -100,6 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }, 0);
           }
         } else {
+          setUser(null);
           setProfile(null);
           if (event === 'SIGNED_OUT') {
             toast.success('Successfully signed out');
@@ -113,10 +137,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
       
       if (session?.user) {
-        loadUserProfile(session.user.id);
+        loadUserProfile(session.user.id).then((profileData) => {
+          const enhancedUser = enhanceUser(session.user, profileData);
+          setUser(enhancedUser);
+        });
       }
       
       setIsLoading(false);
@@ -272,7 +298,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Reload profile data
-      await loadUserProfile(user.id);
+      const profileData = await loadUserProfile(user.id);
+      const enhancedUser = enhanceUser(user, profileData);
+      setUser(enhancedUser);
       
       toast.success('Registration completed successfully!');
       await logActivity('registration_completed', userData);
@@ -304,7 +332,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Reload profile data
-      await loadUserProfile(user.id);
+      const profileData = await loadUserProfile(user.id);
+      const enhancedUser = enhanceUser(user, profileData);
+      setUser(enhancedUser);
       toast.success('Profile updated successfully');
       await logActivity('profile_updated', updates);
       return true;

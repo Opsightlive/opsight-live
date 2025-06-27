@@ -84,7 +84,7 @@ export const useRealtimeData = () => {
           const updatedPrefs = payload.new as any;
           setUserPreferences({
             preferences: updatedPrefs.preferences || {},
-            saved_views: updatedPrefs.saved_views || [],
+            saved_views: Array.isArray(updatedPrefs.saved_views) ? updatedPrefs.saved_views : [],
             saved_filters: updatedPrefs.saved_filters || {},
             dashboard_settings: updatedPrefs.dashboard_settings || {}
           });
@@ -116,7 +116,12 @@ export const useRealtimeData = () => {
         console.error('Error loading KPI updates:', kpiError);
         toast.error('Failed to load KPI updates');
       } else {
-        setKpiUpdates(kpiData || []);
+        // Properly cast the alert_level to the correct type
+        const typedKpiData = (kpiData || []).map(item => ({
+          ...item,
+          alert_level: item.alert_level as 'low' | 'medium' | 'high' | 'critical'
+        }));
+        setKpiUpdates(typedKpiData);
       }
 
       // Load user preferences
@@ -137,7 +142,7 @@ export const useRealtimeData = () => {
       } else {
         setUserPreferences({
           preferences: prefsData.preferences || {},
-          saved_views: prefsData.saved_views || [],
+          saved_views: Array.isArray(prefsData.saved_views) ? prefsData.saved_views : [],
           saved_filters: prefsData.saved_filters || {},
           dashboard_settings: prefsData.dashboard_settings || {}
         });
