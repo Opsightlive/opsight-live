@@ -10,6 +10,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Upload, FileText, Download, Trash2, Eye, Brain, Settings, Zap, Clock, Folder, Search, Filter, BarChart3, TrendingUp, AlertTriangle, CheckCircle, Bot, Lightbulb, FileSearch, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+interface FileObject {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  uploadDate: string;
+  processed: boolean;
+  category: string;
+  confidence: number;
+  insights: string[];
+  keyMetrics?: {
+    revenue: string;
+    expenses: string;
+    noi: string;
+    occupancy: string;
+  };
+  riskFactors?: string[];
+  opportunities?: string[];
+  actionItems?: string[];
+  priorityScore?: string;
+  marketTrends?: {
+    rentGrowth: string;
+    vacancyRate: string;
+    newSupply: string;
+    absorption: string;
+  };
+}
+
 const AIReader = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +49,7 @@ const AIReader = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   
-  const [uploadedFiles, setUploadedFiles] = useState([
+  const [uploadedFiles, setUploadedFiles] = useState<FileObject[]>([
     {
       id: '1',
       name: 'Q4_Financial_Report.pdf',
@@ -142,7 +170,7 @@ const AIReader = () => {
     const files = event.target.files;
     if (files) {
       Array.from(files).forEach(file => {
-        const newFile = {
+        const newFile: FileObject = {
           id: Date.now().toString() + Math.random(),
           name: file.name,
           size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
@@ -151,7 +179,7 @@ const AIReader = () => {
           processed: false,
           category: 'Other',
           confidence: 0,
-          insights: [] as string[]
+          insights: []
         };
         
         setUploadedFiles(prev => [...prev, newFile]);
