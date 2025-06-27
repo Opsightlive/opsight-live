@@ -22,6 +22,7 @@ import IntegrationStatus from '@/pages/IntegrationStatus';
 import LPDashboard from '@/pages/LPDashboard';
 import LPReportGenerator from '@/pages/LPReportGenerator';
 import AIIntelligence from '@/pages/AIIntelligence';
+import AIReader from '@/pages/AIReader';
 import PredictiveSignals from '@/pages/PredictiveSignals';
 import DealVettingToolkit from '@/pages/DealVettingToolkit';
 import EmailAutomation from '@/pages/EmailAutomation';
@@ -121,6 +122,13 @@ function App() {
                 <AuthWrapper>
                   <Layout>
                     <AIIntelligence />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/ai-reader" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AIReader />
                   </Layout>
                 </AuthWrapper>
               } />
