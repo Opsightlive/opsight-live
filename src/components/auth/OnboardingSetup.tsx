@@ -92,7 +92,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Property Information
+                Multifamily Property Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -135,6 +135,9 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     <span className="font-medium text-blue-900">Multifamily</span>
                     <Badge className="bg-blue-100 text-blue-800">Selected</Badge>
                   </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Focus on apartment complexes, condominiums, and residential rental properties
+                  </p>
                 </div>
               </div>
 
@@ -367,7 +370,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Add New Property</h1>
+        <h1 className="text-3xl font-bold mb-2">Add New Multifamily Property</h1>
         <p className="text-gray-600">
           Set up your multifamily property with OPSIGHT
         </p>
