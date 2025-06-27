@@ -10,12 +10,10 @@ const SubscriptionSettings = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <div>
-            <h1 className="text-4xl font-bold mb-4">Subscription Settings</h1>
-            <p className="text-xl text-blue-100 max-w-3xl">
-              Manage your subscription, billing information, and plan details for your multifamily portfolio management.
-            </p>
-          </div>
+          <h1 className="text-4xl font-bold mb-4">Subscription Settings</h1>
+          <p className="text-xl text-blue-100 max-w-3xl">
+            Manage your subscription, billing information, and plan details for your multifamily portfolio management.
+          </p>
         </div>
 
         <div className="container mx-auto px-4 py-8 max-w-4xl">

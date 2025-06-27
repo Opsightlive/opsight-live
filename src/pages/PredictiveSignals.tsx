@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -52,16 +51,10 @@ const PredictiveSignals = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Red Header */}
         <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-lg shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-4">Predictive Signals</h1>
-              <p className="text-xl text-red-100 max-w-3xl">AI-powered insights to anticipate portfolio performance and potential issues</p>
-            </div>
-            <Button className="bg-white text-red-600 hover:bg-red-50 flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Configure Alerts
-            </Button>
-          </div>
+          <h1 className="text-4xl font-bold mb-4">Predictive Signals</h1>
+          <p className="text-xl text-red-100 max-w-3xl">
+            AI-powered insights to anticipate portfolio performance and potential issues
+          </p>
         </div>
 
         {/* Market Trends Overview */}

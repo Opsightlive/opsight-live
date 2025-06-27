@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -104,10 +103,10 @@ const AlertsNotifications = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Red Header */}
         <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-lg shadow-lg">
-          <div>
-            <h1 className="text-4xl font-bold mb-4">Alerts & Notifications</h1>
-            <p className="text-xl text-red-100 max-w-3xl">Manage your notification preferences and view real-time alerts from across your property portfolio</p>
-          </div>
+          <h1 className="text-4xl font-bold mb-4">Alerts & Notifications</h1>
+          <p className="text-xl text-red-100 max-w-3xl">
+            Manage your notification preferences and view real-time alerts from across your property portfolio
+          </p>
         </div>
 
         {/* AI Suggestions Panel */}
