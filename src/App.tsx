@@ -15,6 +15,28 @@ import DemoPage from '@/pages/DemoPage';
 import DemoMode from '@/pages/DemoMode';
 import Index from '@/pages/Index';
 import PortfolioOverview from '@/pages/PortfolioOverview';
+import KPICommandCenter from '@/pages/KPICommandCenter';
+import RedFlagAlerts from '@/pages/RedFlagAlerts';
+import DataIntegration from '@/pages/DataIntegration';
+import IntegrationStatus from '@/pages/IntegrationStatus';
+import LPDashboard from '@/pages/LPDashboard';
+import LPReportGenerator from '@/pages/LPReportGenerator';
+import AIIntelligence from '@/pages/AIIntelligence';
+import PredictiveSignals from '@/pages/PredictiveSignals';
+import DealVettingToolkit from '@/pages/DealVettingToolkit';
+import EmailAutomation from '@/pages/EmailAutomation';
+import SMSAutomation from '@/pages/SMSAutomation';
+import PMEngagementScore from '@/pages/PMEngagementScore';
+import RedFlagTimeline from '@/pages/RedFlagTimeline';
+import ResolutionSummary from '@/pages/ResolutionSummary';
+import AlertDeliveryLogs from '@/pages/AlertDeliveryLogs';
+import DataVault from '@/pages/DataVault';
+import AlertsNotifications from '@/pages/AlertsNotifications';
+import CompanyDashboard from '@/pages/CompanyDashboard';
+import UserManagement from '@/components/users/UserManagement';
+import OwnerOnboardingPage from '@/pages/OwnerOnboarding';
+import Settings from '@/pages/Settings';
+import HelpCenter from '@/pages/HelpCenter';
 import DataSetup from '@/components/auth/DataSetup';
 
 const queryClient = new QueryClient();
@@ -32,7 +54,13 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/demo" element={<DemoPage />} />
-              <Route path="/demo-mode" element={<DemoMode />} />
+              <Route path="/demo-mode" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DemoMode />
+                  </Layout>
+                </AuthWrapper>
+              } />
               <Route path="/dashboard" element={
                 <AuthWrapper>
                   <Layout>
@@ -44,6 +72,160 @@ function App() {
                 <AuthWrapper>
                   <Layout>
                     <PortfolioOverview />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/kpi-center" element={
+                <AuthWrapper>
+                  <Layout>
+                    <KPICommandCenter />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/red-flag-alerts" element={
+                <AuthWrapper>
+                  <Layout>
+                    <RedFlagAlerts />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/data-integration" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DataIntegration />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/integration-status" element={
+                <AuthWrapper>
+                  <Layout>
+                    <IntegrationStatus />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/lp-dashboard" element={
+                <AuthWrapper>
+                  <Layout>
+                    <LPDashboard />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/lp-reports" element={
+                <AuthWrapper>
+                  <Layout>
+                    <LPReportGenerator />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/ai-tools" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AIIntelligence />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/predictive" element={
+                <AuthWrapper>
+                  <Layout>
+                    <PredictiveSignals />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/deal-vetting" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DealVettingToolkit />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/email-automation" element={
+                <AuthWrapper>
+                  <Layout>
+                    <EmailAutomation />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/sms-automation" element={
+                <AuthWrapper>
+                  <Layout>
+                    <SMSAutomation />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/pm-engagement" element={
+                <AuthWrapper>
+                  <Layout>
+                    <PMEngagementScore />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/timeline" element={
+                <AuthWrapper>
+                  <Layout>
+                    <RedFlagTimeline />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/resolutions" element={
+                <AuthWrapper>
+                  <Layout>
+                    <ResolutionSummary />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/delivery-logs" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AlertDeliveryLogs />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/data-vault" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DataVault />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/notifications" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AlertsNotifications />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/company-dashboard" element={
+                <AuthWrapper>
+                  <Layout>
+                    <CompanyDashboard />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/users" element={
+                <AuthWrapper>
+                  <Layout>
+                    <UserManagement />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/owner-onboarding" element={
+                <AuthWrapper>
+                  <Layout>
+                    <OwnerOnboardingPage />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/settings" element={
+                <AuthWrapper>
+                  <Layout>
+                    <Settings />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/help" element={
+                <AuthWrapper>
+                  <Layout>
+                    <HelpCenter />
                   </Layout>
                 </AuthWrapper>
               } />

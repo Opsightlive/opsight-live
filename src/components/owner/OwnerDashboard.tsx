@@ -25,18 +25,6 @@ const OwnerDashboard = () => {
   const { insights, isLoading } = useOwnerInsights();
   const [showTutorial, setShowTutorial] = useState(false);
 
-  useEffect(() => {
-    // Check if user has completed tutorial
-    const tutorialCompleted = localStorage.getItem('dashboardTutorialCompleted');
-    if (!tutorialCompleted) {
-      // Show tutorial after a brief delay to let the dashboard load
-      const timer = setTimeout(() => {
-        setShowTutorial(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
   const startTutorial = () => {
     setShowTutorial(true);
   };
@@ -122,7 +110,7 @@ const OwnerDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-6 relative p-6">
       {/* Tutorial Component */}
       {showTutorial && (
         <DashboardTutorial onClose={() => setShowTutorial(false)} />

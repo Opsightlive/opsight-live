@@ -71,6 +71,7 @@ const tutorialSteps: TutorialStep[] = [
 const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightElement, setHighlightElement] = useState<HTMLElement | null>(null);
+  const [cardPosition, setCardPosition] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
 
   useEffect(() => {
     const step = tutorialSteps[currentStep];
@@ -80,9 +81,15 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
       
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Calculate card position based on element position
+        const rect = element.getBoundingClientRect();
+        const position = getCardPosition(rect, step.position);
+        setCardPosition(position);
       }
     } else {
       setHighlightElement(null);
+      setCardPosition({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
     }
   }, [currentStep]);
 
@@ -101,12 +108,10 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
   };
 
   const handleComplete = () => {
-    localStorage.setItem('dashboardTutorialCompleted', 'true');
     onClose();
   };
 
   const skipTutorial = () => {
-    localStorage.setItem('dashboardTutorialCompleted', 'true');
     onClose();
   };
 
@@ -124,25 +129,17 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
         <div
           className="fixed z-50 pointer-events-none border-4 border-blue-500 rounded-lg animate-pulse"
           style={{
-            top: highlightElement.offsetTop - 4,
-            left: highlightElement.offsetLeft - 4,
-            width: highlightElement.offsetWidth + 8,
-            height: highlightElement.offsetHeight + 8,
+            top: `${highlightElement.offsetTop - 4}px`,
+            left: `${highlightElement.offsetLeft - 4}px`,
+            width: `${highlightElement.offsetWidth + 8}px`,
+            height: `${highlightElement.offsetHeight + 8}px`,
             boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
           }}
         />
       )}
 
       {/* Tutorial Card */}
-      <Card className="fixed z-50 w-96 shadow-2xl" style={{
-        top: isFirstStep ? '50%' : 
-             highlightElement ? getCardPosition(highlightElement, currentStepData.position).top :
-             '50%',
-        left: isFirstStep ? '50%' : 
-              highlightElement ? getCardPosition(highlightElement, currentStepData.position).left :
-              '50%',
-        transform: isFirstStep ? 'translate(-50%, -50%)' : 'none'
-      }}>
+      <Card className="fixed z-50 w-96 shadow-2xl" style={cardPosition}>
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
@@ -204,36 +201,45 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ onClose }) => {
   );
 };
 
-function getCardPosition(element: HTMLElement, position: string) {
-  const rect = element.getBoundingClientRect();
+function getCardPosition(rect: DOMRect, position: string) {
   const cardWidth = 384; // w-96
   const cardHeight = 300; // approximate height
   const offset = 20;
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  let top: string | number = '50%';
+  let left: string | number = '50%';
+  let transform = 'translate(-50%, -50%)';
 
   switch (position) {
     case 'top':
-      return {
-        top: rect.top - cardHeight - offset,
-        left: Math.max(20, rect.left + rect.width / 2 - cardWidth / 2)
-      };
+      top = Math.max(20, rect.top - cardHeight - offset);
+      left = Math.max(20, Math.min(windowWidth - cardWidth - 20, rect.left + rect.width / 2 - cardWidth / 2));
+      transform = 'none';
+      break;
     case 'bottom':
-      return {
-        top: rect.bottom + offset,
-        left: Math.max(20, rect.left + rect.width / 2 - cardWidth / 2)
-      };
+      top = Math.min(windowHeight - cardHeight - 20, rect.bottom + offset);
+      left = Math.max(20, Math.min(windowWidth - cardWidth - 20, rect.left + rect.width / 2 - cardWidth / 2));
+      transform = 'none';
+      break;
     case 'left':
-      return {
-        top: Math.max(20, rect.top + rect.height / 2 - cardHeight / 2),
-        left: rect.left - cardWidth - offset
-      };
+      top = Math.max(20, Math.min(windowHeight - cardHeight - 20, rect.top + rect.height / 2 - cardHeight / 2));
+      left = Math.max(20, rect.left - cardWidth - offset);
+      transform = 'none';
+      break;
     case 'right':
-      return {
-        top: Math.max(20, rect.top + rect.height / 2 - cardHeight / 2),
-        left: rect.right + offset
-      };
-    default:
-      return { top: '50%', left: '50%' };
+      top = Math.max(20, Math.min(windowHeight - cardHeight - 20, rect.top + rect.height / 2 - cardHeight / 2));
+      left = Math.min(windowWidth - cardWidth - 20, rect.right + offset);
+      transform = 'none';
+      break;
   }
+
+  return { 
+    top: typeof top === 'number' ? `${top}px` : top, 
+    left: typeof left === 'number' ? `${left}px` : left, 
+    transform 
+  };
 }
 
 export default DashboardTutorial;
