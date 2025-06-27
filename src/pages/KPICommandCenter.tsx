@@ -1,196 +1,208 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, AlertTriangle, Building2, DollarSign, Users, Calendar, Send } from 'lucide-react';
-import SendToPMModal from '@/components/modals/SendToPMModal';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 const KPICommandCenter = () => {
-  const [selectedProperty, setSelectedProperty] = useState('all');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
-  const [sendToPMModal, setSendToPMModal] = useState<{isOpen: boolean, kpiData?: any}>({isOpen: false});
-
-  const handleSendToPM = (kpiData: any) => {
-    setSendToPMModal({ isOpen: true, kpiData });
-  };
-
-  const properties = [
-    {
-      name: "Oak Ridge Complex",
-      kpis: [
-        { metric: "Physical Occupancy", value: "94.5%", target: "95%", status: "warning", trend: "down", change: "-1.2%" },
-        { metric: "Economic Occupancy", value: "91.8%", target: "93%", status: "critical", trend: "down", change: "-2.1%" },
-        { metric: "Collections Rate", value: "96.7%", target: "95%", status: "good", trend: "up", change: "+0.8%" },
-        { metric: "Average Rent", value: "$1,847", target: "$1,800", status: "good", trend: "up", change: "+2.6%" }
-      ]
-    },
-    {
-      name: "Cedar Point Villas",
-      kpis: [
-        { metric: "Physical Occupancy", value: "89.1%", target: "90%", status: "warning", trend: "down", change: "-0.9%" },
-        { metric: "Economic Occupancy", value: "86.3%", target: "87%", status: "warning", trend: "down", change: "-1.7%" },
-        { metric: "Collections Rate", value: "94.2%", target: "95%", status: "warning", trend: "down", change: "-0.8%" },
-        { metric: "Average Rent", value: "$1,654", target: "$1,600", status: "good", trend: "up", change: "+3.4%" }
-      ]
-    }
+  const kpiMetrics = [
+    { name: 'Occupancy Rate', value: '92.5%', change: '+0.8%', trend: 'up' },
+    { name: 'Net Operating Income', value: '$1.25M', change: '+5.2%', trend: 'up' },
+    { name: 'Expense Ratio', value: '45.7%', change: '-1.5%', trend: 'down' },
+    { name: 'Tenant Satisfaction', value: '4.6/5', change: '+0.2', trend: 'up' }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'good': return 'bg-green-100 text-green-800 border-green-200';
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  const propertyPerformance = [
+    { property: 'Sunset Gardens', occupancy: 94, revenue: 285000, expenses: 150000, noi: 135000 },
+    { property: 'Metro Plaza', occupancy: 91, revenue: 320000, expenses: 170000, noi: 150000 },
+    { property: 'Riverside Towers', occupancy: 88, revenue: 195000, expenses: 110000, noi: 85000 },
+    { property: 'Oak Street Commons', occupancy: 96, revenue: 410000, expenses: 220000, noi: 190000 }
+  ];
 
-  const getTrendIcon = (trend: string) => {
-    return trend === 'up' ? <TrendingUp className="h-4 w-4 text-green-600" /> : <TrendingDown className="h-4 w-4 text-red-600" />;
-  };
+  const expenseBreakdown = [
+    { category: 'Maintenance', value: 320000, color: '#3B82F6' },
+    { category: 'Utilities', value: 210000, color: '#10B981' },
+    { category: 'Management Fees', value: 180000, color: '#F59E0B' },
+    { category: 'Insurance', value: 90000, color: '#EF4444' }
+  ];
+
+  const monthlyCashFlow = [
+    { month: 'Jul', revenue: 220000, expenses: 140000, cashFlow: 80000 },
+    { month: 'Aug', revenue: 235000, expenses: 145000, cashFlow: 90000 },
+    { month: 'Sep', revenue: 228000, expenses: 142000, cashFlow: 86000 },
+    { month: 'Oct', revenue: 240000, expenses: 148000, cashFlow: 92000 },
+    { month: 'Nov', revenue: 245000, expenses: 150000, cashFlow: 95000 },
+    { month: 'Dec', revenue: 250000, expenses: 152000, cashFlow: 98000 }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <h1 className="text-4xl font-bold mb-4">KPI Command Center</h1>
-          <p className="text-xl text-blue-100 max-w-3xl">Monitor key performance indicators across all properties with real-time insights and actionable alerts</p>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white border border-gray-200 p-6 mb-8 rounded-lg shadow-sm">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <label className="text-base font-medium text-black">Property:</label>
-              <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Properties</SelectItem>
-                  <SelectItem value="oak-ridge">Oak Ridge Complex</SelectItem>
-                  <SelectItem value="cedar-point">Cedar Point Villas</SelectItem>
-                  <SelectItem value="meridian">Meridian Apartments</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center space-x-3">
-              <label className="text-base font-medium text-black">Timeframe:</label>
-              <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7d">7 days</SelectItem>
-                  <SelectItem value="30d">30 days</SelectItem>
-                  <SelectItem value="90d">90 days</SelectItem>
-                  <SelectItem value="1y">1 year</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">KPI Command Center</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">
+                Real-time performance monitoring and key performance indicators dashboard
+              </p>
+              <div className="flex items-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  <span>Performance Tracking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  <span>Analytics Engine</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  <span>Real-time Monitoring</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  <span>Automated Alerts</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Property KPI Cards */}
-        <div className="space-y-8">
-          {properties.map((property) => (
-            <Card key={property.name} className="border-2 border-gray-200">
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center space-x-2 text-xl">
-                  <Building2 className="h-6 w-6 text-blue-600" />
-                  <span>{property.name}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {property.kpis.map((kpi, index) => (
-                    <div key={index} className={`p-4 border-2 rounded-lg ${getStatusColor(kpi.status)}`}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="font-semibold text-sm">{kpi.metric}</h3>
-                          <div className="text-2xl font-bold mt-1">{kpi.value}</div>
-                          <div className="text-sm text-gray-600">Target: {kpi.target}</div>
-                        </div>
-                        <div className="flex flex-col items-end space-y-1">
-                          {getTrendIcon(kpi.trend)}
-                          <span className={`text-xs font-medium ${kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                            {kpi.change}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between mt-4">
-                        <Badge className={`text-xs ${kpi.status === 'good' ? 'bg-green-600' : kpi.status === 'warning' ? 'bg-yellow-600' : 'bg-red-600'} text-white`}>
-                          {kpi.status.toUpperCase()}
-                        </Badge>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleSendToPM({
-                            metric: kpi.metric,
-                            property: property.name,
-                            value: kpi.value,
-                            target: kpi.target
-                          })}
-                          className="text-xs h-7"
-                        >
-                          <Send className="h-3 w-3 mr-1" />
-                          Send to PM
-                        </Button>
-                      </div>
+        {/* Key Performance Indicators */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {kpiMetrics.map((kpi, index) => (
+            <Card key={index}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{kpi.name}</p>
+                    <p className="text-2xl font-bold">{kpi.value}</p>
+                    <div className={`flex items-center text-sm ${kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {kpi.trend === 'up' ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
+                      {kpi.change}
                     </div>
-                  ))}
+                  </div>
+                  <Target className="h-8 w-8 text-blue-600" />
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Portfolio Summary */}
-        <Card className="mt-8 border-2 border-blue-200">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl">Portfolio Summary</CardTitle>
+        {/* Charts and Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Cash Flow</CardTitle>
+              <CardDescription>Net cash flow trend over the last six months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={monthlyCashFlow}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="cashFlow" stroke="#3B82F6" strokeWidth={2} name="Cash Flow" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Expense Breakdown</CardTitle>
+              <CardDescription>Distribution of expenses by category</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={expenseBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ category, value }) => `${category}: $${value.toLocaleString()}`}
+                  >
+                    {expenseBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Property Performance Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Property Performance Overview</CardTitle>
+            <CardDescription>Key financial metrics for each property</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-green-600">$94.2K</div>
-                <div className="text-sm text-gray-600">Monthly Revenue</div>
-                <div className="text-xs text-green-600 mt-1">+5.8% vs last month</div>
-              </div>
-              
-              <div className="text-center">
-                <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-blue-600">91.8%</div>
-                <div className="text-sm text-gray-600">Avg Occupancy</div>
-                <div className="text-xs text-yellow-600 mt-1">-1.5% vs target</div>
-              </div>
-              
-              <div className="text-center">
-                <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-purple-600">95.5%</div>
-                <div className="text-sm text-gray-600">Avg Collections</div>
-                <div className="text-xs text-green-600 mt-1">+0.5% vs target</div>
-              </div>
-              
-              <div className="text-center">
-                <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-orange-600">23</div>
-                <div className="text-sm text-gray-600">Avg Days to Lease</div>
-                <div className="text-xs text-red-600 mt-1">+3 days vs target</div>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Occupancy</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expenses</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NOI</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {propertyPerformance.map((property, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap">{property.property}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{property.occupancy}%</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.revenue.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.expenses.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.noi.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
 
-        <SendToPMModal 
-          isOpen={sendToPMModal.isOpen}
-          onClose={() => setSendToPMModal({isOpen: false})}
-          kpiData={sendToPMModal.kpiData}
-        />
+        {/* Actionable Insights */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Actionable Insights</CardTitle>
+            <CardDescription>AI-driven recommendations for portfolio optimization</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Optimize Rent Strategy</h3>
+                <p className="text-sm text-gray-600">Increase revenue by adjusting rental rates based on market trends</p>
+              </div>
+              <Button variant="outline">Analyze</Button>
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Reduce Operating Expenses</h3>
+                <p className="text-sm text-gray-600">Identify areas to cut costs and improve efficiency</p>
+              </div>
+              <Button variant="outline">Explore</Button>
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Improve Tenant Retention</h3>
+                <p className="text-sm text-gray-600">Implement strategies to increase tenant satisfaction and reduce turnover</p>
+              </div>
+              <Button variant="outline">Implement</Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
