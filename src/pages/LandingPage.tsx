@@ -179,7 +179,7 @@ const LandingPage = () => {
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-6 rounded-r-lg shadow-sm">
                 <blockquote className="text-lg text-gray-700 italic mb-4">
                   "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
-                  Legacy tools manage units. OPSIGHT manages outcomes."
+                  Property management software manages units. OPSIGHT manages outcomes."
                 </blockquote>
                 <p className="text-blue-600 font-semibold">- Built for ownership, not operations</p>
               </div>
