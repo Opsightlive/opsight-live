@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -94,209 +92,207 @@ const PMEngagementScore = () => {
   };
 
   return (
-    <Layout>
-      <div className="p-6">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
-          <h1 className="text-2xl font-bold mb-2">PM Engagement Score</h1>
-          <p className="text-blue-100">
-            Monitor and analyze property manager performance and tenant engagement metrics
-          </p>
-        </div>
+    <div className="p-6">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg mb-6">
+        <h1 className="text-2xl font-bold mb-2">PM Engagement Score</h1>
+        <p className="text-blue-100">
+          Monitor and analyze property manager performance and tenant engagement metrics
+        </p>
+      </div>
 
-        {/* Overview Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Average Score</p>
-                  <p className="text-2xl font-bold text-blue-600">{overallMetrics.averageScore}</p>
-                </div>
-                <Star className="h-8 w-8 text-blue-600" />
+      {/* Overview Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Average Score</p>
+                <p className="text-2xl font-bold text-blue-600">{overallMetrics.averageScore}</p>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total PMs</p>
-                  <p className="text-2xl font-bold">{overallMetrics.totalPMs}</p>
-                </div>
-                <Users className="h-8 w-8 text-gray-600" />
+              <Star className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total PMs</p>
+                <p className="text-2xl font-bold">{overallMetrics.totalPMs}</p>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Top Performers</p>
-                  <p className="text-2xl font-bold text-green-600">{overallMetrics.topPerformers}</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+              <Users className="h-8 w-8 text-gray-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Top Performers</p>
+                <p className="text-2xl font-bold text-green-600">{overallMetrics.topPerformers}</p>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Needs Attention</p>
-                  <p className="text-2xl font-bold text-red-600">{overallMetrics.needsAttention}</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Needs Attention</p>
+                <p className="text-2xl font-bold text-red-600">{overallMetrics.needsAttention}</p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        <Tabs defaultValue="individual" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="individual">Individual Scores</TabsTrigger>
-            <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="individual" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="individual">Individual Scores</TabsTrigger>
+          <TabsTrigger value="trends">Trends</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="individual" className="space-y-4">
-            {pmScores.map((pm, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{pm.name}</CardTitle>
-                      <CardDescription>{pm.property}</CardDescription>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="text-right">
-                        <div className={`text-3xl font-bold ${getScoreColor(pm.score)}`}>
-                          {pm.score}
-                        </div>
-                        <Badge {...getScoreBadge(pm.score)}>
-                          {getScoreBadge(pm.score).label}
-                        </Badge>
-                      </div>
-                      <div className={`flex items-center ${pm.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                        {pm.trend === 'up' ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                        <span className="ml-1 font-medium">{pm.change}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-600">Avg Response</p>
-                        <p className="font-medium">{pm.responseTime}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Star className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-600">Satisfaction</p>
-                        <p className="font-medium">{pm.satisfaction}/5.0</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-600">Open Issues</p>
-                        <p className="font-medium">{pm.issues}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Button size="sm" variant="outline">View Details</Button>
-                      <Button size="sm">Send Feedback</Button>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>Performance Score</span>
-                      <span>{pm.score}/100</span>
-                    </div>
-                    <Progress value={pm.score} className="h-2" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-
-          <TabsContent value="trends">
-            <Card>
+        <TabsContent value="individual" className="space-y-4">
+          {pmScores.map((pm, index) => (
+            <Card key={index}>
               <CardHeader>
-                <CardTitle>Engagement Score Trends</CardTitle>
-                <CardDescription>Average PM engagement scores over time</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">{pm.name}</CardTitle>
+                    <CardDescription>{pm.property}</CardDescription>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <div className={`text-3xl font-bold ${getScoreColor(pm.score)}`}>
+                        {pm.score}
+                      </div>
+                      <Badge {...getScoreBadge(pm.score)}>
+                        {getScoreBadge(pm.score).label}
+                      </Badge>
+                    </div>
+                    <div className={`flex items-center ${pm.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {pm.trend === 'up' ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                      <span className="ml-1 font-medium">{pm.change}</span>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={engagementTrends}>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-600">Avg Response</p>
+                      <p className="font-medium">{pm.responseTime}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Star className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-600">Satisfaction</p>
+                      <p className="font-medium">{pm.satisfaction}/5.0</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-600">Open Issues</p>
+                      <p className="font-medium">{pm.issues}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button size="sm" variant="outline">View Details</Button>
+                    <Button size="sm">Send Feedback</Button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Performance Score</span>
+                    <span>{pm.score}/100</span>
+                  </div>
+                  <Progress value={pm.score} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="trends">
+          <Card>
+            <CardHeader>
+              <CardTitle>Engagement Score Trends</CardTitle>
+              <CardDescription>Average PM engagement scores over time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={engagementTrends}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis domain={[70, 95]} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="score" stroke="#3B82F6" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Score Distribution</CardTitle>
+                <CardDescription>Distribution of PM engagement scores</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={scoreDistribution}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[70, 95]} />
+                    <XAxis dataKey="range" />
+                    <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="score" stroke="#3B82F6" strokeWidth={2} />
-                  </LineChart>
+                    <Bar dataKey="count" fill="#3B82F6" />
+                  </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="analytics">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Score Distribution</CardTitle>
-                  <CardDescription>Distribution of PM engagement scores</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={scoreDistribution}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="range" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="count" fill="#3B82F6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Categories</CardTitle>
-                  <CardDescription>PM performance breakdown</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={scoreDistribution}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="count"
-                        label={({ range, count }) => `${range}: ${count}`}
-                      >
-                        {scoreDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+            <Card>
+              <CardHeader>
+                <CardTitle>Performance Categories</CardTitle>
+                <CardDescription>PM performance breakdown</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={scoreDistribution}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="count"
+                      label={({ range, count }) => `${range}: ${count}`}
+                    >
+                      {scoreDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
