@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -184,6 +185,91 @@ const LandingPage = () => {
 
       {/* Testimonials Section */}
       <TestimonialsCarousel />
+
+      {/* Success Stories Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Success Stories
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See how property managers and owners are transforming their operations with OPSIGHT
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Success Story 1 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+              <div className="flex items-center mb-4">
+                <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">95% Faster Reporting</h3>
+                  <p className="text-gray-600">Metro Properties</p>
+                </div>
+              </div>
+              <p className="text-gray-600">
+                "OPSIGHT reduced our monthly reporting time from 40 hours to just 2 hours. The automated insights are incredible."
+              </p>
+              <div className="mt-4 flex items-center">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              </div>
+            </div>
+
+            {/* Success Story 2 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+              <div className="flex items-center mb-4">
+                <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                  <DollarSign className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">$2M+ Cost Savings</h3>
+                  <p className="text-gray-600">Urban Holdings</p>
+                </div>
+              </div>
+              <p className="text-gray-600">
+                "Early warning alerts helped us prevent major maintenance issues, saving over $2 million in emergency repairs."
+              </p>
+              <div className="mt-4 flex items-center">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              </div>
+            </div>
+
+            {/* Success Story 3 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+              <div className="flex items-center mb-4">
+                <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                  <Users className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">98% Tenant Satisfaction</h3>
+                  <p className="text-gray-600">Skyline Management</p>
+                </div>
+              </div>
+              <p className="text-gray-600">
+                "Proactive maintenance scheduling and instant communication improved our tenant satisfaction scores dramatically."
+              </p>
+              <div className="mt-4 flex items-center">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Trusted By Section */}
       <div className="py-12 bg-white">
