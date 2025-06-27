@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { isMobile } = useDeviceDetection();
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'ai-intelligence': false,
+    'ai-tools': false,
   });
 
   const handleLogout = () => {
@@ -117,8 +117,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       ]
     },
     {
-      category: 'AI & Intelligence',
-      key: 'ai-intelligence',
+      category: 'AI Tools',
+      key: 'ai-tools',
       expandable: true,
       items: [
         { name: 'AI Tools', href: '/ai-tools', icon: Brain },
