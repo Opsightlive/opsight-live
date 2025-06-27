@@ -51,12 +51,10 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
     return isLogin ? (
       <LoginForm 
         onRegisterClick={() => setIsLogin(false)} 
-        onError={setAuthError}
       />
     ) : (
       <RegisterForm 
         onLoginClick={() => setIsLogin(true)} 
-        onError={setAuthError}
       />
     );
   }
