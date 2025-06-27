@@ -12,26 +12,26 @@ const PortfolioOverview = () => {
   const navigate = useNavigate();
 
   const portfolioMetrics = [
-    { name: 'Total Properties', value: '24', change: '+2', trend: 'up' },
-    { name: 'Total Units', value: '1,847', change: '+45', trend: 'up' },
+    { name: 'Total Properties', value: '8', change: '+1', trend: 'up' },
+    { name: 'Total Units', value: '1,247', change: '+32', trend: 'up' },
     { name: 'Avg Occupancy', value: '94.2%', change: '+1.5%', trend: 'up' },
-    { name: 'Monthly Revenue', value: '$2.4M', change: '+$120K', trend: 'up' }
+    { name: 'Monthly Revenue', value: '$1.8M', change: '+$85K', trend: 'up' }
   ];
 
   const performanceData = [
     { property: 'Sunset Gardens', occupancy: 96, revenue: 285000, noi: 68, units: 248 },
-    { property: 'Metro Plaza', occupancy: 92, revenue: 320000, noi: 71, units: 156 },
+    { property: 'Metro Plaza Apartments', occupancy: 92, revenue: 320000, noi: 71, units: 156 },
     { property: 'Riverside Towers', occupancy: 89, revenue: 195000, noi: 65, units: 184 },
     { property: 'Oak Street Commons', occupancy: 97, revenue: 410000, noi: 74, units: 312 }
   ];
 
   const monthlyTrends = [
-    { month: 'Jul', revenue: 2200, expenses: 1400, noi: 800 },
-    { month: 'Aug', revenue: 2350, expenses: 1450, noi: 900 },
-    { month: 'Sep', revenue: 2280, expenses: 1420, noi: 860 },
-    { month: 'Oct', revenue: 2400, expenses: 1480, noi: 920 },
-    { month: 'Nov', revenue: 2450, expenses: 1500, noi: 950 },
-    { month: 'Dec', revenue: 2500, expenses: 1520, noi: 980 }
+    { month: 'Jul', revenue: 1600, expenses: 1000, noi: 600 },
+    { month: 'Aug', revenue: 1650, expenses: 1050, noi: 600 },
+    { month: 'Sep', revenue: 1700, expenses: 1080, noi: 620 },
+    { month: 'Oct', revenue: 1750, expenses: 1100, noi: 650 },
+    { month: 'Nov', revenue: 1780, expenses: 1150, noi: 630 },
+    { month: 'Dec', revenue: 1800, expenses: 1200, noi: 600 }
   ];
 
   const unitMixData = [
@@ -59,11 +59,11 @@ const PortfolioOverview = () => {
               <div className="flex items-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
                   <Building2 className="h-5 w-5" />
-                  <span>24 Properties</span>
+                  <span>8 Multifamily Properties</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span>1,847 Units</span>
+                  <span>1,247 Units</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
@@ -71,7 +71,7 @@ const PortfolioOverview = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />
-                  <span>$2.4M Revenue</span>
+                  <span>$1.8M Revenue</span>
                 </div>
               </div>
             </div>
@@ -232,7 +232,7 @@ const PortfolioOverview = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold">Market Comparison</h3>
+                    <h3 className="font-semibf">Market Comparison</h3>
                     <p className="text-sm text-gray-600">Compare to market benchmarks</p>
                   </div>
                   <Button variant="outline">Compare</Button>
