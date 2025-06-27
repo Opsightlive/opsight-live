@@ -91,7 +91,7 @@ const PortfolioDashboard = () => {
   const totalUnits = multifamilyProperties.reduce((sum, prop) => sum + prop.units, 0);
   const avgOccupancy = multifamilyProperties.reduce((sum, prop) => sum + prop.occupancy, 0) / multifamilyProperties.length;
   const totalNOI = multifamilyProperties.reduce((sum, prop) => sum + prop.noi, 0);
-  const avgRent = multifamilyProperties.reduce((sum, prop) => sum + prop.avgRent, 0) / multifamilyProperties.length;
+  const avgRent = multifamilyProperties.reduce((sum, prop) => sum + (prop.avgRent * prop.units), 0) / totalUnits;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -286,7 +286,7 @@ const PortfolioDashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`$${(value / 1000).toFixed(0)}K`, '']} />
+                    <Tooltip formatter={(value) => [`$${(Number(value) / 1000).toFixed(0)}K`, '']} />
                     <Area type="monotone" dataKey="revenue" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} name="Revenue" />
                     <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} name="Expenses" />
                   </AreaChart>
