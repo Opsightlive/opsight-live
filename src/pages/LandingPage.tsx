@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -63,7 +62,9 @@ const LandingPage = () => {
       }));
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [liveMetrics.length]);
+
+  const IconComponent = liveMetrics[currentMetric].icon;
 
   return (
     <div className="min-h-screen bg-white">
@@ -209,9 +210,7 @@ const LandingPage = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center">
-                        {React.createElement(liveMetrics[currentMetric].icon, { 
-                          className: `h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`
-                        })}
+                        <IconComponent className={`h-6 w-6 ${liveMetrics[currentMetric].color} mr-2 animate-spin`} />
                         <p className="text-sm font-bold text-blue-800">🔥 LIVE UPDATES</p>
                       </div>
                       <p className="text-3xl font-bold text-blue-900 animate-bounce">
@@ -222,6 +221,42 @@ const LandingPage = () => {
                     <div className="text-green-600 font-bold text-lg animate-pulse">
                       {liveMetrics[currentMetric].change}
                     </div>
+                  </div>
+                </div>
+
+                {/* Live Updating Counter Display */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-blue-50 p-3 rounded-lg border animate-pulse">
+                    <div className="flex items-center justify-between">
+                      <Building2 className="h-5 w-5 text-blue-600" />
+                      <span className="text-xs text-blue-600">+{Math.floor(Math.random() * 5)}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-900">{liveStats.properties.toLocaleString()}</p>
+                    <p className="text-xs text-blue-600">Properties</p>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded-lg border animate-pulse">
+                    <div className="flex items-center justify-between">
+                      <AlertTriangle className="h-5 w-5 text-red-600" />
+                      <span className="text-xs text-red-600">+{Math.floor(Math.random() * 3)}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-900">{liveStats.issues}</p>
+                    <p className="text-xs text-red-600">Alerts</p>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg border animate-pulse">
+                    <div className="flex items-center justify-between">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <span className="text-xs text-green-600">+${Math.floor(Math.random() * 50)}K</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-900">${(liveStats.savings / 1000000).toFixed(1)}M</p>
+                    <p className="text-xs text-green-600">Saved</p>
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg border animate-pulse">
+                    <div className="flex items-center justify-between">
+                      <Users className="h-5 w-5 text-purple-600" />
+                      <span className="text-xs text-purple-600">+{Math.floor(Math.random() * 10)}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-900">{liveStats.users}</p>
+                    <p className="text-xs text-purple-600">Users</p>
                   </div>
                 </div>
 
@@ -258,15 +293,19 @@ const LandingPage = () => {
                   <div className="space-y-2 text-xs">
                     <div className="flex items-center text-green-600 animate-pulse">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></div>
-                      New property added to monitoring
+                      New property added to monitoring - {new Date().toLocaleTimeString()}
                     </div>
                     <div className="flex items-center text-blue-600 animate-pulse">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-ping"></div>
-                      KPI threshold updated automatically
+                      KPI threshold updated automatically - {new Date().toLocaleTimeString()}
                     </div>
                     <div className="flex items-center text-orange-600 animate-pulse">
                       <div className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-ping"></div>
-                      Predictive alert triggered
+                      Predictive alert triggered - {new Date().toLocaleTimeString()}
+                    </div>
+                    <div className="flex items-center text-purple-600 animate-pulse">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-ping"></div>
+                      Performance report generated - {new Date().toLocaleTimeString()}
                     </div>
                   </div>
                 </div>
