@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -34,25 +33,58 @@ const LandingPage = () => {
 
   // Live metrics animation
   const liveMetrics = [
-    { label: 'Properties Monitored', value: liveStats.properties.toLocaleString(), change: '+23', icon: Building2, color: 'text-blue-600' },
-    { label: 'Issues Predicted', value: liveStats.issues.toString(), change: '+12', icon: AlertTriangle, color: 'text-red-600' },
-    { label: 'Cost Savings', value: `$${(liveStats.savings / 1000000).toFixed(1)}M`, change: '+$45K', icon: DollarSign, color: 'text-green-600' },
-    { label: 'Active Users', value: liveStats.users.toLocaleString(), change: '+8', icon: Users, color: 'text-purple-600' }
+    { 
+      label: 'Properties Monitored', 
+      value: liveStats.properties.toLocaleString(), 
+      change: '+23', 
+      icon: Building2, 
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200'
+    },
+    { 
+      label: 'Issues Predicted', 
+      value: liveStats.issues.toString(), 
+      change: '+12', 
+      icon: AlertTriangle, 
+      color: 'text-red-600',
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200'
+    },
+    { 
+      label: 'Cost Savings', 
+      value: `$${(liveStats.savings / 1000000).toFixed(1)}M`, 
+      change: '+$45K', 
+      icon: DollarSign, 
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200'
+    },
+    { 
+      label: 'Active Users', 
+      value: liveStats.users.toLocaleString(), 
+      change: '+8', 
+      icon: Users, 
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200'
+    }
   ];
 
-  // Live counter animation
+  // Live counter animation with more realistic updates
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMetric((prev) => (prev + 1) % liveMetrics.length);
       
       // Simulate live updates with small random increments
       setLiveStats(prev => ({
-        properties: prev.properties + Math.floor(Math.random() * 3),
+        properties: prev.properties + Math.floor(Math.random() * 3) + 1,
         issues: prev.issues + Math.floor(Math.random() * 2),
-        savings: prev.savings + Math.floor(Math.random() * 50000),
-        users: prev.users + Math.floor(Math.random() * 2)
+        savings: prev.savings + Math.floor(Math.random() * 25000) + 10000,
+        users: prev.users + Math.floor(Math.random() * 3)
       }));
-    }, 3000);
+    }, 2500); // Faster updates for better live effect
+    
     return () => clearInterval(interval);
   }, [liveMetrics.length]);
 
@@ -123,7 +155,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               {/* Trust Badge */}
               <div className="flex items-center">
@@ -139,36 +171,36 @@ const LandingPage = () => {
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                   Property management software wasn't built for owners. OPSIGHT flips the power to you - 
-                  Real-time red flags, KPI enforcement, and full operational visibility. Built for ownership, not operations.
+                  Real-time red flags, KPI enforcement, and full operational visibility.
                 </p>
               </div>
 
               {/* Quote Section */}
-              <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-6 rounded-r-lg shadow-sm">
                 <blockquote className="text-lg text-gray-700 italic mb-4">
                   "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
-                  Legacy tools manage units. OPSIGHT manages outcomes - We don't just show you data, we enforce results."
+                  Legacy tools manage units. OPSIGHT manages outcomes."
                 </blockquote>
-                <p className="text-blue-600 font-semibold">- The OPSIGHT Vision</p>
+                <p className="text-blue-600 font-semibold">- Built for ownership, not operations</p>
               </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/demo">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
                     Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 hover:bg-gray-50">
                     Start Free Trial
                   </Button>
                 </Link>
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex items-center space-x-6 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
                   No credit card required
@@ -184,98 +216,127 @@ const LandingPage = () => {
               </div>
             </div>
             
-            {/* Live Portfolio Dashboard */}
+            {/* Enhanced Live Portfolio Dashboard */}
             <div className="relative">
-              <div className="bg-white rounded-xl shadow-2xl p-6 border border-gray-200">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-semibold text-gray-900 text-lg">Live Portfolio Dashboard</h3>
-                  <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-                  </div>
-                </div>
+              <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 relative overflow-hidden">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-indigo-50/20 pointer-events-none"></div>
                 
-                {/* Live Metrics Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {liveMetrics.map((metric, index) => {
-                    const IconComponent = metric.icon;
-                    return (
-                      <div 
-                        key={metric.label}
-                        className={`p-4 rounded-lg transition-all duration-500 ${
-                          currentMetric === index 
-                            ? 'bg-blue-50 border-2 border-blue-200 scale-105' 
-                            : 'bg-gray-50 border border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <IconComponent className={`h-5 w-5 ${metric.color}`} />
-                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                            currentMetric === index ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <h3 className="font-bold text-gray-900 text-xl">Live Portfolio Dashboard</h3>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                        <div className="w-3 h-3 bg-green-300 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                      </div>
+                      <span className="text-xs text-green-600 font-medium">LIVE</span>
+                    </div>
+                  </div>
+                  
+                  {/* Enhanced Live Metrics Grid */}
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    {liveMetrics.map((metric, index) => {
+                      const IconComponent = metric.icon;
+                      const isActive = currentMetric === index;
+                      return (
+                        <div 
+                          key={metric.label}
+                          className={`p-5 rounded-xl transition-all duration-700 transform ${
+                            isActive 
+                              ? `${metric.bgColor} ${metric.borderColor} border-2 scale-105 shadow-lg` 
+                              : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
+                          }`}
+                          style={{
+                            transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <IconComponent className={`h-6 w-6 ${isActive ? metric.color : 'text-gray-400'} transition-colors duration-300`} />
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full transition-all duration-300 ${
+                              isActive 
+                                ? 'bg-green-100 text-green-700 animate-pulse' 
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {metric.change}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600 mb-2">{metric.label}</p>
+                          <p className={`font-bold transition-all duration-300 ${
+                            isActive ? `${metric.color} text-xl` : 'text-gray-900 text-lg'
                           }`}>
-                            {metric.change}
-                          </span>
+                            {metric.value}
+                          </p>
+                          {isActive && (
+                            <div className="mt-2 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
+                          )}
                         </div>
-                        <p className="text-xs text-gray-600 mb-1">{metric.label}</p>
-                        <p className={`font-bold ${currentMetric === index ? 'text-blue-600 text-lg' : 'text-gray-900'}`}>
-                          {metric.value}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
 
-                {/* Action Items */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
-                    <div className="flex items-center">
-                      <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
-                      <div>
-                        <span className="text-sm font-medium text-red-800">3 Predictive Alerts</span>
-                        <p className="text-xs text-red-600">Immediate attention required</p>
+                  {/* Enhanced Action Items */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border border-red-200 shadow-sm">
+                      <div className="flex items-center">
+                        <div className="bg-red-500 p-2 rounded-lg mr-3">
+                          <AlertTriangle className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold text-red-800">3 Predictive Alerts</span>
+                          <p className="text-xs text-red-600">Immediate attention required</p>
+                        </div>
                       </div>
+                      <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white shadow-sm">
+                        Review
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline" className="border-red-200 text-red-700 hover:bg-red-100">
-                      Review
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
-                    <div className="flex items-center">
-                      <TrendingUp className="h-5 w-5 text-green-500 mr-3" />
-                      <div>
-                        <span className="text-sm font-medium text-green-800">NOI Up 18%</span>
-                        <p className="text-xs text-green-600">This quarter vs last</p>
+                    
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200 shadow-sm">
+                      <div className="flex items-center">
+                        <div className="bg-green-500 p-2 rounded-lg mr-3">
+                          <TrendingUp className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold text-green-800">NOI Up 18%</span>
+                          <p className="text-xs text-green-600">This quarter vs last</p>
+                        </div>
                       </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white shadow-sm">
+                        View Report
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline" className="border-green-200 text-green-700 hover:bg-green-100">
-                      View Report
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
-                    <div className="flex items-center">
-                      <Bot className="h-5 w-5 text-blue-500 mr-3" />
-                      <div>
-                        <span className="text-sm font-medium text-blue-800">AI Recommendations</span>
-                        <p className="text-xs text-blue-600">5 new insights available</p>
+                    
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="flex items-center">
+                        <div className="bg-blue-500 p-2 rounded-lg mr-3">
+                          <Bot className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold text-blue-800">AI Recommendations</span>
+                          <p className="text-xs text-blue-600">5 new insights available</p>
+                        </div>
                       </div>
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+                        See All
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-100">
-                      See All
-                    </Button>
                   </div>
-                </div>
 
-                {/* Live Update Indicator */}
-                <div className="flex items-center justify-center mt-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                    Live updates every 3 seconds
+                  {/* Enhanced Live Update Indicator */}
+                  <div className="flex items-center justify-center mt-6 pt-4 border-t border-gray-100">
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                      <span className="animate-pulse">Live updates every 2.5 seconds</span>
+                    </div>
                   </div>
                 </div>
               </div>
+              
+              {/* Floating elements for visual appeal */}
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500 rounded-full opacity-20 animate-bounce"></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-indigo-500 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
           </div>
         </div>
