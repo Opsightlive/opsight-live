@@ -1,327 +1,303 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { 
   LayoutDashboard, 
   Building2, 
-  BarChart3, 
+  TrendingUp, 
   AlertTriangle, 
-  Bot,
-  Users,
-  Settings,
+  FileText, 
+  Users, 
+  Settings, 
   HelpCircle,
-  FileText,
+  BarChart3,
+  Brain,
+  Target,
+  Briefcase,
   Mail,
   MessageSquare,
-  TrendingUp,
+  UserCheck,
   Calendar,
-  Database,
+  CheckSquare,
+  Archive,
   Bell,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Lightbulb
+  LogOut,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-
-interface SidebarItem {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  path?: string;
-  companyOnly?: boolean;
-  children?: SidebarItem[];
-}
 
 interface SidebarProps {
   onClose?: () => void;
 }
 
-const sidebarItems: SidebarItem[] = [
-  // Core Dashboard & Overview
-  {
-    icon: LayoutDashboard,
-    label: 'Dashboard',
-    path: '/dashboard'
-  },
-  {
-    icon: Building2,
-    label: 'Portfolio Overview',
-    path: '/portfolio'
-  },
-  
-  // Alerts & Monitoring (with dropdown)
-  {
-    icon: AlertTriangle,
-    label: 'Alerts & Monitoring',
-    children: [
-      {
-        icon: AlertTriangle,
-        label: 'Red Flag Alerts',
-        path: '/red-flag-alerts'
-      },
-      {
-        icon: Calendar,
-        label: 'Red Flag Timeline',
-        path: '/timeline'
-      },
-      {
-        icon: TrendingUp,
-        label: 'Predictive Signals',
-        path: '/predictive'
-      },
-      {
-        icon: Bell,
-        label: 'Alerts & Notifications',
-        path: '/notifications'
-      },
-      {
-        icon: Bell,
-        label: 'Alert Delivery Logs',
-        path: '/delivery-logs'
-      }
-    ]
-  },
-  
-  // Analytics & KPIs (now includes Deal Vetting and Resolutions)
-  {
-    icon: BarChart3,
-    label: 'Analytics & KPIs',
-    children: [
-      {
-        icon: BarChart3,
-        label: 'KPI Command Center',
-        path: '/kpi-center'
-      },
-      {
-        icon: BarChart3,
-        label: 'PM Engagement Score',
-        path: '/pm-engagement'
-      },
-      {
-        icon: FileText,
-        label: 'Deal Vetting Toolkit',
-        path: '/deal-vetting'
-      },
-      {
-        icon: FileText,
-        label: 'Resolution Summary',
-        path: '/resolutions'
-      }
-    ]
-  },
-  
-  // AI Tools (with dropdown including AI Suggestions)
-  {
-    icon: Bot,
-    label: 'AI Tools',
-    children: [
-      {
-        icon: Bot,
-        label: 'AI Reader',
-        path: '/ai-reader'
-      },
-      {
-        icon: Bot,
-        label: 'AI Intelligence Tools',
-        path: '/ai-tools'
-      },
-      {
-        icon: Lightbulb,
-        label: 'AI Suggestions',
-        path: '/ai-suggestions'
-      }
-    ]
-  },
-  
-  // LP Dashboard (new dropdown section)
-  {
-    icon: TrendingUp,
-    label: 'LP Dashboard',
-    children: [
-      {
-        icon: TrendingUp,
-        label: 'LP Dashboard',
-        path: '/lp-dashboard'
-      },
-      {
-        icon: FileText,
-        label: 'LP Report Generator',
-        path: '/lp-reports'
-      }
-    ]
-  },
-  
-  // Automation (with dropdown)
-  {
-    icon: Mail,
-    label: 'Automation',
-    children: [
-      {
-        icon: Mail,
-        label: 'Email Automation',
-        path: '/email-automation'
-      },
-      {
-        icon: MessageSquare,
-        label: 'SMS Automation',
-        path: '/sms-automation'
-      }
-    ]
-  },
-  
-  // Data & Management
-  {
-    icon: Database,
-    label: 'Data Vault',
-    path: '/data-vault'
-  },
-  
-  // Administration (Company Only)
-  {
-    icon: Users,
-    label: 'User Management',
-    path: '/users',
-    companyOnly: true
-  },
-  
-  // Settings & Support
-  {
-    icon: Settings,
-    label: 'Settings',
-    path: '/settings'
-  },
-  {
-    icon: HelpCircle,
-    label: 'Help Center',
-    path: '/help'
-  }
-];
-
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const location = useLocation();
-  const { isCompanyUser } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout, isCompanyUser } = useAuth();
   const { isMobile } = useDeviceDetection();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['AI Tools']); // Default expand AI Tools to show suggestions
 
-  const filteredItems = sidebarItems.filter(item => 
-    !item.companyOnly || isCompanyUser
-  );
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    if (onClose) onClose();
+  };
 
-  const handleItemClick = () => {
-    if (isMobile && onClose) {
-      onClose();
+  const isActive = (path: string) => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  const navigationItems = [
+    { 
+      name: 'Dashboard', 
+      href: '/dashboard', 
+      icon: LayoutDashboard,
+      description: 'Portfolio overview and key metrics'
+    },
+    { 
+      name: 'Portfolio', 
+      href: '/portfolio', 
+      icon: Building2,
+      description: 'Property portfolio management'
+    },
+    { 
+      name: 'KPI Center', 
+      href: '/kpi-center', 
+      icon: TrendingUp,
+      description: 'Key performance indicators'
+    },
+    { 
+      name: 'Red Flag Alerts', 
+      href: '/red-flag-alerts', 
+      icon: AlertTriangle,
+      description: 'Critical issues and alerts',
+      badge: '3'
     }
-  };
+  ];
 
-  const toggleExpanded = (label: string) => {
-    setExpandedItems(prev => 
-      prev.includes(label) 
-        ? prev.filter(item => item !== label)
-        : [...prev, label]
-    );
-  };
+  const modules = [
+    {
+      category: 'LP & Reporting',
+      items: [
+        { name: 'LP Dashboard', href: '/lp-dashboard', icon: BarChart3 },
+        { name: 'LP Reports', href: '/lp-reports', icon: FileText }
+      ]
+    },
+    {
+      category: 'AI & Intelligence',
+      items: [
+        { name: 'AI Tools', href: '/ai-tools', icon: Brain },
+        { name: 'Predictive Signals', href: '/predictive', icon: Target },
+        { name: 'Deal Vetting', href: '/deal-vetting', icon: Briefcase }
+      ]
+    },
+    {
+      category: 'Automation',
+      items: [
+        { name: 'Email Automation', href: '/email-automation', icon: Mail },
+        { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare }
+      ]
+    },
+    {
+      category: 'Management',
+      items: [
+        { name: 'PM Engagement', href: '/pm-engagement', icon: UserCheck },
+        { name: 'Timeline', href: '/timeline', icon: Calendar },
+        { name: 'Resolutions', href: '/resolutions', icon: CheckSquare }
+      ]
+    },
+    {
+      category: 'System',
+      items: [
+        { name: 'Delivery Logs', href: '/delivery-logs', icon: Archive },
+        { name: 'Data Vault', href: '/data-vault', icon: Archive },
+        { name: 'Notifications', href: '/notifications', icon: Bell }
+      ]
+    }
+  ];
 
-  const renderSidebarItem = (item: SidebarItem, level = 0) => {
-    const hasChildren = item.children && item.children.length > 0;
-    const isExpanded = expandedItems.includes(item.label);
-    const isActive = item.path ? location.pathname === item.path : false;
-    const hasActiveChild = item.children?.some(child => child.path === location.pathname);
-    
-    return (
-      <li key={item.label}>
-        {hasChildren ? (
-          <>
-            <button
-              onClick={() => toggleExpanded(item.label)}
-              className={cn(
-                "w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50 group",
-                (isActive || hasActiveChild)
-                  ? "bg-blue-50 text-blue-700" 
-                  : "text-gray-700 hover:text-gray-900"
-              )}
-            >
-              <item.icon 
-                className={cn(
-                  "mr-3 h-5 w-5 transition-colors",
-                  (isActive || hasActiveChild)
-                    ? "text-blue-700" 
-                    : "text-gray-500 group-hover:text-gray-700"
-                )} 
-              />
-              <span className="flex-1 text-left">{item.label}</span>
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
-            {isExpanded && (
-              <ul className="ml-4 mt-1 space-y-1">
-                {item.children.map(child => renderSidebarItem(child, level + 1))}
-              </ul>
-            )}
-          </>
-        ) : (
-          <Link
-            to={item.path!}
-            onClick={handleItemClick}
-            className={cn(
-              "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-50 group",
-              level > 0 ? "ml-4" : "",
-              isActive 
-                ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" 
-                : "text-gray-700 hover:text-gray-900"
-            )}
-          >
-            <item.icon 
-              className={cn(
-                "mr-3 h-5 w-5 transition-colors",
-                level > 0 ? "h-4 w-4" : "",
-                isActive 
-                  ? "text-blue-700" 
-                  : "text-gray-500 group-hover:text-gray-700"
-              )} 
-            />
-            {item.label}
-          </Link>
-        )}
-      </li>
-    );
+  const companyItems = [
+    { 
+      name: 'Company Dashboard', 
+      href: '/company-dashboard', 
+      icon: Building2,
+      description: 'Company-wide analytics and management'
+    },
+    { 
+      name: 'User Management', 
+      href: '/users', 
+      icon: Users,
+      description: 'Manage company users and permissions'
+    }
+  ];
+
+  const settingsItems = [
+    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Help', href: '/help', icon: HelpCircle }
+  ];
+
+  const handleLinkClick = () => {
+    if (onClose) onClose();
   };
 
   return (
-    <div className={`bg-white border-r border-gray-200 ${isMobile ? 'w-80' : 'w-64'} h-full flex flex-col`}>
-      {/* Mobile Header */}
-      {isMobile && (
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <img 
-              src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-              alt="OPSIGHT Logo" 
-              className="h-8 w-8 object-contain"
-            />
-            <h1 className="text-xl font-bold text-gray-900">OPSIGHT</h1>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="hover:bg-gray-100"
-          >
-            <X className="h-6 w-6" />
-          </Button>
+    <div className="flex flex-col h-full w-64 bg-white border-r border-gray-200">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <img 
+            src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+            alt="OPSIGHT Logo" 
+            className="h-8 w-8 object-contain"
+          />
+          <h1 className="text-xl font-bold text-gray-900">OPSIGHT</h1>
         </div>
-      )}
+        {isMobile && onClose && (
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-5 w-5" />
+          </Button>
+        )}
+      </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <nav className={`${isMobile ? 'mt-4' : 'mt-8'} px-4 pb-8`}>
-          <ul className="space-y-2">
-            {filteredItems.map(item => renderSidebarItem(item))}
-          </ul>
+      <ScrollArea className="flex-1">
+        <div className="p-4">
+          {/* User Info */}
+          <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">
+                  {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'User'}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                {isCompanyUser && (
+                  <Badge className="text-xs mt-1 bg-blue-100 text-blue-800">Company</Badge>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Navigation */}
+          <nav className="space-y-1 mb-6">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={handleLinkClick}
+                className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive(item.href)
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center">
+                  <item.icon className="mr-3 h-4 w-4" />
+                  {item.name}
+                </div>
+                {item.badge && (
+                  <Badge variant="destructive" className="text-xs">
+                    {item.badge}
+                  </Badge>
+                )}
+              </Link>
+            ))}
+          </nav>
+
+          <Separator className="my-4" />
+
+          {/* Company Features (if company user) */}
+          {isCompanyUser && (
+            <>
+              <div className="mb-4">
+                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                  Company
+                </h3>
+                <nav className="space-y-1">
+                  {companyItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={handleLinkClick}
+                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                        isActive(item.href)
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <item.icon className="mr-3 h-4 w-4" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+              <Separator className="my-4" />
+            </>
+          )}
+
+          {/* Modules */}
+          {modules.map((section, index) => (
+            <div key={section.category} className="mb-4">
+              <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                {section.category}
+              </h3>
+              <nav className="space-y-1">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={handleLinkClick}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      isActive(item.href)
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <item.icon className="mr-3 h-4 w-4" />
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+              {index < modules.length - 1 && <Separator className="my-4" />}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200">
+        <nav className="space-y-1 mb-3">
+          {settingsItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.href}
+              onClick={handleLinkClick}
+              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                isActive(item.href)
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <item.icon className="mr-3 h-4 w-4" />
+              {item.name}
+            </Link>
+          ))}
         </nav>
+        
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700"
+        >
+          <LogOut className="mr-3 h-4 w-4" />
+          Sign Out
+        </Button>
       </div>
     </div>
   );
