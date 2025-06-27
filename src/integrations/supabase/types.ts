@@ -355,6 +355,60 @@ export type Database = {
           },
         ]
       }
+      user_layout_settings: {
+        Row: {
+          card_layout: string | null
+          compact_view: boolean | null
+          created_at: string | null
+          custom_settings: Json | null
+          device_type: string
+          font_size: string | null
+          id: string
+          last_used: string | null
+          layout_density: string | null
+          screen_height: number | null
+          screen_width: number | null
+          sidebar_collapsed: boolean | null
+          theme_preference: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          card_layout?: string | null
+          compact_view?: boolean | null
+          created_at?: string | null
+          custom_settings?: Json | null
+          device_type?: string
+          font_size?: string | null
+          id?: string
+          last_used?: string | null
+          layout_density?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          sidebar_collapsed?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          card_layout?: string | null
+          compact_view?: boolean | null
+          created_at?: string | null
+          custom_settings?: Json | null
+          device_type?: string
+          font_size?: string | null
+          id?: string
+          last_used?: string | null
+          layout_density?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          sidebar_collapsed?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           created_at: string | null
