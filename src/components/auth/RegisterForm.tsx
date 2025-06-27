@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import OnboardingSetup from './OnboardingSetup';
+import MultiStepOnboarding from './MultiStepOnboarding';
 import PaymentSetup from './PaymentSetup';
 
 interface RegisterFormProps {
@@ -47,14 +47,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     setCurrentStep('onboarding');
   };
 
-  const handleOnboardingComplete = () => {
-    setCurrentStep('payment');
-  };
-
-  const handlePaymentComplete = async () => {
+  const handleOnboardingComplete = async () => {
     const pendingRegistration = localStorage.getItem('pendingRegistration');
+    const onboardingData = localStorage.getItem('onboardingData');
     
-    if (pendingRegistration) {
+    if (pendingRegistration && onboardingData) {
       const { email, password } = JSON.parse(pendingRegistration);
       
       try {
@@ -80,11 +77,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   };
 
   if (currentStep === 'onboarding') {
-    return <OnboardingSetup onComplete={handleOnboardingComplete} />;
-  }
-
-  if (currentStep === 'payment') {
-    return <PaymentSetup onComplete={handlePaymentComplete} />;
+    return <MultiStepOnboarding onComplete={handleOnboardingComplete} />;
   }
 
   if (isMobile) {
