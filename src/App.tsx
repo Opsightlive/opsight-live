@@ -39,6 +39,8 @@ import OwnerOnboardingPage from '@/pages/OwnerOnboarding';
 import Settings from '@/pages/Settings';
 import HelpCenter from '@/pages/HelpCenter';
 import DataSetup from '@/components/auth/DataSetup';
+import SubscriptionSettings from '@/pages/SubscriptionSettings';
+import UserProfile from '@/pages/UserProfile';
 
 const queryClient = new QueryClient();
 
@@ -227,6 +229,20 @@ function App() {
                 <AuthWrapper>
                   <Layout>
                     <Settings />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/subscription" element={
+                <AuthWrapper>
+                  <Layout>
+                    <SubscriptionSettings />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/profile" element={
+                <AuthWrapper>
+                  <Layout>
+                    <UserProfile />
                   </Layout>
                 </AuthWrapper>
               } />

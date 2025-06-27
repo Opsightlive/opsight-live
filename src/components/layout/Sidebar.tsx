@@ -38,24 +38,25 @@ const Sidebar = () => {
     {
       title: 'Overview',
       items: [
-        { name: 'Portfolio Overview', href: '/portfolio', icon: Home },
-        { name: 'KPI Command Center', href: '/kpi-command', icon: BarChart3 },
+        { name: 'Dashboard', href: '/dashboard', icon: Home },
+        { name: 'Portfolio Overview', href: '/portfolio', icon: Building2 },
+        { name: 'KPI Command Center', href: '/kpi-center', icon: BarChart3 },
         { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart },
       ]
     },
     {
       title: 'Intelligence',
       items: [
-        { name: 'Red Flag Alerts', href: '/red-flags', icon: AlertTriangle },
-        { name: 'Predictive Signals', href: '/predictive-signals', icon: TrendingUp },
-        { name: 'AI Intelligence', href: '/ai-intelligence', icon: Bot },
+        { name: 'Red Flag Alerts', href: '/red-flag-alerts', icon: AlertTriangle },
+        { name: 'Predictive Signals', href: '/predictive', icon: TrendingUp },
+        { name: 'AI Intelligence', href: '/ai-tools', icon: Bot },
         { name: 'AI Reader', href: '/ai-reader', icon: FileText },
       ]
     },
     {
       title: 'Communications',
       items: [
-        { name: 'Alerts & Notifications', href: '/alerts', icon: Bell },
+        { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
         { name: 'Email Automation', href: '/email-automation', icon: Mail },
         { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare },
         { name: 'PM Engagement Score', href: '/pm-engagement', icon: Users },
@@ -74,9 +75,9 @@ const Sidebar = () => {
       title: 'Reports',
       items: [
         { name: 'LP Report Generator', href: '/lp-reports', icon: FileText },
-        { name: 'Red Flag Timeline', href: '/red-flag-timeline', icon: Clock },
-        { name: 'Resolution Summary', href: '/resolution-summary', icon: Zap },
-        { name: 'Alert Delivery Logs', href: '/alert-logs', icon: Activity },
+        { name: 'Red Flag Timeline', href: '/timeline', icon: Clock },
+        { name: 'Resolution Summary', href: '/resolutions', icon: Zap },
+        { name: 'Alert Delivery Logs', href: '/delivery-logs', icon: Activity },
       ]
     },
     {
