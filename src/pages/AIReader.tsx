@@ -150,7 +150,8 @@ const AIReader = () => {
           uploadDate: new Date().toISOString().split('T')[0],
           processed: false,
           category: 'Other',
-          confidence: 0
+          confidence: 0,
+          insights: [] as string[]
         };
         
         setUploadedFiles(prev => [...prev, newFile]);
@@ -159,7 +160,12 @@ const AIReader = () => {
           setUploadedFiles(prev => 
             prev.map(f => 
               f.id === newFile.id 
-                ? { ...f, processed: true, confidence: Math.floor(Math.random() * 20) + 80, insights: ['AI analysis completed...'] }
+                ? { 
+                    ...f, 
+                    processed: true, 
+                    confidence: Math.floor(Math.random() * 20) + 80, 
+                    insights: ['AI analysis completed successfully', 'Document processed and indexed', 'Key information extracted']
+                  }
                 : f
             )
           );
