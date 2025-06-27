@@ -73,7 +73,7 @@ const CompanyPage = () => {
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
-                    className="w-full h-80 lg:h-full object-cover"
+                    className="w-full h-64 lg:h-96 object-cover object-top"
                   />
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
