@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +13,7 @@ import SignupPage from "./pages/SignupPage";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import Settings from "./pages/Settings";
-import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
 import OwnerDashboard from "./components/owner/OwnerDashboard";
 import OwnerOnboarding from "./pages/OwnerOnboarding";
 
@@ -57,7 +58,7 @@ const App = () => (
             <Route path="/profile" element={
               <AuthWrapper>
                 <Layout>
-                  <Profile />
+                  <UserProfile />
                 </Layout>
               </AuthWrapper>
             } />
