@@ -15,17 +15,10 @@ const OwnerOnboarding: React.FC<OwnerOnboardingProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   const [ownerProfile, setOwnerProfile] = useState({
     portfolioSize: '',
-    investmentFocus: '',
+    investmentFocus: 'multifamily', // Default to multifamily
     primaryConcerns: [] as string[],
     reportingFrequency: ''
   });
-
-  const investmentTypes = [
-    { id: 'multifamily', label: 'Multifamily', icon: Building2 },
-    { id: 'commercial', label: 'Commercial', icon: Building2 },
-    { id: 'mixed-use', label: 'Mixed-Use', icon: Building2 },
-    { id: 'single-family', label: 'Single Family', icon: Building2 }
-  ];
 
   const ownerConcerns = [
     'Cash flow optimization',
@@ -53,7 +46,7 @@ const OwnerOnboarding: React.FC<OwnerOnboardingProps> = ({ onComplete }) => {
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Tell us about your portfolio</CardTitle>
+              <CardTitle>Tell us about your multifamily portfolio</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
@@ -72,30 +65,22 @@ const OwnerOnboarding: React.FC<OwnerOnboardingProps> = ({ onComplete }) => {
               </div>
 
               <div>
-                <Label className="mb-3 block">Primary investment focus</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {investmentTypes.map((type) => (
-                    <div
-                      key={type.id}
-                      className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                        ownerProfile.investmentFocus === type.id 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => setOwnerProfile(prev => ({ ...prev, investmentFocus: type.id }))}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <type.icon className="h-5 w-5" />
-                        <span className="font-medium">{type.label}</span>
-                      </div>
-                    </div>
-                  ))}
+                <Label className="mb-3 block">Investment focus</Label>
+                <div className="border-2 border-blue-500 bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-center space-x-2">
+                    <Building2 className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">Multifamily Properties</span>
+                    <Badge className="ml-auto">Selected</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Focus on apartment complexes, condominiums, and residential rental properties
+                  </p>
                 </div>
               </div>
 
               <Button 
                 onClick={() => setStep(2)}
-                disabled={!ownerProfile.portfolioSize || !ownerProfile.investmentFocus}
+                disabled={!ownerProfile.portfolioSize}
                 className="w-full"
               >
                 Continue <ArrowRight className="h-4 w-4 ml-2" />
@@ -176,7 +161,7 @@ const OwnerOnboarding: React.FC<OwnerOnboardingProps> = ({ onComplete }) => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Portfolio Focus:</span>
-                    <Badge>{ownerProfile.investmentFocus}</Badge>
+                    <Badge>Multifamily</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Primary Concerns:</span>
@@ -213,9 +198,9 @@ const OwnerOnboarding: React.FC<OwnerOnboardingProps> = ({ onComplete }) => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Welcome to OPSIGHT</h1>
+        <h1 className="text-3xl font-bold mb-2">Add New Multifamily Property</h1>
         <p className="text-gray-600">
-          Let's customize your experience for optimal portfolio oversight
+          Let's customize your experience for optimal multifamily portfolio oversight
         </p>
         <div className="flex items-center space-x-2 mt-4">
           <Badge variant="outline">Step {step} of 3</Badge>
