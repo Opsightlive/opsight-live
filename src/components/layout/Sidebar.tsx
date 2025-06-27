@@ -28,7 +28,8 @@ import {
   LogOut,
   X,
   Database,
-  Eye
+  Eye,
+  CheckCircle
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDeviceDetection } from '@/hooks/use-device-detection';
