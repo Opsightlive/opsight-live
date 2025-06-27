@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -265,72 +266,6 @@ const LandingPage = () => {
                       <div className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-ping"></div>
                       Predictive alert triggered
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Company Section */}
-      <div id="company" className="py-16 lg:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Meet Our Leadership
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built by property management professionals who understand the challenges you face every day.
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="md:flex">
-                <div className="md:w-1/3">
-                  <img 
-                    src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
-                    alt="CEO & Founder" 
-                    className="w-full h-64 md:h-full object-cover"
-                  />
-                </div>
-                <div className="md:w-2/3 p-8">
-                  <div className="flex items-center mb-4">
-                    <User className="h-6 w-6 text-blue-600 mr-2" />
-                    <span className="text-blue-600 font-semibold">Chief Executive Officer & Founder</span>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">About Our Founder</h3>
-                  
-                  <div className="space-y-4 text-gray-700">
-                    <div className="flex items-start">
-                      <Building2 className="h-5 w-5 text-blue-600 mr-3 mt-1 flex-shrink-0" />
-                      <p>Over <strong>5,000 units</strong> managed throughout career, providing deep operational expertise</p>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <TrendingUp className="h-5 w-5 text-green-600 mr-3 mt-1 flex-shrink-0" />
-                      <p>Currently owns <strong>$20,000,000</strong> in assets under management (AUM)</p>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <Briefcase className="h-5 w-5 text-purple-600 mr-3 mt-1 flex-shrink-0" />
-                      <p>Worked from <strong>porter to regional property manager</strong>, understanding every level of operations</p>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <Mic className="h-5 w-5 text-orange-600 mr-3 mt-1 flex-shrink-0" />
-                      <p>Featured on <strong>multiple podcasts and interviews</strong> by top successful investors in the Dallas-Fort Worth market</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <blockquote className="text-blue-800 italic">
-                      "Having managed thousands of units and worked at every level of property management, 
-                      I've seen firsthand how owners are left in the dark. OPSIGHT was born from the frustration 
-                      of not having the real-time insights needed to protect and grow your investments."
-                    </blockquote>
                   </div>
                 </div>
               </div>
@@ -647,7 +582,7 @@ const LandingPage = () => {
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 italic">"{testimonial.quote}"</p>
+                <p className="text-gray-700 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div>
                   <p className="font-semibold text-gray-900">{testimonial.author}</p>
                   <p className="text-gray-600">{testimonial.title}</p>
@@ -764,7 +699,7 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#company" className="hover:text-white">About</a></li>
+                <li><Link to="/company" className="hover:text-white">About</Link></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
                 <li><a href="#" className="hover:text-white">Support</a></li>
                 <li><a href="#" className="hover:text-white">Privacy</a></li>
