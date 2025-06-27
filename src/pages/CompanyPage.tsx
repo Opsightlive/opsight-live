@@ -42,9 +42,9 @@ const CompanyPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-16">
+      <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-6">
               <Award className="h-8 w-8 text-blue-600 mr-3" />
               <span className="text-blue-600 font-semibold text-xl">Leadership That Understands Your Challenges</span>
@@ -64,12 +64,12 @@ const CompanyPage = () => {
       </div>
 
       {/* Founder Section */}
-      <div className="py-16 lg:py-24 bg-white">
+      <div className="py-8 lg:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
               <div className="lg:flex">
-                <div className="lg:w-2/5">
+                <div className="lg:w-2/5 flex items-end">
                   <img 
                     src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
                     alt="CEO & Founder" 
@@ -117,7 +117,7 @@ const CompanyPage = () => {
                         <Mic className="h-6 w-6 text-orange-600 mr-3 mt-1 flex-shrink-0" />
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-1">Industry Recognition</h4>
-                          <p className="text-gray-600">Featured on multiple podcasts and interviews by top successful investors in the Dallas-Fort Worth market</p>
+                          <p className="text-gray-600">Features on multiple podcasts and interviews by top successful investors in the Dallas-Fort Worth market</p>
                         </div>
                       </div>
                     </div>
