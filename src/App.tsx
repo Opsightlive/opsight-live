@@ -1,12 +1,10 @@
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import AuthWrapper from '@/components/auth/AuthWrapper';
 import Layout from '@/components/layout/Layout';
-import ErrorBoundary from '@/components/common/ErrorBoundary';
-import LoadingSpinner from '@/components/common/LoadingSpinner';
-import { Suspense } from 'react';
 
 // Page imports
 import LandingPage from '@/pages/LandingPage';
@@ -42,284 +40,213 @@ import Settings from '@/pages/Settings';
 import HelpCenter from '@/pages/HelpCenter';
 import DataSetup from '@/components/auth/DataSetup';
 
-// Configure React Query with optimized settings for production
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
-      retry: 3,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <div className="min-h-screen bg-gray-50">
-              <Toaster />
-              <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/company" element={<CompanyPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  <Route path="/demo" element={<DemoPage />} />
-                  <Route path="/demo-mode" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <DemoMode />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/dashboard" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <Index />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/portfolio" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <PortfolioOverview />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/kpi-center" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <KPICommandCenter />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/red-flag-alerts" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <RedFlagAlerts />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/data-integration" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <DataIntegration />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/integration-status" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <IntegrationStatus />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/lp-dashboard" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <LPDashboard />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/lp-reports" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <LPReportGenerator />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/ai-tools" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <AIIntelligence />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/ai-reader" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <AIReader />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/predictive" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <PredictiveSignals />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/deal-vetting" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <DealVettingToolkit />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/email-automation" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <EmailAutomation />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/sms-automation" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <SMSAutomation />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/pm-engagement" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <PMEngagementScore />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/timeline" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <RedFlagTimeline />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/resolutions" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <ResolutionSummary />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/delivery-logs" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <AlertDeliveryLogs />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/data-vault" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <DataVault />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/notifications" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <AlertsNotifications />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/company-dashboard" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <CompanyDashboard />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/users" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <UserManagement />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/owner-onboarding" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <OwnerOnboardingPage />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/settings" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <Settings />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/help" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                        <Layout>
-                          <HelpCenter />
-                        </Layout>
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/data-setup" element={
-                    <ErrorBoundary>
-                      <AuthWrapper>
-                         <DataSetup onComplete={() => {}} />
-                      </AuthWrapper>
-                    </ErrorBoundary>
-                  } />
-                </Routes>
-              </Suspense>
-            </div>
-          </AuthProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <div className="min-h-screen bg-gray-50">
+            <Toaster />
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/company" element={<CompanyPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/demo" element={<DemoPage />} />
+              <Route path="/demo-mode" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DemoMode />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/dashboard" element={
+                <AuthWrapper>
+                  <Layout>
+                    <Index />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/portfolio" element={
+                <AuthWrapper>
+                  <Layout>
+                    <PortfolioOverview />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/kpi-center" element={
+                <AuthWrapper>
+                  <Layout>
+                    <KPICommandCenter />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/red-flag-alerts" element={
+                <AuthWrapper>
+                  <Layout>
+                    <RedFlagAlerts />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/data-integration" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DataIntegration />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/integration-status" element={
+                <AuthWrapper>
+                  <Layout>
+                    <IntegrationStatus />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/lp-dashboard" element={
+                <AuthWrapper>
+                  <Layout>
+                    <LPDashboard />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/lp-reports" element={
+                <AuthWrapper>
+                  <Layout>
+                    <LPReportGenerator />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/ai-tools" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AIIntelligence />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/ai-reader" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AIReader />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/predictive" element={
+                <AuthWrapper>
+                  <Layout>
+                    <PredictiveSignals />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/deal-vetting" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DealVettingToolkit />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/email-automation" element={
+                <AuthWrapper>
+                  <Layout>
+                    <EmailAutomation />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/sms-automation" element={
+                <AuthWrapper>
+                  <Layout>
+                    <SMSAutomation />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/pm-engagement" element={
+                <AuthWrapper>
+                  <Layout>
+                    <PMEngagementScore />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/timeline" element={
+                <AuthWrapper>
+                  <Layout>
+                    <RedFlagTimeline />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/resolutions" element={
+                <AuthWrapper>
+                  <Layout>
+                    <ResolutionSummary />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/delivery-logs" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AlertDeliveryLogs />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/data-vault" element={
+                <AuthWrapper>
+                  <Layout>
+                    <DataVault />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/notifications" element={
+                <AuthWrapper>
+                  <Layout>
+                    <AlertsNotifications />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/company-dashboard" element={
+                <AuthWrapper>
+                  <Layout>
+                    <CompanyDashboard />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/users" element={
+                <AuthWrapper>
+                  <Layout>
+                    <UserManagement />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/owner-onboarding" element={
+                <AuthWrapper>
+                  <Layout>
+                    <OwnerOnboardingPage />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/settings" element={
+                <AuthWrapper>
+                  <Layout>
+                    <Settings />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/help" element={
+                <AuthWrapper>
+                  <Layout>
+                    <HelpCenter />
+                  </Layout>
+                </AuthWrapper>
+              } />
+              <Route path="/data-setup" element={
+                <AuthWrapper>
+                   <DataSetup onComplete={() => {}} />
+                </AuthWrapper>
+              } />
+            </Routes>
+          </div>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
