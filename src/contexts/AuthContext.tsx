@@ -20,13 +20,17 @@ interface AuthUser extends User {
   bio?: string;
   phone?: string;
   role?: string;
+  subscription?: {
+    status: string;
+    trialEnd?: string;
+  };
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   profile: UserProfile | null;
   session: Session | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, isCompanyLogin?: boolean) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   completeRegistration: (userData: any) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -95,7 +99,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       company: profileData?.company_name,
       role: profileData?.role,
       phone: profileData?.phone,
-      bio: '' // Default empty bio
+      bio: '', // Default empty bio
+      subscription: {
+        status: 'trial',
+        trialEnd: '2025-01-29'
+      }
     };
   };
 
@@ -151,10 +159,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, isCompanyLogin?: boolean): Promise<boolean> => {
     setIsLoading(true);
     
     try {
+      // For company login, check if it's the specific company email
+      if (isCompanyLogin && email !== 'opsightlive@gmail.com') {
+        toast.error('Invalid company credentials. Use opsightlive@gmail.com');
+        setIsLoading(false);
+        return false;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
