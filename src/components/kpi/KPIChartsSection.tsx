@@ -1,11 +1,13 @@
+
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
+import { KPIMetric } from '@/hooks/useRealtimeKPIs';
 
 interface KPIChartsSectionProps {
   timeRange: string;
   category: string;
+  realTimeData?: KPIMetric[];
 }
 
 interface TrendDataPoint {
@@ -18,9 +20,43 @@ interface TrendDataPoint {
   forecast?: boolean;
 }
 
-const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
-  // Generate sample trend data based on time range
+const KPIChartsSection = ({ timeRange, category, realTimeData = [] }: KPIChartsSectionProps) => {
+  // Generate trend data from real-time metrics or use mock data
   const trendData = useMemo(() => {
+    if (realTimeData.length > 0) {
+      // Group metrics by month and create trend data
+      const monthlyData = realTimeData.reduce((acc: any, metric) => {
+        const month = new Date(metric.created_at).toLocaleDateString('en-US', { month: 'short' });
+        if (!acc[month]) {
+          acc[month] = { month, count: 0 };
+        }
+        
+        // Map metric names to chart properties
+        switch (metric.metric_name) {
+          case 'Occupancy Rate':
+            acc[month].occupancy = metric.metric_value;
+            break;
+          case 'Gross Revenue':
+            acc[month].revenue = metric.metric_value;
+            break;
+          case 'NOI Margin':
+            acc[month].noi = metric.metric_value;
+            break;
+          case 'Operating Expenses':
+            acc[month].expenses = metric.metric_value;
+            break;
+          case 'Risk Score':
+            acc[month].riskScore = metric.metric_value;
+            break;
+        }
+        acc[month].count++;
+        return acc;
+      }, {});
+
+      return Object.values(monthlyData).slice(0, 12);
+    }
+
+    // Fallback to mock data if no real data available
     const months = timeRange === '12m' ? 12 : timeRange === '6m' ? 6 : timeRange === '3m' ? 3 : 1;
     return Array.from({ length: months }, (_, i) => ({
       month: new Date(2024, i, 1).toLocaleDateString('en-US', { month: 'short' }),
@@ -30,7 +66,7 @@ const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
       expenses: 800000 + Math.random() * 200000,
       riskScore: 1 + Math.random() * 3
     }));
-  }, [timeRange]);
+  }, [timeRange, realTimeData]);
 
   const forecastData = useMemo(() => {
     const futureMonths = 6;
@@ -47,20 +83,37 @@ const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
 
   const combinedData: TrendDataPoint[] = [...trendData, ...forecastData];
 
-  const pieData = [
-    { name: 'Leasing', value: 25, color: '#3B82F6' },
-    { name: 'Revenue', value: 30, color: '#10B981' },
-    { name: 'Staffing', value: 20, color: '#F59E0B' },
-    { name: 'Financials', value: 15, color: '#EF4444' },
-    { name: 'Risk', value: 10, color: '#8B5CF6' }
-  ];
+  // Performance distribution from real data
+  const pieData = useMemo(() => {
+    if (realTimeData.length === 0) {
+      return [
+        { name: 'Green Zone', value: 65, color: '#10B981' },
+        { name: 'Yellow Zone', value: 25, color: '#F59E0B' },
+        { name: 'Red Zone', value: 10, color: '#EF4444' }
+      ];
+    }
+
+    const zoneCounts = realTimeData.reduce((acc: any, metric) => {
+      acc[metric.performance_zone] = (acc[metric.performance_zone] || 0) + 1;
+      return acc;
+    }, {});
+
+    const total = realTimeData.length;
+    return [
+      { name: 'Green Zone', value: Math.round((zoneCounts.green || 0) / total * 100), color: '#10B981' },
+      { name: 'Yellow Zone', value: Math.round((zoneCounts.yellow || 0) / total * 100), color: '#F59E0B' },
+      { name: 'Red Zone', value: Math.round((zoneCounts.red || 0) / total * 100), color: '#EF4444' }
+    ];
+  }, [realTimeData]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Performance Trends & Forecasts</CardTitle>
-          <CardDescription>12-month historical data with 6-month projections</CardDescription>
+          <CardDescription>
+            {realTimeData.length > 0 ? 'Live data with projections' : 'Historical data with 6-month projections'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
@@ -87,7 +140,7 @@ const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
                 dataKey="revenue" 
                 stroke="#10B981" 
                 strokeWidth={2}
-                strokeDasharray={combinedData.some(d => d.forecast) ? "5 5" : ""}
+                strokeDasharray="5 5"
                 name="Revenue ($)"
                 connectNulls={false}
               />
@@ -99,7 +152,9 @@ const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
       <Card>
         <CardHeader>
           <CardTitle>Performance Zones Distribution</CardTitle>
-          <CardDescription>KPI performance across all categories</CardDescription>
+          <CardDescription>
+            {realTimeData.length > 0 ? `Current status of ${realTimeData.length} metrics` : 'KPI performance across all categories'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>

@@ -1,14 +1,14 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw } from 'lucide-react';
-import { useRealtimeData } from '@/hooks/useRealtimeData';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw, Database, Sync } from 'lucide-react';
+import { useRealtimeKPIs } from '@/hooks/useRealtimeKPIs';
 import { useAuth } from '@/contexts/AuthContext';
+import { kpiService } from '@/services/kpiService';
 import KPIMetricsGrid from '@/components/kpi/KPIMetricsGrid';
 import KPIChartsSection from '@/components/kpi/KPIChartsSection';
 import PropertyComparisonTable from '@/components/kpi/PropertyComparisonTable';
@@ -18,59 +18,42 @@ import KPINoDataState from '@/components/kpi/KPINoDataState';
 
 const KPICommandCenter = () => {
   const { user } = useAuth();
-  const { kpiUpdates, isLoading } = useRealtimeData();
+  const { metrics, events, loading, error, syncDataSources } = useRealtimeKPIs();
   const [selectedTimeRange, setSelectedTimeRange] = useState('12m');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Simulate comprehensive KPI data with caching
-  const kpiData = useMemo(() => {
-    const baseMetrics = {
-      leasing: [
-        { name: 'Occupancy Rate', value: '94.2%', change: '+2.1%', trend: 'up' as const, target: 95, current: 94.2, zone: 'green' as const },
-        { name: 'Average Days to Lease', value: '18', change: '-3', trend: 'up' as const, target: 15, current: 18, zone: 'yellow' as const },
-        { name: 'Lease Renewal Rate', value: '87%', change: '+4%', trend: 'up' as const, target: 85, current: 87, zone: 'green' as const },
-        { name: 'New Leases MTD', value: '42', change: '+8', trend: 'up' as const, target: 40, current: 42, zone: 'green' as const }
-      ],
-      revenue: [
-        { name: 'Gross Revenue', value: '$2.4M', change: '+8.5%', trend: 'up' as const, target: 2.3, current: 2.4, zone: 'green' as const },
-        { name: 'Revenue per Unit', value: '$1,850', change: '+3.2%', trend: 'up' as const, target: 1800, current: 1850, zone: 'green' as const },
-        { name: 'Collection Rate', value: '96.8%', change: '+1.1%', trend: 'up' as const, target: 95, current: 96.8, zone: 'green' as const },
-        { name: 'Late Fees Collected', value: '$28K', change: '-5%', trend: 'down' as const, target: 30, current: 28, zone: 'yellow' as const }
-      ],
-      staffing: [
-        { name: 'Staff Utilization', value: '89%', change: '+2%', trend: 'up' as const, target: 85, current: 89, zone: 'green' as const },
-        { name: 'Turnover Rate', value: '12%', change: '-3%', trend: 'up' as const, target: 15, current: 12, zone: 'green' as const },
-        { name: 'Training Hours', value: '124', change: '+15', trend: 'up' as const, target: 120, current: 124, zone: 'green' as const },
-        { name: 'Response Time', value: '4.2h', change: '-0.8h', trend: 'up' as const, target: 4, current: 4.2, zone: 'yellow' as const }
-      ],
-      financials: [
-        { name: 'NOI Margin', value: '64.3%', change: '+1.8%', trend: 'up' as const, target: 60, current: 64.3, zone: 'green' as const },
-        { name: 'Operating Expenses', value: '$890K', change: '-2.1%', trend: 'up' as const, target: 900, current: 890, zone: 'green' as const },
-        { name: 'Cap Ex Spending', value: '$156K', change: '+12%', trend: 'down' as const, target: 150, current: 156, zone: 'yellow' as const },
-        { name: 'Cash Flow', value: '$1.55M', change: '+6.8%', trend: 'up' as const, target: 1.4, current: 1.55, zone: 'green' as const }
-      ],
-      risk: [
-        { name: 'Risk Score', value: '2.3', change: '-0.5', trend: 'up' as const, target: 3, current: 2.3, zone: 'green' as const },
-        { name: 'Open Work Orders', value: '23', change: '+5', trend: 'down' as const, target: 20, current: 23, zone: 'yellow' as const },
-        { name: 'Insurance Claims', value: '1', change: '-2', trend: 'up' as const, target: 3, current: 1, zone: 'green' as const },
-        { name: 'Compliance Score', value: '94%', change: '+2%', trend: 'up' as const, target: 90, current: 94, zone: 'green' as const }
-      ]
-    };
-
-    return selectedCategory === 'all' 
-      ? Object.values(baseMetrics).flat()
-      : baseMetrics[selectedCategory as keyof typeof baseMetrics] || [];
-  }, [selectedCategory]);
+  // Transform real-time metrics to display format
+  const transformedMetrics = metrics
+    .filter(metric => selectedCategory === 'all' || metric.category === selectedCategory)
+    .map(metric => ({
+      name: metric.metric_name,
+      value: formatMetricValue(metric.metric_value, metric.metric_unit),
+      change: formatChangeValue(metric.change_percentage),
+      trend: (metric.change_percentage || 0) >= 0 ? 'up' as const : 'down' as const,
+      target: metric.target_value || 100,
+      current: metric.metric_value,
+      zone: metric.performance_zone as 'green' | 'yellow' | 'red'
+    }));
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    // Simulate data refresh
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await syncDataSources();
     setRefreshing(false);
   };
 
-  if (isLoading) return <KPILoadingState />;
+  const handleManualSync = async () => {
+    if (!user) return;
+    
+    try {
+      await kpiService.syncDataSources(user.id);
+    } catch (error) {
+      console.error('Manual sync failed:', error);
+    }
+  };
+
+  if (loading) return <KPILoadingState />;
+  if (error) return <KPIErrorState error={error} onRetry={handleRefresh} />;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,24 +64,24 @@ const KPICommandCenter = () => {
             <div>
               <h1 className="text-4xl font-bold mb-4">KPI Command Center</h1>
               <p className="text-xl text-blue-100 max-w-3xl">
-                Real-time performance monitoring across all business metrics
+                Real-time performance monitoring powered by live data integration
               </p>
               <div className="flex items-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  <span>Performance Tracking</span>
+                  <span>Live Metrics</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Analytics Engine</span>
+                  <span>Real-time Analytics</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
-                  <span>Real-time Monitoring</span>
+                  <span>Event Streaming</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  <span>Automated Alerts</span>
+                  <Database className="h-5 w-5" />
+                  <span>Data Integration</span>
                 </div>
               </div>
             </div>
@@ -124,16 +107,36 @@ const KPICommandCenter = () => {
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleManualSync}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <Sync className="h-4 w-4 mr-2" />
+                Sync Data
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Category Filter */}
+        {/* Real-time Status */}
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="font-medium">Filter by Category:</span>
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Live Data Feed Active</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Last Update:</span>
+                  <span className="text-sm font-mono">
+                    {metrics.length > 0 ? new Date(metrics[0].created_at).toLocaleTimeString() : 'No data'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger className="w-48">
                     <SelectValue />
@@ -147,28 +150,64 @@ const KPICommandCenter = () => {
                     <SelectItem value="risk">Risk Management</SelectItem>
                   </SelectContent>
                 </Select>
+                <Badge variant="outline" className="text-sm">
+                  {transformedMetrics.length} Live Metrics
+                </Badge>
               </div>
-              <Badge variant="outline" className="text-sm">
-                {kpiData.length} Metrics Active
-              </Badge>
             </div>
           </CardContent>
         </Card>
 
+        {/* Recent Events */}
+        {events.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent KPI Events</CardTitle>
+              <CardDescription>Real-time alerts and metric changes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {events.slice(0, 10).map((event) => (
+                  <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-2 w-2 rounded-full ${
+                        event.alert_level === 'critical' ? 'bg-red-500' :
+                        event.alert_level === 'high' ? 'bg-orange-500' :
+                        event.alert_level === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                      }`} />
+                      <span className="font-medium">{event.metric_name}</span>
+                      <span className="text-sm text-gray-600">{event.event_type.replace('_', ' ')}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-mono">
+                        {event.old_value} → {event.new_value}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(event.created_at).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* KPI Metrics Grid */}
-        <KPIMetricsGrid metrics={kpiData} />
+        <KPIMetricsGrid metrics={transformedMetrics} />
 
         {/* Charts and Analytics */}
         <KPIChartsSection 
           timeRange={selectedTimeRange}
           category={selectedCategory}
+          realTimeData={metrics}
         />
 
         {/* Property Comparison */}
         <PropertyComparisonTable />
 
         {/* No Data State */}
-        {kpiData.length === 0 && (
+        {transformedMetrics.length === 0 && (
           <KPINoDataState 
             category={selectedCategory}
             onReset={() => setSelectedCategory('all')}
@@ -178,5 +217,23 @@ const KPICommandCenter = () => {
     </div>
   );
 };
+
+// Helper functions
+function formatMetricValue(value: number, unit?: string): string {
+  if (unit === '$') {
+    return `$${(value / 1000000).toFixed(1)}M`;
+  } else if (unit === '%') {
+    return `${value.toFixed(1)}%`;
+  } else if (unit === 'days') {
+    return Math.round(value).toString();
+  }
+  return value.toLocaleString();
+}
+
+function formatChangeValue(changePercentage?: number): string {
+  if (!changePercentage) return '+0%';
+  const sign = changePercentage >= 0 ? '+' : '';
+  return `${sign}${changePercentage.toFixed(1)}%`;
+}
 
 export default KPICommandCenter;

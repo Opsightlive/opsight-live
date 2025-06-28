@@ -249,6 +249,54 @@ export type Database = {
           },
         ]
       }
+      data_integration_sources: {
+        Row: {
+          api_credentials_encrypted: string | null
+          created_at: string
+          endpoint_url: string | null
+          error_log: string | null
+          id: string
+          last_sync_at: string | null
+          mapping_config: Json | null
+          source_name: string
+          source_type: string
+          sync_frequency: string | null
+          sync_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_credentials_encrypted?: string | null
+          created_at?: string
+          endpoint_url?: string | null
+          error_log?: string | null
+          id?: string
+          last_sync_at?: string | null
+          mapping_config?: Json | null
+          source_name: string
+          source_type: string
+          sync_frequency?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_credentials_encrypted?: string | null
+          created_at?: string
+          endpoint_url?: string | null
+          error_log?: string | null
+          id?: string
+          last_sync_at?: string | null
+          mapping_config?: Json | null
+          source_name?: string
+          source_type?: string
+          sync_frequency?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string | null
@@ -352,6 +400,160 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kpi_aggregations: {
+        Row: {
+          aggregated_value: number
+          aggregation_type: string
+          category: string
+          created_at: string
+          id: string
+          metric_name: string
+          period_end: string
+          period_start: string
+          property_count: number | null
+          user_id: string
+        }
+        Insert: {
+          aggregated_value: number
+          aggregation_type: string
+          category: string
+          created_at?: string
+          id?: string
+          metric_name: string
+          period_end: string
+          period_start: string
+          property_count?: number | null
+          user_id: string
+        }
+        Update: {
+          aggregated_value?: number
+          aggregation_type?: string
+          category?: string
+          created_at?: string
+          id?: string
+          metric_name?: string
+          period_end?: string
+          period_start?: string
+          property_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kpi_events: {
+        Row: {
+          alert_level: string | null
+          category: string
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          metric_name: string
+          new_value: number | null
+          old_value: number | null
+          processed: boolean | null
+          property_id: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_level?: string | null
+          category: string
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          metric_name: string
+          new_value?: number | null
+          old_value?: number | null
+          processed?: boolean | null
+          property_id?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_level?: string | null
+          category?: string
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          metric_name?: string
+          new_value?: number | null
+          old_value?: number | null
+          processed?: boolean | null
+          property_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_events_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "user_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kpi_metrics: {
+        Row: {
+          category: string
+          change_percentage: number | null
+          created_at: string
+          id: string
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number
+          performance_zone: string | null
+          period_end: string
+          period_start: string
+          previous_value: number | null
+          property_id: string | null
+          target_value: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          change_percentage?: number | null
+          created_at?: string
+          id?: string
+          metric_name: string
+          metric_unit?: string | null
+          metric_value: number
+          performance_zone?: string | null
+          period_end: string
+          period_start: string
+          previous_value?: number | null
+          property_id?: string | null
+          target_value?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          change_percentage?: number | null
+          created_at?: string
+          id?: string
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number
+          performance_zone?: string | null
+          period_end?: string
+          period_start?: string
+          previous_value?: number | null
+          property_id?: string | null
+          target_value?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_metrics_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "user_properties"
             referencedColumns: ["id"]
           },
         ]
@@ -1027,7 +1229,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_performance_zone: {
+        Args: {
+          current_value: number
+          target_value: number
+          metric_type?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       alert_severity: "low" | "medium" | "high" | "critical"
