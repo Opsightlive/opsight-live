@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { kpiService } from '@/services/kpiService';
 
 export interface KPIMetric {
   id: string;
@@ -15,6 +15,9 @@ export interface KPIMetric {
   change_percentage?: number;
   performance_zone: 'green' | 'yellow' | 'red';
   created_at: string;
+  property_id?: string;
+  period_start: string;
+  period_end: string;
 }
 
 export interface KPIEvent {
@@ -26,6 +29,8 @@ export interface KPIEvent {
   new_value?: number;
   alert_level: 'low' | 'medium' | 'high' | 'critical';
   created_at: string;
+  event_data?: any;
+  property_id?: string;
 }
 
 export const useRealtimeKPIs = () => {
@@ -42,6 +47,7 @@ export const useRealtimeKPIs = () => {
     const fetchKPIs = async () => {
       try {
         setLoading(true);
+        setError(null);
         
         // Get latest metrics for each category/metric_name combination
         const { data: kpiData, error: kpiError } = await supabase
@@ -53,7 +59,7 @@ export const useRealtimeKPIs = () => {
         if (kpiError) throw kpiError;
 
         // Group by category and metric_name, keeping only the latest
-        const latestMetrics = kpiData.reduce((acc: any, metric: any) => {
+        const latestMetrics = kpiData?.reduce((acc: any, metric: any) => {
           const key = `${metric.category}-${metric.metric_name}`;
           if (!acc[key] || new Date(metric.created_at) > new Date(acc[key].created_at)) {
             acc[key] = metric;
@@ -61,7 +67,7 @@ export const useRealtimeKPIs = () => {
           return acc;
         }, {});
 
-        setMetrics(Object.values(latestMetrics) as KPIMetric[]);
+        setMetrics(Object.values(latestMetrics || {}) as KPIMetric[]);
 
         // Get recent events
         const { data: eventData, error: eventError } = await supabase
@@ -176,43 +182,70 @@ export const useRealtimeKPIs = () => {
     };
   }, [user]);
 
-  // Function to manually trigger KPI update
-  const updateKPI = async (kpiData: Partial<KPIMetric>) => {
-    if (!user) return;
+  // Function to manually create KPI metric
+  const createKPI = async (kpiData: Partial<KPIMetric>) => {
+    if (!user) return false;
 
     try {
-      const { error } = await supabase.functions.invoke('kpi-processor', {
-        body: {
-          action: 'process_kpi_update',
-          data: {
-            user_id: user.id,
-            ...kpiData
-          }
-        }
+      const currentDate = new Date().toISOString().split('T')[0];
+      const success = await kpiService.createKPIMetric(user.id, {
+        category: kpiData.category || 'general',
+        metric_name: kpiData.metric_name || 'Unnamed Metric',
+        metric_value: kpiData.metric_value || 0,
+        metric_unit: kpiData.metric_unit,
+        target_value: kpiData.target_value,
+        period_start: kpiData.period_start || currentDate,
+        period_end: kpiData.period_end || currentDate,
+        property_id: kpiData.property_id
       });
 
-      if (error) throw error;
-      toast.success('KPI updated successfully');
+      return success;
+    } catch (err: any) {
+      console.error('Error creating KPI:', err);
+      toast.error('Failed to create KPI');
+      return false;
+    }
+  };
+
+  // Function to update existing KPI metric
+  const updateKPI = async (metricId: string, updateData: Partial<KPIMetric>) => {
+    if (!user) return false;
+
+    try {
+      const success = await kpiService.updateKPIMetric(user.id, metricId, updateData);
+      return success;
     } catch (err: any) {
       console.error('Error updating KPI:', err);
       toast.error('Failed to update KPI');
+      return false;
     }
   };
 
   // Function to sync data sources
   const syncDataSources = async () => {
-    if (!user) return;
+    if (!user) return false;
 
     try {
-      const { error } = await supabase.functions.invoke('data-integration', {
-        body: { user_id: user.id }
-      });
-
-      if (error) throw error;
-      toast.success('Data sources synced successfully');
+      const success = await kpiService.syncDataSources(user.id);
+      return success;
     } catch (err: any) {
       console.error('Error syncing data sources:', err);
       toast.error('Failed to sync data sources');
+      return false;
+    }
+  };
+
+  // Function to generate sample data
+  const generateSampleData = async () => {
+    if (!user) return false;
+
+    try {
+      const success = await kpiService.generateSampleKPIData(user.id);
+      return success;
+    } catch (err: any) {
+      console.error('Error generating sample data:', err);
+      toast.error('Failed to generate sample data');
+      return false;
     }
   };
 
@@ -221,7 +254,9 @@ export const useRealtimeKPIs = () => {
     events,
     loading,
     error,
+    createKPI,
     updateKPI,
-    syncDataSources
+    syncDataSources,
+    generateSampleData
   };
 };

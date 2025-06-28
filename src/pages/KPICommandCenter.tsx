@@ -15,6 +15,7 @@ import PropertyComparisonTable from '@/components/kpi/PropertyComparisonTable';
 import KPILoadingState from '@/components/kpi/KPILoadingState';
 import KPIErrorState from '@/components/kpi/KPIErrorState';
 import KPINoDataState from '@/components/kpi/KPINoDataState';
+import KPIDemoDataGenerator from '@/components/kpi/KPIDemoDataGenerator';
 
 const KPICommandCenter = () => {
   const { user } = useAuth();
@@ -158,6 +159,11 @@ const KPICommandCenter = () => {
           </CardContent>
         </Card>
 
+        {/* Demo Data Generator - Show when no data */}
+        {transformedMetrics.length === 0 && (
+          <KPIDemoDataGenerator />
+        )}
+
         {/* Recent Events */}
         {events.length > 0 && (
           <Card>
@@ -194,20 +200,26 @@ const KPICommandCenter = () => {
         )}
 
         {/* KPI Metrics Grid */}
-        <KPIMetricsGrid metrics={transformedMetrics} />
+        {transformedMetrics.length > 0 && (
+          <KPIMetricsGrid metrics={transformedMetrics} />
+        )}
 
         {/* Charts and Analytics */}
-        <KPIChartsSection 
-          timeRange={selectedTimeRange}
-          category={selectedCategory}
-          realTimeData={metrics}
-        />
+        {transformedMetrics.length > 0 && (
+          <KPIChartsSection 
+            timeRange={selectedTimeRange}
+            category={selectedCategory}
+            realTimeData={metrics}
+          />
+        )}
 
         {/* Property Comparison */}
-        <PropertyComparisonTable />
+        {transformedMetrics.length > 0 && (
+          <PropertyComparisonTable />
+        )}
 
         {/* No Data State */}
-        {transformedMetrics.length === 0 && (
+        {transformedMetrics.length === 0 && selectedCategory !== 'all' && (
           <KPINoDataState 
             category={selectedCategory}
             onReset={() => setSelectedCategory('all')}

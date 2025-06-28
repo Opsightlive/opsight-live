@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -11,6 +10,21 @@ export interface DataIntegrationSource {
   mapping_config?: any;
   sync_frequency?: string;
   sync_status?: string;
+}
+
+export interface KPIMetric {
+  id?: string;
+  category: string;
+  metric_name: string;
+  metric_value: number;
+  metric_unit?: string;
+  target_value?: number;
+  previous_value?: number;
+  change_percentage?: number;
+  performance_zone?: 'green' | 'yellow' | 'red';
+  property_id?: string;
+  period_start: string;
+  period_end: string;
 }
 
 class KPIService {
@@ -61,6 +75,148 @@ class KPIService {
     }
   }
 
+  // KPI Metrics Management
+  async createKPIMetric(userId: string, kpiData: KPIMetric): Promise<boolean> {
+    try {
+      // Calculate performance zone if target is provided
+      let performanceZone = 'yellow';
+      if (kpiData.target_value) {
+        const { data: zoneData, error: zoneError } = await supabase
+          .rpc('calculate_performance_zone', {
+            current_value: kpiData.metric_value,
+            target_value: kpiData.target_value,
+            metric_type: 'higher_better'
+          });
+
+        if (!zoneError && zoneData) {
+          performanceZone = zoneData;
+        }
+      }
+
+      const { error } = await supabase
+        .from('kpi_metrics')
+        .insert({
+          user_id: userId,
+          category: kpiData.category,
+          metric_name: kpiData.metric_name,
+          metric_value: kpiData.metric_value,
+          metric_unit: kpiData.metric_unit,
+          target_value: kpiData.target_value,
+          previous_value: kpiData.previous_value,
+          change_percentage: kpiData.change_percentage,
+          performance_zone: performanceZone,
+          property_id: kpiData.property_id,
+          period_start: kpiData.period_start,
+          period_end: kpiData.period_end
+        });
+
+      if (error) {
+        console.error('Error creating KPI metric:', error);
+        toast.error('Failed to create KPI metric');
+        return false;
+      }
+
+      toast.success('KPI metric created successfully');
+      return true;
+    } catch (error) {
+      console.error('Error creating KPI metric:', error);
+      toast.error('Failed to create KPI metric');
+      return false;
+    }
+  }
+
+  async getKPIMetrics(userId: string, category?: string): Promise<KPIMetric[]> {
+    try {
+      let query = supabase
+        .from('kpi_metrics')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (category && category !== 'all') {
+        query = query.eq('category', category);
+      }
+
+      const { data, error } = await query
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching KPI metrics:', error);
+        toast.error('Failed to load KPI metrics');
+        return [];
+      }
+
+      return (data as KPIMetric[]) || [];
+    } catch (error) {
+      console.error('Error fetching KPI metrics:', error);
+      toast.error('Failed to load KPI metrics');
+      return [];
+    }
+  }
+
+  async updateKPIMetric(userId: string, metricId: string, updateData: Partial<KPIMetric>): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('kpi_metrics')
+        .update(updateData)
+        .eq('id', metricId)
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('Error updating KPI metric:', error);
+        toast.error('Failed to update KPI metric');
+        return false;
+      }
+
+      toast.success('KPI metric updated successfully');
+      return true;
+    } catch (error) {
+      console.error('Error updating KPI metric:', error);
+      toast.error('Failed to update KPI metric');
+      return false;
+    }
+  }
+
+  // Manual KPI Updates (keeping for compatibility)
+  async updateKPIMetricLegacy(userId: string, kpiData: {
+    property_id?: string;
+    category: string;
+    metric_name: string;
+    metric_value: number;
+    metric_unit?: string;
+    target_value?: number;
+  }): Promise<boolean> {
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    return this.createKPIMetric(userId, {
+      ...kpiData,
+      period_start: currentDate,
+      period_end: currentDate
+    });
+  }
+
+  // KPI Events
+  async getKPIEvents(userId: string, limit: number = 50): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('kpi_events')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching KPI events:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching KPI events:', error);
+      return [];
+    }
+  }
+
+  // Test connection for data sources
   async testConnection(sourceId: string): Promise<boolean> {
     try {
       const { data, error } = await supabase.functions.invoke('data-integration/test-connection', {
@@ -92,7 +248,7 @@ class KPIService {
       if (error) throw error;
 
       if (data.success) {
-        toast.success(`Synchronized ${data.results.length} data sources`);
+        toast.success(`Synchronized ${data.results?.length || 0} data sources`);
         return true;
       } else {
         toast.error('Data synchronization failed');
@@ -101,42 +257,6 @@ class KPIService {
     } catch (error) {
       console.error('Error syncing data sources:', error);
       toast.error('Data synchronization failed');
-      return false;
-    }
-  }
-
-  // Manual KPI Updates
-  async updateKPIMetric(userId: string, kpiData: {
-    property_id?: string;
-    category: string;
-    metric_name: string;
-    metric_value: number;
-    metric_unit?: string;
-    target_value?: number;
-  }): Promise<boolean> {
-    try {
-      const { data, error } = await supabase.functions.invoke('kpi-processor', {
-        body: {
-          action: 'process_kpi_update',
-          data: {
-            user_id: userId,
-            ...kpiData
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        toast.success('KPI metric updated successfully');
-        return true;
-      } else {
-        toast.error('Failed to update KPI metric');
-        return false;
-      }
-    } catch (error) {
-      console.error('Error updating KPI metric:', error);
-      toast.error('Failed to update KPI metric');
       return false;
     }
   }
@@ -189,6 +309,53 @@ class KPIService {
     } catch (error) {
       console.error('Error generating forecasts:', error);
       return [];
+    }
+  }
+
+  // Generate sample data for demo purposes
+  async generateSampleKPIData(userId: string): Promise<boolean> {
+    try {
+      const currentDate = new Date();
+      const sampleMetrics = [
+        {
+          category: 'leasing',
+          metric_name: 'Occupancy Rate',
+          metric_value: 92.5,
+          metric_unit: '%',
+          target_value: 95.0,
+          period_start: currentDate.toISOString().split('T')[0],
+          period_end: currentDate.toISOString().split('T')[0]
+        },
+        {
+          category: 'revenue',
+          metric_name: 'Monthly Rent Revenue',
+          metric_value: 125000,
+          metric_unit: '$',
+          target_value: 130000,
+          period_start: currentDate.toISOString().split('T')[0],
+          period_end: currentDate.toISOString().split('T')[0]
+        },
+        {
+          category: 'financials',
+          metric_name: 'Operating Expense Ratio',
+          metric_value: 45.2,
+          metric_unit: '%',
+          target_value: 40.0,
+          period_start: currentDate.toISOString().split('T')[0],
+          period_end: currentDate.toISOString().split('T')[0]
+        }
+      ];
+
+      for (const metric of sampleMetrics) {
+        await this.createKPIMetric(userId, metric);
+      }
+
+      toast.success('Sample KPI data generated successfully');
+      return true;
+    } catch (error) {
+      console.error('Error generating sample data:', error);
+      toast.error('Failed to generate sample data');
+      return false;
     }
   }
 
