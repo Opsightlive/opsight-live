@@ -297,6 +297,141 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_logs: {
+        Row: {
+          alert_instance_id: string | null
+          clicked_at: string | null
+          created_at: string
+          delivery_provider: string | null
+          delivery_status: string
+          delivery_time: string | null
+          error_message: string | null
+          id: string
+          max_retries: number | null
+          message_content: string
+          opened_at: string | null
+          priority: number | null
+          provider_message_id: string | null
+          recipient_address: string
+          recipient_type: string
+          retry_count: number | null
+          subject: string | null
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_instance_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          delivery_provider?: string | null
+          delivery_status?: string
+          delivery_time?: string | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          message_content: string
+          opened_at?: string | null
+          priority?: number | null
+          provider_message_id?: string | null
+          recipient_address: string
+          recipient_type: string
+          retry_count?: number | null
+          subject?: string | null
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_instance_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          delivery_provider?: string | null
+          delivery_status?: string
+          delivery_time?: string | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          message_content?: string
+          opened_at?: string | null
+          priority?: number | null
+          provider_message_id?: string | null
+          recipient_address?: string
+          recipient_type?: string
+          retry_count?: number | null
+          subject?: string | null
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_logs_alert_instance_id_fkey"
+            columns: ["alert_instance_id"]
+            isOneToOne: false
+            referencedRelation: "alert_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_logs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_statistics: {
+        Row: {
+          channel: string
+          click_rate: number | null
+          created_at: string
+          date: string
+          delivery_rate: number | null
+          id: string
+          open_rate: number | null
+          total_clicked: number | null
+          total_delivered: number | null
+          total_failed: number | null
+          total_opened: number | null
+          total_sent: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          click_rate?: number | null
+          created_at?: string
+          date: string
+          delivery_rate?: number | null
+          id?: string
+          open_rate?: number | null
+          total_clicked?: number | null
+          total_delivered?: number | null
+          total_failed?: number | null
+          total_opened?: number | null
+          total_sent?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          click_rate?: number | null
+          created_at?: string
+          date?: string
+          delivery_rate?: number | null
+          id?: string
+          open_rate?: number | null
+          total_clicked?: number | null
+          total_delivered?: number | null
+          total_failed?: number | null
+          total_opened?: number | null
+          total_sent?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string | null
@@ -652,6 +787,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      message_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          message_content: string
+          subject: string | null
+          template_name: string
+          template_type: string
+          updated_at: string
+          user_id: string
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message_content: string
+          subject?: string | null
+          template_name: string
+          template_type: string
+          updated_at?: string
+          user_id: string
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message_content?: string
+          subject?: string | null
+          template_name?: string
+          template_type?: string
+          updated_at?: string
+          user_id?: string
+          variables?: Json | null
+        }
+        Relationships: []
       }
       notification_queue: {
         Row: {
@@ -1099,6 +1273,69 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_notification_settings: {
+        Row: {
+          created_at: string
+          default_email_template_id: string | null
+          default_sms_template_id: string | null
+          enable_delivery_tracking: boolean | null
+          id: string
+          rate_limit_per_hour: number | null
+          sendgrid_api_key_encrypted: string | null
+          twilio_account_sid_encrypted: string | null
+          twilio_auth_token_encrypted: string | null
+          twilio_phone_number: string | null
+          updated_at: string
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          default_email_template_id?: string | null
+          default_sms_template_id?: string | null
+          enable_delivery_tracking?: boolean | null
+          id?: string
+          rate_limit_per_hour?: number | null
+          sendgrid_api_key_encrypted?: string | null
+          twilio_account_sid_encrypted?: string | null
+          twilio_auth_token_encrypted?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          default_email_template_id?: string | null
+          default_sms_template_id?: string | null
+          enable_delivery_tracking?: boolean | null
+          id?: string
+          rate_limit_per_hour?: number | null
+          sendgrid_api_key_encrypted?: string | null
+          twilio_account_sid_encrypted?: string | null
+          twilio_auth_token_encrypted?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notification_settings_default_email_template_id_fkey"
+            columns: ["default_email_template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notification_settings_default_sms_template_id_fkey"
+            columns: ["default_sms_template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_preferences: {
         Row: {
