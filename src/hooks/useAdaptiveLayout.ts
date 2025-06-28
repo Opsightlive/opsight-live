@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { dataService } from '@/services/dataService';
+import { useErrorHandler } from './useErrorHandler';
 
 export type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'tv';
 export type CardLayout = 'grid' | 'list' | 'compact';
@@ -41,6 +42,7 @@ const BREAKPOINTS = {
 
 export const useAdaptiveLayout = () => {
   const { user } = useAuth();
+  const { handleError } = useErrorHandler();
   const [screenInfo, setScreenInfo] = useState<ScreenInfo>(() => getScreenInfo());
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>({
     sidebarCollapsed: false,
@@ -83,7 +85,7 @@ export const useAdaptiveLayout = () => {
     };
   }
 
-  // Load user layout settings from Supabase
+  // Load user layout settings
   const loadLayoutSettings = async () => {
     if (!user) {
       setIsLoading(false);
@@ -92,78 +94,72 @@ export const useAdaptiveLayout = () => {
 
     try {
       const currentScreen = getScreenInfo();
-      const { data, error } = await supabase
-        .from('user_layout_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('device_type', currentScreen.deviceType)
-        .order('last_used', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const response = await dataService.getUserLayoutSettings(user.id, currentScreen.deviceType);
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading layout settings:', error);
-        toast.error('Failed to load layout preferences');
-      } else if (data) {
+      if (response.success && response.data) {
         // Safely handle the custom_settings Json type
-        const customSettings = data.custom_settings && typeof data.custom_settings === 'object' && !Array.isArray(data.custom_settings) 
-          ? data.custom_settings as Record<string, any>
+        const customSettings = response.data.custom_settings && 
+          typeof response.data.custom_settings === 'object' && 
+          !Array.isArray(response.data.custom_settings) 
+          ? response.data.custom_settings as Record<string, any>
           : {};
 
         setLayoutSettings({
-          sidebarCollapsed: data.sidebar_collapsed || false,
-          compactView: data.compact_view || false,
-          cardLayout: (data.card_layout as CardLayout) || 'grid',
-          layoutDensity: (data.layout_density as LayoutDensity) || 'comfortable',
-          fontSize: (data.font_size as FontSize) || 'medium',
+          sidebarCollapsed: response.data.sidebar_collapsed || false,
+          compactView: response.data.compact_view || false,
+          cardLayout: (response.data.card_layout as CardLayout) || 'grid',
+          layoutDensity: (response.data.layout_density as LayoutDensity) || 'comfortable',
+          fontSize: (response.data.font_size as FontSize) || 'medium',
           customSettings
         });
-      } else {
+      } else if (!response.success) {
+        handleError(new Error(response.error || 'Failed to load layout settings'), 'loadLayoutSettings', {
+          showToast: false,
+          logToConsole: true,
+          logToService: true
+        });
+        
         // Create default settings for this device type
         await saveLayoutSettings(layoutSettings, currentScreen);
       }
     } catch (error) {
-      console.error('Error loading layout settings:', error);
+      handleError(error as Error, 'loadLayoutSettings');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Save layout settings to Supabase
+  // Save layout settings
   const saveLayoutSettings = async (settings: LayoutSettings, screen?: ScreenInfo) => {
     if (!user) return false;
 
     const currentScreen = screen || getScreenInfo();
     
     try {
-      const { error } = await supabase
-        .from('user_layout_settings')
-        .upsert({
-          user_id: user.id,
-          device_type: currentScreen.deviceType,
-          screen_width: currentScreen.width,
-          screen_height: currentScreen.height,
-          sidebar_collapsed: settings.sidebarCollapsed,
-          compact_view: settings.compactView,
-          card_layout: settings.cardLayout,
-          layout_density: settings.layoutDensity,
-          font_size: settings.fontSize,
-          custom_settings: settings.customSettings,
-          last_used: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,device_type',
-          ignoreDuplicates: false
-        });
+      const settingsData = {
+        user_id: user.id,
+        device_type: currentScreen.deviceType,
+        screen_width: currentScreen.width,
+        screen_height: currentScreen.height,
+        sidebar_collapsed: settings.sidebarCollapsed,
+        compact_view: settings.compactView,
+        card_layout: settings.cardLayout,
+        layout_density: settings.layoutDensity,
+        font_size: settings.fontSize,
+        custom_settings: settings.customSettings,
+        last_used: new Date().toISOString()
+      };
 
-      if (error) {
-        console.error('Error saving layout settings:', error);
-        toast.error('Failed to save layout preferences');
+      const response = await dataService.updateLayoutSettings(settingsData);
+      
+      if (!response.success) {
+        handleError(new Error(response.error || 'Failed to save layout settings'), 'saveLayoutSettings');
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Error saving layout settings:', error);
+      handleError(error as Error, 'saveLayoutSettings');
       return false;
     }
   };
@@ -178,27 +174,36 @@ export const useAdaptiveLayout = () => {
     await saveLayoutSettings(newSettings);
   };
 
-  // Handle screen resize
+  // Handle screen resize with debouncing
   useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+
     const handleResize = () => {
-      const newScreenInfo = getScreenInfo();
-      setScreenInfo(newScreenInfo);
-      
-      // Load settings for new device type if it changed
-      if (newScreenInfo.deviceType !== screenInfo.deviceType) {
-        loadLayoutSettings();
-      }
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newScreenInfo = getScreenInfo();
+        setScreenInfo(newScreenInfo);
+        
+        // Load settings for new device type if it changed
+        if (newScreenInfo.deviceType !== screenInfo.deviceType) {
+          loadLayoutSettings();
+        }
+      }, 150); // Debounce resize events
     };
 
     const handleOrientationChange = () => {
       // Small delay to ensure screen dimensions are updated
-      setTimeout(handleResize, 100);
+      setTimeout(() => {
+        const newScreenInfo = getScreenInfo();
+        setScreenInfo(newScreenInfo);
+      }, 100);
     };
 
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleOrientationChange);
     
     return () => {
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientationChange);
     };
@@ -209,7 +214,7 @@ export const useAdaptiveLayout = () => {
     loadLayoutSettings();
   }, [user]);
 
-  // Auto-save settings when they change
+  // Auto-save settings when they change (debounced)
   useEffect(() => {
     if (!isLoading && user) {
       const timeoutId = setTimeout(() => {
