@@ -68,7 +68,27 @@ export const useRedFlagEngine = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAlertRules(data || []);
+      
+      // Transform database response to match interface
+      const transformedRules: AlertRule[] = (data || []).map(rule => ({
+        id: rule.id,
+        rule_name: rule.rule_name,
+        description: rule.description,
+        kpi_type: rule.kpi_type,
+        property_ids: rule.property_ids || [],
+        threshold_green_min: rule.threshold_green_min,
+        threshold_green_max: rule.threshold_green_max,
+        threshold_yellow_min: rule.threshold_yellow_min,
+        threshold_yellow_max: rule.threshold_yellow_max,
+        threshold_red_min: rule.threshold_red_min,
+        threshold_red_max: rule.threshold_red_max,
+        alert_frequency: rule.alert_frequency as 'immediate' | 'hourly' | 'daily' | 'weekly',
+        notification_channels: rule.notification_channels || ['dashboard'],
+        is_active: rule.is_active,
+        conditions: rule.conditions
+      }));
+      
+      setAlertRules(transformedRules);
     } catch (error: any) {
       console.error('Error loading alert rules:', error);
       toast.error('Failed to load alert rules');
@@ -90,7 +110,24 @@ export const useRedFlagEngine = () => {
         .limit(100);
 
       if (error) throw error;
-      setAlertInstances(data || []);
+      
+      // Transform database response to match interface
+      const transformedInstances: AlertInstance[] = (data || []).map(instance => ({
+        id: instance.id,
+        alert_rule_id: instance.alert_rule_id || '',
+        property_name: instance.property_name || '',
+        kpi_type: instance.kpi_type,
+        kpi_value: instance.kpi_value || 0,
+        alert_level: instance.alert_level as 'yellow' | 'red',
+        alert_message: instance.alert_message,
+        status: instance.status as 'active' | 'acknowledged' | 'resolved',
+        trigger_data: instance.trigger_data,
+        created_at: instance.created_at,
+        acknowledged_at: instance.acknowledged_at || undefined,
+        resolved_at: instance.resolved_at || undefined
+      }));
+      
+      setAlertInstances(transformedInstances);
     } catch (error: any) {
       console.error('Error loading alert instances:', error);
       toast.error('Failed to load alerts');
