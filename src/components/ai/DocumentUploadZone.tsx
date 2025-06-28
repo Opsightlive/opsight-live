@@ -28,7 +28,7 @@ const DocumentUploadZone = () => {
       'application/msword': ['.doc'],
       'text/plain': ['.txt']
     },
-    maxFileSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024, // 10MB
     multiple: true
   });
 

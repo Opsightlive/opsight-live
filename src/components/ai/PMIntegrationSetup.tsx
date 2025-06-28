@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Settings, Plus, Sync, Trash2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Settings, Plus, RefreshCw, Trash2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { usePMIntegration } from '@/hooks/usePMIntegration';
 
 const PMIntegrationSetup = () => {
@@ -238,7 +237,7 @@ const PMIntegrationSetup = () => {
                     onClick={() => syncIntegration(integration.id)}
                     disabled={integration.sync_status === 'syncing'}
                   >
-                    <Sync className="h-4 w-4 mr-1" />
+                    <RefreshCw className="h-4 w-4 mr-1" />
                     Sync Now
                   </Button>
                   <Button
