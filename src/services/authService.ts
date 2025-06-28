@@ -179,10 +179,8 @@ class AuthService {
       // Update the user_profiles table with the role
       const { error } = await supabase
         .from('user_profiles')
-        .upsert({
-          id: userId,
-          role: role
-        });
+        .update({ role: role })
+        .eq('id', userId);
 
       if (error) throw error;
       return true;
