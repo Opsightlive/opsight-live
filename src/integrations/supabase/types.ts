@@ -788,6 +788,125 @@ export type Database = {
           },
         ]
       }
+      lp_report_templates: {
+        Row: {
+          ai_summary_enabled: boolean | null
+          auto_generation_enabled: boolean | null
+          chart_configs: Json | null
+          created_at: string
+          description: string | null
+          email_recipients: string[] | null
+          generation_schedule: string | null
+          id: string
+          is_active: boolean | null
+          sections: Json
+          template_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_summary_enabled?: boolean | null
+          auto_generation_enabled?: boolean | null
+          chart_configs?: Json | null
+          created_at?: string
+          description?: string | null
+          email_recipients?: string[] | null
+          generation_schedule?: string | null
+          id?: string
+          is_active?: boolean | null
+          sections?: Json
+          template_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_summary_enabled?: boolean | null
+          auto_generation_enabled?: boolean | null
+          chart_configs?: Json | null
+          created_at?: string
+          description?: string | null
+          email_recipients?: string[] | null
+          generation_schedule?: string | null
+          id?: string
+          is_active?: boolean | null
+          sections?: Json
+          template_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lp_reports: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          download_count: number | null
+          email_sent_at: string | null
+          error_message: string | null
+          file_size_bytes: number | null
+          generated_at: string | null
+          generation_status: string
+          id: string
+          pdf_storage_path: string | null
+          property_ids: string[] | null
+          report_data: Json
+          report_period_end: string
+          report_period_start: string
+          report_title: string
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          download_count?: number | null
+          email_sent_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          generated_at?: string | null
+          generation_status?: string
+          id?: string
+          pdf_storage_path?: string | null
+          property_ids?: string[] | null
+          report_data?: Json
+          report_period_end: string
+          report_period_start: string
+          report_title: string
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          download_count?: number | null
+          email_sent_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          generated_at?: string | null
+          generation_status?: string
+          id?: string
+          pdf_storage_path?: string | null
+          property_ids?: string[] | null
+          report_data?: Json
+          report_period_end?: string
+          report_period_start?: string
+          report_title?: string
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lp_reports_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "lp_report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_templates: {
         Row: {
           created_at: string
@@ -1134,6 +1253,113 @@ export type Database = {
           },
         ]
       }
+      report_analytics: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          report_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          report_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          report_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_analytics_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lp_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_generation_queue: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_details: Json | null
+          id: string
+          max_retries: number | null
+          priority: number | null
+          report_id: string | null
+          retry_count: number | null
+          scheduled_for: string | null
+          started_at: string | null
+          status: string
+          template_id: string | null
+          user_id: string
+          worker_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_details?: Json | null
+          id?: string
+          max_retries?: number | null
+          priority?: number | null
+          report_id?: string | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string
+          template_id?: string | null
+          user_id: string
+          worker_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_details?: Json | null
+          id?: string
+          max_retries?: number | null
+          priority?: number | null
+          report_id?: string | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string
+          template_id?: string | null
+          user_id?: string
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_generation_queue_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lp_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_generation_queue_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "lp_report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_activity_logs: {
         Row: {
           action_details: Json | null
@@ -1473,6 +1699,21 @@ export type Database = {
           metric_type?: string
         }
         Returns: string
+      }
+      cleanup_report_queue: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_report_statistics: {
+        Args: { p_user_id: string; p_days?: number }
+        Returns: {
+          total_reports: number
+          completed_reports: number
+          failed_reports: number
+          avg_generation_time_minutes: number
+          total_downloads: number
+          total_emails_sent: number
+        }[]
       }
     }
     Enums: {
