@@ -73,6 +73,113 @@ export type Database = {
           },
         ]
       }
+      documents: {
+        Row: {
+          category: string | null
+          confidence_score: number | null
+          created_at: string
+          extracted_data: Json | null
+          file_size: number
+          file_type: string
+          filename: string
+          id: string
+          processing_error: string | null
+          processing_status: string
+          storage_path: string
+          updated_at: string
+          upload_date: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          extracted_data?: Json | null
+          file_size: number
+          file_type: string
+          filename: string
+          id?: string
+          processing_error?: string | null
+          processing_status?: string
+          storage_path: string
+          updated_at?: string
+          upload_date?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          extracted_data?: Json | null
+          file_size?: number
+          file_type?: string
+          filename?: string
+          id?: string
+          processing_error?: string | null
+          processing_status?: string
+          storage_path?: string
+          updated_at?: string
+          upload_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      extracted_kpis: {
+        Row: {
+          created_at: string
+          document_id: string | null
+          extraction_confidence: number | null
+          id: string
+          kpi_name: string
+          kpi_type: string
+          kpi_unit: string | null
+          kpi_value: number | null
+          period_end: string | null
+          period_start: string | null
+          property_name: string | null
+          raw_text: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id?: string | null
+          extraction_confidence?: number | null
+          id?: string
+          kpi_name: string
+          kpi_type: string
+          kpi_unit?: string | null
+          kpi_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          property_name?: string | null
+          raw_text?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string | null
+          extraction_confidence?: number | null
+          id?: string
+          kpi_name?: string
+          kpi_type?: string
+          kpi_unit?: string | null
+          kpi_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          property_name?: string | null
+          raw_text?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extracted_kpis_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kpi_updates: {
         Row: {
           alert_level: string | null
@@ -217,6 +324,96 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pm_integrations: {
+        Row: {
+          api_endpoint: string | null
+          created_at: string
+          credentials_encrypted: string | null
+          error_log: string | null
+          id: string
+          integration_name: string
+          last_sync: string | null
+          pm_software: string
+          settings: Json | null
+          sync_frequency: string
+          sync_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_endpoint?: string | null
+          created_at?: string
+          credentials_encrypted?: string | null
+          error_log?: string | null
+          id?: string
+          integration_name: string
+          last_sync?: string | null
+          pm_software: string
+          settings?: Json | null
+          sync_frequency?: string
+          sync_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_endpoint?: string | null
+          created_at?: string
+          credentials_encrypted?: string | null
+          error_log?: string | null
+          id?: string
+          integration_name?: string
+          last_sync?: string | null
+          pm_software?: string
+          settings?: Json | null
+          sync_frequency?: string
+          sync_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      processing_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          job_status: string
+          job_type: string
+          payload: Json
+          priority: number
+          result: Json | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_status?: string
+          job_type: string
+          payload?: Json
+          priority?: number
+          result?: Json | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_status?: string
+          job_type?: string
+          payload?: Json
+          priority?: number
+          result?: Json | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
