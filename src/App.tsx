@@ -47,10 +47,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <PerformanceMonitor />
         <BrowserRouter>
           <AuthProvider>
             <AdaptiveLayoutProvider>
+              <PerformanceMonitor />
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={
