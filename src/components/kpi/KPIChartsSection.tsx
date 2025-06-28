@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +6,16 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 interface KPIChartsSectionProps {
   timeRange: string;
   category: string;
+}
+
+interface TrendDataPoint {
+  month: string;
+  occupancy: number;
+  revenue: number;
+  noi: number;
+  expenses: number;
+  riskScore: number;
+  forecast?: boolean;
 }
 
 const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
@@ -29,11 +38,14 @@ const KPIChartsSection = ({ timeRange, category }: KPIChartsSectionProps) => {
       month: new Date(2024, 12 + i, 1).toLocaleDateString('en-US', { month: 'short' }),
       occupancy: 92 + Math.random() * 6,
       revenue: 2200000 + Math.random() * 400000,
+      noi: 0,
+      expenses: 0,
+      riskScore: 0,
       forecast: true
     }));
   }, []);
 
-  const combinedData = [...trendData, ...forecastData];
+  const combinedData: TrendDataPoint[] = [...trendData, ...forecastData];
 
   const pieData = [
     { name: 'Leasing', value: 25, color: '#3B82F6' },

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, Refresh } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw } from 'lucide-react';
 import { useRealtimeData } from '@/hooks/useRealtimeData';
 import { useAuth } from '@/contexts/AuthContext';
 import KPIMetricsGrid from '@/components/kpi/KPIMetricsGrid';
@@ -27,34 +27,34 @@ const KPICommandCenter = () => {
   const kpiData = useMemo(() => {
     const baseMetrics = {
       leasing: [
-        { name: 'Occupancy Rate', value: '94.2%', change: '+2.1%', trend: 'up', target: 95, current: 94.2, zone: 'green' },
-        { name: 'Average Days to Lease', value: '18', change: '-3', trend: 'up', target: 15, current: 18, zone: 'yellow' },
-        { name: 'Lease Renewal Rate', value: '87%', change: '+4%', trend: 'up', target: 85, current: 87, zone: 'green' },
-        { name: 'New Leases MTD', value: '42', change: '+8', trend: 'up', target: 40, current: 42, zone: 'green' }
+        { name: 'Occupancy Rate', value: '94.2%', change: '+2.1%', trend: 'up' as const, target: 95, current: 94.2, zone: 'green' as const },
+        { name: 'Average Days to Lease', value: '18', change: '-3', trend: 'up' as const, target: 15, current: 18, zone: 'yellow' as const },
+        { name: 'Lease Renewal Rate', value: '87%', change: '+4%', trend: 'up' as const, target: 85, current: 87, zone: 'green' as const },
+        { name: 'New Leases MTD', value: '42', change: '+8', trend: 'up' as const, target: 40, current: 42, zone: 'green' as const }
       ],
       revenue: [
-        { name: 'Gross Revenue', value: '$2.4M', change: '+8.5%', trend: 'up', target: 2.3, current: 2.4, zone: 'green' },
-        { name: 'Revenue per Unit', value: '$1,850', change: '+3.2%', trend: 'up', target: 1800, current: 1850, zone: 'green' },
-        { name: 'Collection Rate', value: '96.8%', change: '+1.1%', trend: 'up', target: 95, current: 96.8, zone: 'green' },
-        { name: 'Late Fees Collected', value: '$28K', change: '-5%', trend: 'down', target: 30, current: 28, zone: 'yellow' }
+        { name: 'Gross Revenue', value: '$2.4M', change: '+8.5%', trend: 'up' as const, target: 2.3, current: 2.4, zone: 'green' as const },
+        { name: 'Revenue per Unit', value: '$1,850', change: '+3.2%', trend: 'up' as const, target: 1800, current: 1850, zone: 'green' as const },
+        { name: 'Collection Rate', value: '96.8%', change: '+1.1%', trend: 'up' as const, target: 95, current: 96.8, zone: 'green' as const },
+        { name: 'Late Fees Collected', value: '$28K', change: '-5%', trend: 'down' as const, target: 30, current: 28, zone: 'yellow' as const }
       ],
       staffing: [
-        { name: 'Staff Utilization', value: '89%', change: '+2%', trend: 'up', target: 85, current: 89, zone: 'green' },
-        { name: 'Turnover Rate', value: '12%', change: '-3%', trend: 'up', target: 15, current: 12, zone: 'green' },
-        { name: 'Training Hours', value: '124', change: '+15', trend: 'up', target: 120, current: 124, zone: 'green' },
-        { name: 'Response Time', value: '4.2h', change: '-0.8h', trend: 'up', target: 4, current: 4.2, zone: 'yellow' }
+        { name: 'Staff Utilization', value: '89%', change: '+2%', trend: 'up' as const, target: 85, current: 89, zone: 'green' as const },
+        { name: 'Turnover Rate', value: '12%', change: '-3%', trend: 'up' as const, target: 15, current: 12, zone: 'green' as const },
+        { name: 'Training Hours', value: '124', change: '+15', trend: 'up' as const, target: 120, current: 124, zone: 'green' as const },
+        { name: 'Response Time', value: '4.2h', change: '-0.8h', trend: 'up' as const, target: 4, current: 4.2, zone: 'yellow' as const }
       ],
       financials: [
-        { name: 'NOI Margin', value: '64.3%', change: '+1.8%', trend: 'up', target: 60, current: 64.3, zone: 'green' },
-        { name: 'Operating Expenses', value: '$890K', change: '-2.1%', trend: 'up', target: 900, current: 890, zone: 'green' },
-        { name: 'Cap Ex Spending', value: '$156K', change: '+12%', trend: 'down', target: 150, current: 156, zone: 'yellow' },
-        { name: 'Cash Flow', value: '$1.55M', change: '+6.8%', trend: 'up', target: 1.4, current: 1.55, zone: 'green' }
+        { name: 'NOI Margin', value: '64.3%', change: '+1.8%', trend: 'up' as const, target: 60, current: 64.3, zone: 'green' as const },
+        { name: 'Operating Expenses', value: '$890K', change: '-2.1%', trend: 'up' as const, target: 900, current: 890, zone: 'green' as const },
+        { name: 'Cap Ex Spending', value: '$156K', change: '+12%', trend: 'down' as const, target: 150, current: 156, zone: 'yellow' as const },
+        { name: 'Cash Flow', value: '$1.55M', change: '+6.8%', trend: 'up' as const, target: 1.4, current: 1.55, zone: 'green' as const }
       ],
       risk: [
-        { name: 'Risk Score', value: '2.3', change: '-0.5', trend: 'up', target: 3, current: 2.3, zone: 'green' },
-        { name: 'Open Work Orders', value: '23', change: '+5', trend: 'down', target: 20, current: 23, zone: 'yellow' },
-        { name: 'Insurance Claims', value: '1', change: '-2', trend: 'up', target: 3, current: 1, zone: 'green' },
-        { name: 'Compliance Score', value: '94%', change: '+2%', trend: 'up', target: 90, current: 94, zone: 'green' }
+        { name: 'Risk Score', value: '2.3', change: '-0.5', trend: 'up' as const, target: 3, current: 2.3, zone: 'green' as const },
+        { name: 'Open Work Orders', value: '23', change: '+5', trend: 'down' as const, target: 20, current: 23, zone: 'yellow' as const },
+        { name: 'Insurance Claims', value: '1', change: '-2', trend: 'up' as const, target: 3, current: 1, zone: 'green' as const },
+        { name: 'Compliance Score', value: '94%', change: '+2%', trend: 'up' as const, target: 90, current: 94, zone: 'green' as const }
       ]
     };
 
@@ -121,7 +121,7 @@ const KPICommandCenter = () => {
                 disabled={refreshing}
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
-                <Refresh className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
             </div>
