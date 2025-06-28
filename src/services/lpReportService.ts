@@ -89,8 +89,8 @@ class LPReportService {
         user_id: userId,
         template_name: template.template_name,
         description: template.description,
-        sections: template.sections,
-        chart_configs: template.chart_configs,
+        sections: template.sections as any, // Cast to Json
+        chart_configs: template.chart_configs as any, // Cast to Json
         ai_summary_enabled: template.ai_summary_enabled,
         auto_generation_enabled: template.auto_generation_enabled,
         generation_schedule: template.generation_schedule,
@@ -160,7 +160,7 @@ class LPReportService {
           report_period_start: reportConfig.report_period_start,
           report_period_end: reportConfig.report_period_end,
           property_ids: reportConfig.property_ids,
-          report_data: { sections: reportConfig.sections },
+          report_data: { sections: reportConfig.sections } as any, // Cast to Json
           generation_status: 'queued'
         })
         .select('id')
@@ -242,10 +242,20 @@ class LPReportService {
 
   async downloadReport(userId: string, reportId: string): Promise<boolean> {
     try {
+      // Get current download count first
+      const { data: currentReport, error: fetchError } = await supabase
+        .from('lp_reports')
+        .select('download_count')
+        .eq('id', reportId)
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       // Increment download count
       const { error: updateError } = await supabase
         .from('lp_reports')
-        .update({ download_count: supabase.raw('download_count + 1') })
+        .update({ download_count: (currentReport.download_count || 0) + 1 })
         .eq('id', reportId)
         .eq('user_id', userId);
 
@@ -261,14 +271,14 @@ class LPReportService {
         });
 
       // Get the report's PDF path
-      const { data: report, error: fetchError } = await supabase
+      const { data: report, error: fetchError2 } = await supabase
         .from('lp_reports')
         .select('pdf_storage_path, report_title')
         .eq('id', reportId)
         .eq('user_id', userId)
         .single();
 
-      if (fetchError) throw fetchError;
+      if (fetchError2) throw fetchError2;
 
       if (!report.pdf_storage_path) {
         toast.error('Report PDF not found');

@@ -281,7 +281,7 @@ export const LPReportBuilder = () => {
                       <Checkbox
                         id={property.id}
                         checked={reportConfig.property_ids.includes(property.id)}
-                        onCheckedChange={(checked) => handlePropertySelection(property.id, checked as boolean)}
+                        onCheckedChange={(checked) => handlePropertySelection(property.id, checked === true)}
                       />
                       <div className="flex-1">
                         <div className="flex items-center space-x-3">
@@ -332,7 +332,7 @@ export const LPReportBuilder = () => {
                     <Checkbox
                       id={section.id}
                       checked={section.enabled}
-                      onCheckedChange={(checked) => handleSectionToggle(section.id, checked as boolean)}
+                      onCheckedChange={(checked) => handleSectionToggle(section.id, checked === true)}
                       className="mt-1"
                     />
                     <div className="flex-1">
@@ -365,7 +365,7 @@ export const LPReportBuilder = () => {
                   checked={reportConfig.ai_summary_enabled}
                   onCheckedChange={(checked) => setReportConfig(prev => ({ 
                     ...prev, 
-                    ai_summary_enabled: checked as boolean 
+                    ai_summary_enabled: checked === true 
                   }))}
                 />
                 <div className="flex-1">
@@ -473,7 +473,7 @@ export const LPReportBuilder = () => {
                 <Checkbox
                   id="save-template"
                   checked={saveAsTemplate}
-                  onCheckedChange={setSaveAsTemplate}
+                  onCheckedChange={(checked) => setSaveAsTemplate(checked === true)}
                 />
                 <Label htmlFor="save-template">Save as template</Label>
               </div>
