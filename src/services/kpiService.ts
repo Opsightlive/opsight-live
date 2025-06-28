@@ -53,7 +53,7 @@ class KPIService {
         return [];
       }
 
-      return data || [];
+      return (data as DataIntegrationSource[]) || [];
     } catch (error) {
       console.error('Error fetching data sources:', error);
       toast.error('Failed to load data sources');

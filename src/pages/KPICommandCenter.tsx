@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw, Database, Sync } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw, Database } from 'lucide-react';
 import { useRealtimeKPIs } from '@/hooks/useRealtimeKPIs';
 import { useAuth } from '@/contexts/AuthContext';
 import { kpiService } from '@/services/kpiService';
@@ -113,7 +113,7 @@ const KPICommandCenter = () => {
                 onClick={handleManualSync}
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
-                <Sync className="h-4 w-4 mr-2" />
+                <Database className="h-4 w-4 mr-2" />
                 Sync Data
               </Button>
             </div>

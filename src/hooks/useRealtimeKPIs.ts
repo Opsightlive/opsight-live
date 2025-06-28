@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -60,7 +61,7 @@ export const useRealtimeKPIs = () => {
           return acc;
         }, {});
 
-        setMetrics(Object.values(latestMetrics));
+        setMetrics(Object.values(latestMetrics) as KPIMetric[]);
 
         // Get recent events
         const { data: eventData, error: eventError } = await supabase
@@ -71,7 +72,7 @@ export const useRealtimeKPIs = () => {
           .limit(50);
 
         if (eventError) throw eventError;
-        setEvents(eventData || []);
+        setEvents((eventData as KPIEvent[]) || []);
 
       } catch (err: any) {
         console.error('Error fetching KPIs:', err);

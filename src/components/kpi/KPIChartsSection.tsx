@@ -25,7 +25,7 @@ const KPIChartsSection = ({ timeRange, category, realTimeData = [] }: KPIChartsS
   const trendData = useMemo(() => {
     if (realTimeData.length > 0) {
       // Group metrics by month and create trend data
-      const monthlyData = realTimeData.reduce((acc: any, metric) => {
+      const monthlyData: Record<string, Partial<TrendDataPoint> & { month: string; count: number }> = realTimeData.reduce((acc, metric) => {
         const month = new Date(metric.created_at).toLocaleDateString('en-US', { month: 'short' });
         if (!acc[month]) {
           acc[month] = { month, count: 0 };
@@ -51,9 +51,17 @@ const KPIChartsSection = ({ timeRange, category, realTimeData = [] }: KPIChartsS
         }
         acc[month].count++;
         return acc;
-      }, {});
+      }, {} as Record<string, Partial<TrendDataPoint> & { month: string; count: number }>);
 
-      return Object.values(monthlyData).slice(0, 12);
+      // Convert to proper TrendDataPoint array with defaults
+      return Object.values(monthlyData).map(item => ({
+        month: item.month,
+        occupancy: item.occupancy || 0,
+        revenue: item.revenue || 0,
+        noi: item.noi || 0,
+        expenses: item.expenses || 0,
+        riskScore: item.riskScore || 0
+      } as TrendDataPoint)).slice(0, 12);
     }
 
     // Fallback to mock data if no real data available
