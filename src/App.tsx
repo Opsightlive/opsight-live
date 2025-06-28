@@ -23,6 +23,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const OwnerDashboard = lazy(() => import("./components/owner/OwnerDashboard"));
 const OwnerOnboarding = lazy(() => import("./pages/OwnerOnboarding"));
+const KPICommandCenter = lazy(() => import("./pages/KPICommandCenter"));
 
 // Configure React Query for production
 const queryClient = new QueryClient({
@@ -75,6 +76,16 @@ const App = () => (
                     <Layout>
                       <SuspenseWrapper loadingText="Loading dashboard...">
                         <Index />
+                      </SuspenseWrapper>
+                    </Layout>
+                  </AuthWrapper>
+                } />
+                
+                <Route path="/kpi-command-center" element={
+                  <AuthWrapper>
+                    <Layout>
+                      <SuspenseWrapper loadingText="Loading KPI Command Center...">
+                        <KPICommandCenter />
                       </SuspenseWrapper>
                     </Layout>
                   </AuthWrapper>
