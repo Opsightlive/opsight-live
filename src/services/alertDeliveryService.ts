@@ -69,7 +69,17 @@ class AlertDeliveryService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      
+      // Cast the data to ensure proper types
+      return (data || []).map(item => ({
+        id: item.id,
+        template_name: item.template_name,
+        template_type: item.template_type as 'email' | 'sms' | 'push',
+        subject: item.subject,
+        message_content: item.message_content,
+        variables: (item.variables as any) || {},
+        is_active: item.is_active
+      }));
     } catch (error: any) {
       console.error('Error fetching message templates:', error);
       toast.error('Failed to load message templates');
@@ -163,7 +173,27 @@ class AlertDeliveryService {
         .limit(limit);
 
       if (error) throw error;
-      return data || [];
+      
+      // Cast the data to ensure proper types
+      return (data || []).map(item => ({
+        id: item.id,
+        alert_instance_id: item.alert_instance_id,
+        template_id: item.template_id,
+        recipient_type: item.recipient_type as 'email' | 'sms' | 'push',
+        recipient_address: item.recipient_address,
+        subject: item.subject,
+        message_content: item.message_content,
+        delivery_status: item.delivery_status as 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced',
+        delivery_provider: item.delivery_provider,
+        provider_message_id: item.provider_message_id,
+        delivery_time: item.delivery_time,
+        opened_at: item.opened_at,
+        clicked_at: item.clicked_at,
+        error_message: item.error_message,
+        retry_count: item.retry_count,
+        priority: item.priority,
+        created_at: item.created_at
+      }));
     } catch (error: any) {
       console.error('Error fetching delivery logs:', error);
       toast.error('Failed to load delivery logs');
@@ -185,7 +215,20 @@ class AlertDeliveryService {
         .order('date', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      
+      // Cast the data to ensure proper types
+      return (data || []).map(item => ({
+        date: item.date,
+        channel: item.channel as 'email' | 'sms' | 'push',
+        total_sent: item.total_sent,
+        total_delivered: item.total_delivered,
+        total_failed: item.total_failed,
+        total_opened: item.total_opened,
+        total_clicked: item.total_clicked,
+        delivery_rate: item.delivery_rate,
+        open_rate: item.open_rate,
+        click_rate: item.click_rate
+      }));
     } catch (error: any) {
       console.error('Error fetching delivery statistics:', error);
       toast.error('Failed to load delivery statistics');
@@ -274,7 +317,7 @@ class AlertDeliveryService {
   ): Promise<boolean> {
     try {
       // Get template
-      const { data: template, error: templateError } = await supabase
+      const { data: templateData, error: templateError } = await supabase
         .from('message_templates')
         .select('*')
         .eq('id', templateId)
@@ -282,6 +325,17 @@ class AlertDeliveryService {
         .single();
 
       if (templateError) throw templateError;
+
+      // Cast template to proper type
+      const template: MessageTemplate = {
+        id: templateData.id,
+        template_name: templateData.template_name,
+        template_type: templateData.template_type as 'email' | 'sms' | 'push',
+        subject: templateData.subject,
+        message_content: templateData.message_content,
+        variables: (templateData.variables as any) || {},
+        is_active: templateData.is_active
+      };
 
       const preview = await this.previewTemplate(template, alertData);
 
