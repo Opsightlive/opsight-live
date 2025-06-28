@@ -211,6 +211,7 @@ export const useAuth = (): UseAuthReturn => {
       
       // Clear any cached data
       localStorage.removeItem('onboardingData');
+      localStorage.removeItem('onboardingCompleted');
       
       toast.success('Successfully signed out');
     } catch (error: any) {

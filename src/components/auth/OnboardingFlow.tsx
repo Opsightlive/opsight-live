@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { authService } from '@/services/authService';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,16 +88,6 @@ const OnboardingFlow: React.FC = () => {
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
-      
-      // Save progress
-      if (user) {
-        await authService.updateOnboardingProgress(
-          user.id,
-          steps[currentStep + 1].id,
-          steps.slice(0, currentStep + 1).map(s => s.id),
-          onboardingData
-        );
-      }
     } else {
       await completeOnboarding();
     }
@@ -114,27 +103,17 @@ const OnboardingFlow: React.FC = () => {
     if (!user) return;
 
     try {
-      // Save final onboarding data
-      await authService.updateOnboardingProgress(
-        user.id,
-        'completed',
-        steps.map(s => s.id),
-        onboardingData
-      );
-
-      // Mark onboarding as complete
-      await authService.completeOnboarding(user.id);
-      
-      // Update user profile
+      // Update user profile in the existing user_profiles table
       const { error } = await supabase
         .from('user_profiles')
-        .update({
+        .upsert({
+          id: user.id,
+          email: user.email!,
           full_name: onboardingData.fullName,
           company_name: onboardingData.companyName,
           phone: onboardingData.phoneNumber,
           role: onboardingData.role
-        })
-        .eq('id', user.id);
+        });
 
       if (error) throw error;
 
