@@ -9,6 +9,182 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      alert_instances: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_level: string
+          alert_message: string
+          alert_rule_id: string | null
+          created_at: string
+          id: string
+          kpi_type: string
+          kpi_value: number | null
+          notification_sent: Json | null
+          property_id: string | null
+          property_name: string | null
+          resolved_at: string | null
+          status: string
+          trigger_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_level: string
+          alert_message: string
+          alert_rule_id?: string | null
+          created_at?: string
+          id?: string
+          kpi_type: string
+          kpi_value?: number | null
+          notification_sent?: Json | null
+          property_id?: string | null
+          property_name?: string | null
+          resolved_at?: string | null
+          status?: string
+          trigger_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_level?: string
+          alert_message?: string
+          alert_rule_id?: string | null
+          created_at?: string
+          id?: string
+          kpi_type?: string
+          kpi_value?: number | null
+          notification_sent?: Json | null
+          property_id?: string | null
+          property_name?: string | null
+          resolved_at?: string | null
+          status?: string
+          trigger_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_instances_alert_rule_id_fkey"
+            columns: ["alert_rule_id"]
+            isOneToOne: false
+            referencedRelation: "alert_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alert_processing_log: {
+        Row: {
+          alerts_triggered: number | null
+          batch_id: string
+          completed_at: string | null
+          error_message: string | null
+          id: string
+          notifications_sent: number | null
+          processing_time_ms: number | null
+          processing_type: string
+          properties_processed: number | null
+          started_at: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          alerts_triggered?: number | null
+          batch_id?: string
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          notifications_sent?: number | null
+          processing_time_ms?: number | null
+          processing_type: string
+          properties_processed?: number | null
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          alerts_triggered?: number | null
+          batch_id?: string
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          notifications_sent?: number | null
+          processing_time_ms?: number | null
+          processing_type?: string
+          properties_processed?: number | null
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      alert_rules: {
+        Row: {
+          alert_frequency: string
+          conditions: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          kpi_type: string
+          notification_channels: string[] | null
+          property_ids: string[] | null
+          rule_name: string
+          threshold_green_max: number | null
+          threshold_green_min: number | null
+          threshold_red_max: number | null
+          threshold_red_min: number | null
+          threshold_yellow_max: number | null
+          threshold_yellow_min: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: string
+          conditions?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kpi_type: string
+          notification_channels?: string[] | null
+          property_ids?: string[] | null
+          rule_name: string
+          threshold_green_max?: number | null
+          threshold_green_min?: number | null
+          threshold_red_max?: number | null
+          threshold_red_min?: number | null
+          threshold_yellow_max?: number | null
+          threshold_yellow_min?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: string
+          conditions?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kpi_type?: string
+          notification_channels?: string[] | null
+          property_ids?: string[] | null
+          rule_name?: string
+          threshold_green_max?: number | null
+          threshold_green_min?: number | null
+          threshold_red_max?: number | null
+          threshold_red_min?: number | null
+          threshold_yellow_max?: number | null
+          threshold_yellow_min?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           assigned_to: string | null
@@ -271,6 +447,74 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_queue: {
+        Row: {
+          alert_instance_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          max_retries: number
+          message: string
+          notification_type: string
+          priority: number
+          recipient: string
+          retry_count: number
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          subject: string | null
+          template_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_instance_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          message: string
+          notification_type: string
+          priority?: number
+          recipient: string
+          retry_count?: number
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          template_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_instance_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          message?: string
+          notification_type?: string
+          priority?: number
+          recipient?: string
+          retry_count?: number
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          template_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_queue_alert_instance_id_fkey"
+            columns: ["alert_instance_id"]
+            isOneToOne: false
+            referencedRelation: "alert_instances"
             referencedColumns: ["id"]
           },
         ]
@@ -602,6 +846,54 @@ export type Database = {
           sidebar_collapsed?: boolean | null
           theme_preference?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_notification_preferences: {
+        Row: {
+          created_at: string
+          dashboard_enabled: boolean
+          email_address: string | null
+          email_enabled: boolean
+          emergency_override: boolean
+          id: string
+          phone_number: string | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          quiet_hours_timezone: string | null
+          sms_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dashboard_enabled?: boolean
+          email_address?: string | null
+          email_enabled?: boolean
+          emergency_override?: boolean
+          id?: string
+          phone_number?: string | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          quiet_hours_timezone?: string | null
+          sms_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dashboard_enabled?: boolean
+          email_address?: string | null
+          email_enabled?: boolean
+          emergency_override?: boolean
+          id?: string
+          phone_number?: string | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          quiet_hours_timezone?: string | null
+          sms_enabled?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
