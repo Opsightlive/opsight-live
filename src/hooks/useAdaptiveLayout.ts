@@ -105,13 +105,18 @@ export const useAdaptiveLayout = () => {
         console.error('Error loading layout settings:', error);
         toast.error('Failed to load layout preferences');
       } else if (data) {
+        // Safely handle the custom_settings Json type
+        const customSettings = data.custom_settings && typeof data.custom_settings === 'object' && !Array.isArray(data.custom_settings) 
+          ? data.custom_settings as Record<string, any>
+          : {};
+
         setLayoutSettings({
           sidebarCollapsed: data.sidebar_collapsed || false,
           compactView: data.compact_view || false,
           cardLayout: (data.card_layout as CardLayout) || 'grid',
           layoutDensity: (data.layout_density as LayoutDensity) || 'comfortable',
           fontSize: (data.font_size as FontSize) || 'medium',
-          customSettings: data.custom_settings || {}
+          customSettings
         });
       } else {
         // Create default settings for this device type
