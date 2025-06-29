@@ -21,6 +21,7 @@ import DemoMode from '@/pages/DemoMode';
 import DemoPage from '@/pages/DemoPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
+import OnboardingSetup from '@/components/auth/OnboardingSetup';
 
 import { AdaptiveLayoutProvider } from '@/contexts/AdaptiveLayoutContext';
 import { ModuleMemoryProvider } from '@/contexts/ModuleMemoryContext';
@@ -57,7 +58,7 @@ function App() {
                   
                   {/* Auth Routes */}
                   <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/signup" element={<OnboardingSetup onComplete={() => window.location.href = '/dashboard'} />} />
                   
                   {/* Demo Routes */}
                   <Route path="/demo" element={<DemoMode />} />
