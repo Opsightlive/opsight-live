@@ -249,6 +249,42 @@ export type Database = {
           },
         ]
       }
+      consistency_rules: {
+        Row: {
+          affected_modules: string[]
+          created_at: string
+          id: string
+          is_enforced: boolean
+          rule_definition: Json
+          rule_name: string
+          rule_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affected_modules?: string[]
+          created_at?: string
+          id?: string
+          is_enforced?: boolean
+          rule_definition: Json
+          rule_name: string
+          rule_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affected_modules?: string[]
+          created_at?: string
+          id?: string
+          is_enforced?: boolean
+          rule_definition?: Json
+          rule_name?: string
+          rule_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       data_integration_sources: {
         Row: {
           api_credentials_encrypted: string | null
@@ -538,6 +574,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      feature_history: {
+        Row: {
+          change_description: string | null
+          change_type: string
+          created_at: string
+          created_by: string
+          feature_name: string
+          id: string
+          module_name: string
+          new_state: Json
+          previous_state: Json | null
+          user_id: string
+        }
+        Insert: {
+          change_description?: string | null
+          change_type: string
+          created_at?: string
+          created_by: string
+          feature_name: string
+          id?: string
+          module_name: string
+          new_state: Json
+          previous_state?: Json | null
+          user_id: string
+        }
+        Update: {
+          change_description?: string | null
+          change_type?: string
+          created_at?: string
+          created_by?: string
+          feature_name?: string
+          id?: string
+          module_name?: string
+          new_state?: Json
+          previous_state?: Json | null
+          user_id?: string
+        }
+        Relationships: []
       }
       kpi_aggregations: {
         Row: {
@@ -943,6 +1018,84 @@ export type Database = {
           updated_at?: string
           user_id?: string
           variables?: Json | null
+        }
+        Relationships: []
+      }
+      module_dependencies: {
+        Row: {
+          created_at: string
+          dependency_details: Json
+          dependency_type: string
+          id: string
+          is_critical: boolean
+          source_module: string
+          target_module: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dependency_details?: Json
+          dependency_type: string
+          id?: string
+          is_critical?: boolean
+          source_module: string
+          target_module: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dependency_details?: Json
+          dependency_type?: string
+          id?: string
+          is_critical?: boolean
+          source_module?: string
+          target_module?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      module_states: {
+        Row: {
+          business_logic: Json
+          configuration: Json
+          created_at: string
+          data_schema: Json
+          feature_flags: Json
+          id: string
+          is_active: boolean
+          module_name: string
+          module_version: string
+          ui_layout: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_logic?: Json
+          configuration?: Json
+          created_at?: string
+          data_schema?: Json
+          feature_flags?: Json
+          id?: string
+          is_active?: boolean
+          module_name: string
+          module_version?: string
+          ui_layout?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_logic?: Json
+          configuration?: Json
+          created_at?: string
+          data_schema?: Json
+          feature_flags?: Json
+          id?: string
+          is_active?: boolean
+          module_name?: string
+          module_version?: string
+          ui_layout?: Json
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
