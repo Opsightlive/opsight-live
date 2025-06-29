@@ -23,6 +23,7 @@ import SignupPage from '@/pages/SignupPage';
 
 import { AdaptiveLayoutProvider } from '@/contexts/AdaptiveLayoutContext';
 import { ModuleMemoryProvider } from '@/contexts/ModuleMemoryContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const queryClient = new QueryClient();
 
@@ -39,56 +40,58 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ModuleMemoryProvider>
-          <AdaptiveLayoutProvider>
-            <Toaster />
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onError={(error, errorInfo) => {
-                console.error('Global error:', error, errorInfo);
-              }}
-            >
-              <Routes>
-                {/* Public landing page */}
-                <Route path="/" element={<LandingPage />} />
-                
-                {/* Auth Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                
-                {/* Demo Route */}
-                <Route path="/demo" element={<DemoMode />} />
-                
-                {/* Dashboard Routes */}
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/financial-overview" element={<FinancialOverview />} />
-                <Route path="/forecast-alerts" element={<ForecastAlerts />} />
-                <Route path="/maintenance-tracker" element={<MaintenanceTracker />} />
-                <Route path="/property-map" element={<PropertyMap />} />
-                <Route path="/risk-core" element={<RiskCore />} />
-                <Route path="/tenant-portal" element={<TenantPortal />} />
-                <Route path="/settings" element={<Settings />} />
-                
-                {/* Public company page */}
-                <Route path="/company" element={<CompanyPage />} />
+        <AuthProvider>
+          <ModuleMemoryProvider>
+            <AdaptiveLayoutProvider>
+              <Toaster />
+              <ErrorBoundary
+                FallbackComponent={ErrorFallback}
+                onError={(error, errorInfo) => {
+                  console.error('Global error:', error, errorInfo);
+                }}
+              >
+                <Routes>
+                  {/* Public landing page */}
+                  <Route path="/" element={<LandingPage />} />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  
+                  {/* Demo Route */}
+                  <Route path="/demo" element={<DemoMode />} />
+                  
+                  {/* Dashboard Routes */}
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/financial-overview" element={<FinancialOverview />} />
+                  <Route path="/forecast-alerts" element={<ForecastAlerts />} />
+                  <Route path="/maintenance-tracker" element={<MaintenanceTracker />} />
+                  <Route path="/property-map" element={<PropertyMap />} />
+                  <Route path="/risk-core" element={<RiskCore />} />
+                  <Route path="/tenant-portal" element={<TenantPortal />} />
+                  <Route path="/settings" element={<Settings />} />
+                  
+                  {/* Public company page */}
+                  <Route path="/company" element={<CompanyPage />} />
 
-                {/* Example Placeholder Module Route */}
-                <Route
-                  path="/example-module"
-                  element={
-                    <PlaceholderModule
-                      moduleName="Example Module"
-                      description="This is a placeholder module for demonstration purposes."
-                    />
-                  }
-                />
+                  {/* Example Placeholder Module Route */}
+                  <Route
+                    path="/example-module"
+                    element={
+                      <PlaceholderModule
+                        moduleName="Example Module"
+                        description="This is a placeholder module for demonstration purposes."
+                      />
+                    }
+                  />
 
-                {/* 404 Not Found Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ErrorBoundary>
-          </AdaptiveLayoutProvider>
-        </ModuleMemoryProvider>
+                  {/* 404 Not Found Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
+            </AdaptiveLayoutProvider>
+          </ModuleMemoryProvider>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
