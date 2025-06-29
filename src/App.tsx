@@ -18,6 +18,7 @@ import NotFound from '@/pages/NotFound';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Onboarding from '@/pages/Onboarding';
+import CompanyPage from '@/pages/CompanyPage';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AdaptiveLayoutProvider } from '@/contexts/AdaptiveLayoutContext';
@@ -59,6 +60,7 @@ function App() {
                   <Route path="/tenant-portal" element={<TenantPortal />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/company" element={<CompanyPage />} />
 
                   {/* Auth Routes */}
                   <Route path="/login" element={<Login />} />
