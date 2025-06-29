@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Building2, Mail, Database, User, Eye, EyeOff, AlertCircle, CheckCircle, CreditCard } from 'lucide-react';
+import { Building2, Mail, Database, User, Eye, EyeOff, AlertCircle, CheckCircle, CreditCard, Loader2 } from 'lucide-react';
 
 interface OnboardingSetupProps {
   onComplete: () => void;
@@ -14,6 +14,7 @@ interface OnboardingSetupProps {
 
 const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   
   // Step 1: Initial Setup
   const [companyName, setCompanyName] = useState('');
@@ -38,6 +39,17 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [cvv, setCvv] = useState('');
   const [nameOnCard, setNameOnCard] = useState('');
 
+  // Step 4: Data Connection & Sync
+  const [syncProgress, setSyncProgress] = useState(0);
+  const [syncSteps, setSyncSteps] = useState([
+    { name: 'PM System Connection', completed: false, loading: false },
+    { name: 'Payment Processing', completed: false, loading: false },
+    { name: 'Credentials Verification', completed: false, loading: false },
+    { name: 'Properties Configuration', completed: false, loading: false },
+    { name: 'Data Synchronization', completed: false, loading: false },
+    { name: 'Dashboard Setup', completed: false, loading: false }
+  ]);
+
   const passwordsMatch = password === confirmPassword;
 
   const handleGetStarted = () => {
@@ -50,10 +62,46 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
   const handleCompleteSetup = () => {
     setStep(4);
+    startDataSync();
+  };
+
+  const startDataSync = () => {
+    setLoading(true);
+    
+    // Simulate the sync process
+    const processSteps = async () => {
+      for (let i = 0; i < syncSteps.length; i++) {
+        // Set current step as loading
+        setSyncSteps(prev => prev.map((step, index) => 
+          index === i ? { ...step, loading: true } : step
+        ));
+        
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+        
+        // Mark as completed
+        setSyncSteps(prev => prev.map((step, index) => 
+          index === i ? { ...step, loading: false, completed: true } : step
+        ));
+        
+        setSyncProgress((i + 1) / syncSteps.length * 100);
+      }
+      
+      // Final step - show completion
+      setTimeout(() => {
+        setStep(5);
+      }, 1000);
+    };
+    
+    processSteps();
   };
 
   const handleFinishSetup = () => {
-    onComplete();
+    setLoading(true);
+    // Simulate final setup
+    setTimeout(() => {
+      onComplete();
+    }, 2000);
   };
 
   if (step === 1) {
@@ -413,10 +461,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
                 <h4 className="font-semibold text-blue-800 mb-2">Your Selected Plan</h4>
                 <p className="text-blue-700">
-                  Professional • {unitCount} units • monthly billing
+                  {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} • {unitCount} units • monthly billing
                 </p>
                 <div className="text-2xl font-bold text-blue-800 mt-2">
-                  ${(parseInt(unitCount || '0') * 4).toLocaleString()}/monthly
+                  ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()}/monthly
                 </div>
               </div>
             </div>
@@ -449,18 +497,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             </div>
             <h1 className="text-2xl font-bold text-black mb-2">OPSIGHT</h1>
             <p className="text-sm text-gray-600">OPERATIONAL INSIGHT</p>
-            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Choose Your Plan</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Payment Information</h2>
             <p className="text-gray-600">Start your 14-day free trial • No charges until day 15</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="mb-6">
-              <h3 className="font-semibold text-lg mb-4">Payment Information</h3>
-              
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                 <h4 className="font-semibold text-green-800 mb-1">Payment Schedule</h4>
                 <p className="text-green-700 text-sm">
-                  We won't charge your card during the trial period. First payment of $400,800 on your card ending in 2424.
+                  We won't charge your card during the trial period. First payment of ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()} will be processed after your trial ends.
                 </p>
               </div>
 
@@ -473,7 +519,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium">💳 Payment Method 1 (required)</Label>
+                  <Label className="text-sm font-medium">💳 Payment Method (required)</Label>
                   <div className="flex gap-4 mt-2">
                     <Button variant="default" className="bg-green-600 hover:bg-green-700">
                       Credit Card
@@ -490,7 +536,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     <Input
                       value={cardNumber}
                       onChange={(e) => setCardNumber(e.target.value)}
-                      placeholder="1234567890"
+                      placeholder="1234 5678 9012 3456"
                       className="mt-1"
                     />
                   </div>
@@ -527,19 +573,19 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                 </div>
 
                 <div className="text-sm text-gray-600">
-                  <p>• Payment Manager will process charges during free trial</p>
-                  <p>• First payment will show on your credit card statement within</p>
-                  <p>  two business days of our billing cycle</p>
+                  <p>• Payment will be processed after your 14-day trial period</p>
+                  <p>• First charge will appear on your statement within two business days</p>
+                  <p>• You can cancel anytime during the trial with no charges</p>
                 </div>
 
-                <div className="text-sm">
-                  <p>Assign Properties to this Payment Method:</p>
-                  <p className="text-gray-600">All applicable units</p>
-                </div>
-
-                <div className="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" className="rounded" />
-                  <span>Add CVV (AMZ)</span>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 mb-2">Trial Summary</h4>
+                  <div className="text-sm text-blue-700">
+                    <p>Plan: {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}</p>
+                    <p>Units: {unitCount}</p>
+                    <p>Monthly Cost: ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()}</p>
+                    <p className="font-semibold mt-2">Trial Period: 14 days (Free)</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -552,7 +598,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                 onClick={handleCompleteSetup}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8"
               >
-                Complete & Start Trial
+                Start Trial & Setup Account
               </Button>
             </div>
           </div>
@@ -575,49 +621,144 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             </div>
             <h1 className="text-2xl font-bold text-black mb-2">OPSIGHT</h1>
             <p className="text-sm text-gray-600">OPERATIONAL INSIGHT</p>
-            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Connecting Your Data</h2>
-            <p className="text-gray-600">We're connecting to your property management system to sync your data.</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Setting Up Your Account</h2>
+            <p className="text-gray-600">We're connecting to your systems and syncing your data...</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>PM System Connection</span>
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Setup Progress</span>
+                <span>{Math.round(syncProgress)}%</span>
               </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>Payment processed successfully</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>Credentials verified and encrypted</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>Properties configured 2</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>PM Software revision</span>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${syncProgress}%` }}
+                ></div>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <h4 className="font-semibold text-blue-800 mb-1">📊 Syncing Your Data...</h4>
-              <p className="text-blue-700 text-sm">
-                This process can take a few minutes. We're importing your properties, units, tenants, and financial data.
-              </p>
+            {/* Sync Steps */}
+            <div className="space-y-4 mb-8">
+              {syncSteps.map((syncStep, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                  {syncStep.completed ? (
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                  ) : syncStep.loading ? (
+                    <Loader2 className="h-5 w-5 text-blue-500 animate-spin flex-shrink-0" />
+                  ) : (
+                    <div className="h-5 w-5 border-2 border-gray-300 rounded-full flex-shrink-0"></div>
+                  )}
+                  <span className={`${syncStep.completed ? 'text-green-700' : syncStep.loading ? 'text-blue-700' : 'text-gray-600'}`}>
+                    {syncStep.name}
+                  </span>
+                  {syncStep.loading && (
+                    <span className="text-sm text-blue-600 ml-auto">Processing...</span>
+                  )}
+                  {syncStep.completed && (
+                    <span className="text-sm text-green-600 ml-auto">Complete</span>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <div className="flex justify-center mt-8">
+            {/* Status Messages */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h4 className="font-semibold text-blue-800 mb-2">📊 What's Happening</h4>
+              <div className="text-blue-700 text-sm space-y-1">
+                <p>✓ Establishing secure connection to your property management system</p>
+                <p>✓ Verifying payment information and setting up billing</p>
+                <p>✓ Encrypting and storing your credentials safely</p>
+                <p>✓ Importing your properties, units, and tenant data</p>
+                <p>✓ Syncing financial records and performance metrics</p>
+                <p>✓ Configuring your personalized dashboard</p>
+              </div>
+            </div>
+
+            {syncProgress === 100 && (
+              <div className="text-center">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
+                  <h3 className="font-semibold text-green-800 mb-2">Setup Complete!</h3>
+                  <p className="text-green-700 text-sm">
+                    Your account is ready. We've successfully synced your data and configured your dashboard.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setStep(5)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                >
+                  Continue to Dashboard
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 5) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl text-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-12">
+            <div className="w-20 h-20 mx-auto mb-6">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            
+            <h1 className="text-4xl font-bold text-black mb-3">Welcome to OPSIGHT</h1>
+            <p className="text-xl text-blue-600 mb-8">Your Operational Intelligence Platform is Ready</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                <h3 className="font-semibold text-green-800 mb-2">Data Synced</h3>
+                <p className="text-sm text-green-700">Your portfolio data is now live in the system</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                <CheckCircle className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold text-blue-800 mb-2">AI Activated</h3>
+                <p className="text-sm text-blue-700">Predictive insights and alerts are monitoring your properties</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                <CheckCircle className="h-8 w-8 text-purple-600 mx-auto mb-3" />
+                <h3 className="font-semibold text-purple-800 mb-2">Dashboard Ready</h3>
+                <p className="text-sm text-purple-700">Your personalized KPI dashboard is configured</p>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mb-8">
+              <h3 className="font-semibold text-gray-800 mb-3">What's Next?</h3>
+              <div className="text-sm text-gray-600 space-y-2">
+                <p>✓ Explore your real-time portfolio dashboard</p>
+                <p>✓ Review AI-generated insights and recommendations</p>
+                <p>✓ Set up custom alerts for your key metrics</p>
+                <p>✓ Access predictive analytics for your properties</p>
+              </div>
+            </div>
+            
+            {loading ? (
+              <div className="flex items-center justify-center gap-3">
+                <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+                <span className="text-blue-600">Finalizing your dashboard...</span>
+              </div>
+            ) : (
               <Button 
                 onClick={handleFinishSetup}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-12 py-4 text-xl font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
-                Complete Setup & Access Dashboard
+                Enter Your Dashboard
               </Button>
-            </div>
+            )}
           </div>
         </div>
       </div>
