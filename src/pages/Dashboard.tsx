@@ -1,13 +1,13 @@
 
 import React from 'react';
-import PlaceholderModule from './PlaceholderModule';
+import OwnerDashboard from '@/components/owner/OwnerDashboard';
+import ModuleLoader from '@/components/navigation/ModuleLoader';
 
 const Dashboard = () => {
   return (
-    <PlaceholderModule
-      moduleName="Dashboard"
-      description="Main dashboard with overview of all key metrics and activities."
-    />
+    <ModuleLoader moduleName="Dashboard">
+      <OwnerDashboard />
+    </ModuleLoader>
   );
 };
 
