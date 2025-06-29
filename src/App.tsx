@@ -5,7 +5,6 @@ import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import LandingPage from '@/pages/LandingPage';
 import Dashboard from '@/pages/Dashboard';
 import FinancialOverview from '@/pages/FinancialOverview';
 import ForecastAlerts from '@/pages/ForecastAlerts';
@@ -51,15 +50,7 @@ function App() {
                 }}
               >
                 <Routes>
-                  {/* Public landing page */}
-                  <Route path="/" element={<LandingPage />} />
-                  
-                  {/* Auth Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  
-                  {/* Protected Dashboard Routes */}
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/" element={<Dashboard />} />
                   <Route path="/financial-overview" element={<FinancialOverview />} />
                   <Route path="/forecast-alerts" element={<ForecastAlerts />} />
                   <Route path="/maintenance-tracker" element={<MaintenanceTracker />} />
@@ -68,9 +59,11 @@ function App() {
                   <Route path="/tenant-portal" element={<TenantPortal />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/onboarding" element={<Onboarding />} />
-                  
-                  {/* Public company page */}
                   <Route path="/company" element={<CompanyPage />} />
+
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
                   {/* Example Placeholder Module Route */}
                   <Route
