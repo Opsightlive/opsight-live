@@ -1,5 +1,5 @@
 
-import React, { Suspense, ComponentType, ReactNode } from 'react';
+import React, { Suspense, ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import SafeModeScreen from './SafeModeScreen';
