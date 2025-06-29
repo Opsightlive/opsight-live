@@ -59,7 +59,7 @@ function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   
-                  {/* Demo Routes - FIXED */}
+                  {/* Demo Routes */}
                   <Route path="/demo" element={<DemoMode />} />
                   <Route path="/book-demo" element={<DemoPage />} />
                   

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -113,8 +114,8 @@ const LandingPage = () => {
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
               <Link to="/book-demo" className="text-blue-600 hover:text-blue-700 font-medium">Book Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
-              <Link to="/demo">
-                <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
+              <Link to="/signup">
+                <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
               </Link>
             </div>
 
@@ -142,8 +143,8 @@ const LandingPage = () => {
                 <Link to="/book-demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Book Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
-                  <Link to="/demo">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Try Free</Button>
+                  <Link to="/signup">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
                   </Link>
                 </div>
               </div>
@@ -186,15 +187,15 @@ const LandingPage = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/book-demo">
+                <Link to="/demo">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
-                    Book Your Demo
+                    Try Free Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/demo">
+                <Link to="/book-demo">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 hover:bg-gray-50">
-                    Try Free Now
+                    Book Demo Call
                   </Button>
                 </Link>
               </div>
@@ -717,7 +718,7 @@ const LandingPage = () => {
               </Link>
               <Link to="/demo">
                 <Button size="lg" className="text-lg px-8 py-4 bg-white text-blue-600 border-white hover:bg-gray-100 hover:text-blue-700">
-                  Try Free Now
+                  Try Free Demo
                 </Button>
               </Link>
             </div>
