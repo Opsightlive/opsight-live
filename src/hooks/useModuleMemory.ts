@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { moduleMemoryService, ModuleState, FeatureHistory, ConsistencyRule } from '@/services/moduleMemoryService';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export interface UseModuleMemoryOptions {

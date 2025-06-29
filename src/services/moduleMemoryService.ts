@@ -53,6 +53,14 @@ export interface ModuleDependency {
   created_at?: string;
 }
 
+// Helper function to safely convert Json to Record<string, any>
+const safeJsonToRecord = (json: any): Record<string, any> => {
+  if (typeof json === 'object' && json !== null) {
+    return json as Record<string, any>;
+  }
+  return {};
+};
+
 class ModuleMemoryService {
   // Module States Management
   async getModuleState(userId: string, moduleName: string): Promise<ModuleState | null> {
@@ -70,7 +78,16 @@ class ModuleMemoryService {
         return null;
       }
 
-      return data;
+      if (!data) return null;
+
+      return {
+        ...data,
+        configuration: safeJsonToRecord(data.configuration),
+        feature_flags: safeJsonToRecord(data.feature_flags),
+        data_schema: safeJsonToRecord(data.data_schema),
+        ui_layout: safeJsonToRecord(data.ui_layout),
+        business_logic: safeJsonToRecord(data.business_logic),
+      };
     } catch (error) {
       console.error('Error fetching module state:', error);
       return null;
@@ -116,7 +133,14 @@ class ModuleMemoryService {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(item => ({
+        ...item,
+        configuration: safeJsonToRecord(item.configuration),
+        feature_flags: safeJsonToRecord(item.feature_flags),
+        data_schema: safeJsonToRecord(item.data_schema),
+        ui_layout: safeJsonToRecord(item.ui_layout),
+        business_logic: safeJsonToRecord(item.business_logic),
+      }));
     } catch (error) {
       console.error('Error fetching module states:', error);
       return [];
@@ -144,7 +168,12 @@ class ModuleMemoryService {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(item => ({
+        ...item,
+        change_type: item.change_type as FeatureHistory['change_type'],
+        previous_state: item.previous_state ? safeJsonToRecord(item.previous_state) : undefined,
+        new_state: safeJsonToRecord(item.new_state),
+      }));
     } catch (error) {
       console.error('Error fetching feature history:', error);
       return [];
@@ -197,7 +226,11 @@ class ModuleMemoryService {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(item => ({
+        ...item,
+        rule_type: item.rule_type as ConsistencyRule['rule_type'],
+        rule_definition: safeJsonToRecord(item.rule_definition),
+      }));
     } catch (error) {
       console.error('Error fetching consistency rules:', error);
       return [];
@@ -249,7 +282,11 @@ class ModuleMemoryService {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(item => ({
+        ...item,
+        dependency_type: item.dependency_type as ModuleDependency['dependency_type'],
+        dependency_details: safeJsonToRecord(item.dependency_details),
+      }));
     } catch (error) {
       console.error('Error fetching module dependencies:', error);
       return [];

@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Dashboard from '@/pages/Dashboard';
@@ -18,7 +19,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Onboarding from '@/pages/Onboarding';
 
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { AdaptiveLayoutProvider } from '@/contexts/AdaptiveLayoutContext';
 import { ModuleMemoryProvider } from '@/contexts/ModuleMemoryContext';
 

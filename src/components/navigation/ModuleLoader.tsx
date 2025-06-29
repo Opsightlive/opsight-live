@@ -4,7 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import SafeModeScreen from './SafeModeScreen';
 import { useModuleMemory } from '@/hooks/useModuleMemory';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ModuleLoaderProps {
   children: ReactNode;

@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { moduleMemoryService, ModuleState, ConsistencyRule, ModuleDependency } from '@/services/moduleMemoryService';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ModuleMemoryContextType {
   allModuleStates: ModuleState[];
