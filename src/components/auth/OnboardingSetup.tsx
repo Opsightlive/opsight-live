@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,542 +6,625 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Badge } from '@/components/ui/badge';
-import { Building2, Mail, Database, User, Plus, X, CreditCard, Check, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { supabaseService } from '@/services/supabaseService';
-import { toast } from 'sonner';
+import { Building2, Mail, Database, User, Eye, EyeOff, AlertCircle, CheckCircle, CreditCard } from 'lucide-react';
 
 interface OnboardingSetupProps {
   onComplete: () => void;
 }
 
-interface Property {
-  name: string;
-  units: string;
-  address: string;
-  tier: 'basic' | 'professional' | 'enterprise';
-  pmSoftware: string;
-  paymentMethod: 'card' | 'ach';
-}
-
 const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
+  const [step, setStep] = useState(1);
+  
+  // Step 1: Initial Setup
   const [companyName, setCompanyName] = useState('');
   const [role, setRole] = useState('');
+  const [propertyName, setPropertyName] = useState('');
+  const [units, setUnits] = useState('');
+  const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [dataSource, setDataSource] = useState('connect');
-  const [properties, setProperties] = useState<Property[]>([
-    { name: '', units: '', address: '', tier: 'basic', pmSoftware: '', paymentMethod: 'card' }
-  ]);
-  const [isSaving, setIsSaving] = useState(false);
+  
+  // Step 2: Plan Selection
+  const [selectedPlan, setSelectedPlan] = useState('professional');
+  const [unitCount, setUnitCount] = useState('100');
+  
+  // Step 3: Payment
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [nameOnCard, setNameOnCard] = useState('');
 
-  const pricingTiers = [
-    { 
-      id: 'basic', 
-      name: 'Basic', 
-      price: 3, 
-      features: ['Essential monitoring', 'Basic KPI tracking', 'Standard alerts', 'Monthly reporting', 'Email support']
-    },
-    { 
-      id: 'professional', 
-      name: 'Professional', 
-      price: 4, 
-      features: ['Everything in Basic', 'Real-time KPI tracking', 'Predictive alerts', 'AI-powered insights', '24/7 support']
-    },
-    { 
-      id: 'enterprise', 
-      name: 'Enterprise', 
-      price: 5, 
-      features: ['Everything in Professional', 'Advanced analytics', 'Custom integrations', 'Dedicated account manager', 'Priority support']
-    }
-  ];
+  const passwordsMatch = password === confirmPassword;
 
-  const pmSoftwareOptions = [
-    'AppFolio',
-    'Yardi',
-    'RentManager',
-    'Buildium',
-    'TenantCloud',
-    'Rent Spree',
-    'SimplifyEm',
-    'Landlord Studio',
-    'RentBerry',
-    'Avail',
-    'Other'
-  ];
-
-  const addProperty = () => {
-    setProperties([...properties, { name: '', units: '', address: '', tier: 'basic', pmSoftware: '', paymentMethod: 'card' }]);
+  const handleGetStarted = () => {
+    setStep(2);
   };
 
-  const removeProperty = (index: number) => {
-    if (properties.length > 1) {
-      setProperties(properties.filter((_, i) => i !== index));
-    }
+  const handleContinueToPayment = () => {
+    setStep(3);
   };
 
-  const updateProperty = (index: number, updates: Partial<Property>) => {
-    setProperties(properties.map((prop, i) => i === index ? { ...prop, ...updates } : prop));
+  const handleCompleteSetup = () => {
+    setStep(4);
   };
 
-  const calculateTotalCost = () => {
-    return properties.reduce((total, property) => {
-      const units = parseInt(property.units || '0');
-      const tierPrice = pricingTiers.find(t => t.id === property.tier)?.price || 3;
-      return total + (units * tierPrice);
-    }, 0);
+  const handleFinishSetup = () => {
+    onComplete();
   };
 
-  const calculateDiscount = () => {
-    const totalCost = calculateTotalCost();
-    const achProperties = properties.filter(p => p.paymentMethod === 'ach');
-    const cardProperties = properties.filter(p => p.paymentMethod === 'card');
-    
-    let discount = 0;
-    
-    achProperties.forEach(property => {
-      const units = parseInt(property.units || '0');
-      const tierPrice = pricingTiers.find(t => t.id === property.tier)?.price || 3;
-      discount += (units * tierPrice) * 0.05;
-    });
-    
-    cardProperties.forEach(property => {
-      const units = parseInt(property.units || '0');
-      const tierPrice = pricingTiers.find(t => t.id === property.tier)?.price || 3;
-      discount += (units * tierPrice) * 0.03;
-    });
-    
-    return Math.round(discount * 100) / 100;
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    if (confirmPassword) {
-      setPasswordsMatch(value === confirmPassword);
-    }
-  };
-
-  const handleConfirmPasswordChange = (value: string) => {
-    setConfirmPassword(value);
-    setPasswordsMatch(password === value);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  const handleGetStarted = async () => {
-    if (!passwordsMatch) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    if (!companyName || !role || !email || !password) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    if (properties.some(p => !p.name || !p.units || !p.address)) {
-      toast.error('Please complete all property information');
-      return;
-    }
-
-    setIsSaving(true);
-    
-    try {
-      // Store the setup data in localStorage for the payment step
-      const setupData = {
-        companyName,
-        role,
-        email,
-        password,
-        dataSource,
-        properties: properties.map(prop => ({
-          ...prop,
-          monthlyCost: (() => {
-            const units = parseInt(prop.units || '0');
-            const tierPrice = pricingTiers.find(t => t.id === prop.tier)?.price || 3;
-            return units * tierPrice;
-          })()
-        })),
-        totalCost: calculateTotalCost(),
-        discount: calculateDiscount()
-      };
-      
-      localStorage.setItem('onboardingData', JSON.stringify(setupData));
-      
-      toast.success('Setup data saved successfully!');
-      onComplete();
-    } catch (error) {
-      console.error('Error saving setup data:', error);
-      toast.error('Failed to save setup data');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const totalCost = calculateTotalCost();
-  const discount = calculateDiscount();
-  const finalCost = totalCost - discount;
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-7xl">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4">
-            <img 
-              src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-              alt="OPSIGHT Logo" 
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
-          <p className="text-blue-600 text-lg mb-4">OPERATIONAL INSIGHT</p>
-          <h2 className="text-2xl font-semibold text-gray-800">Let's get you set up.</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card className="border-2">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Building2 className="h-5 w-5 text-blue-600" />
-                Company & Role
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="companyName" className="text-sm font-medium">Company Name:</Label>
-                <Input
-                  id="companyName"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="Jordan Equity Partners"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="role" className="text-sm font-medium">Role</Label>
-                <Select value={role} onValueChange={setRole} required>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="GP" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gp">GP (General Partner)</SelectItem>
-                    <SelectItem value="lp">LP (Limited Partner)</SelectItem>
-                    <SelectItem value="pm">Property Manager</SelectItem>
-                    <SelectItem value="investor">Investor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Mail className="h-5 w-5 text-blue-600" />
-                Login Setup
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jordan@example.co"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => handlePasswordChange(e.target.value)}
-                    placeholder="••••••••••"
-                    className="pr-10"
-                    required
-                    minLength={6}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                    placeholder="••••••••••"
-                    className={`pr-10 ${!passwordsMatch && confirmPassword ? 'border-red-500' : ''}`}
-                    required
-                    minLength={6}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {!passwordsMatch && confirmPassword && (
-                  <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
-                    <AlertCircle className="h-3 w-3" />
-                    Passwords do not match
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="border-2 mb-6">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Building2 className="h-5 w-5 text-blue-600" />
-                Property Portfolio
-              </CardTitle>
-              <Button onClick={addProperty} variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Property
-              </Button>
+  if (step === 1) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-4xl">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {properties.map((property, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Property {index + 1}</h4>
-                  {properties.length > 1 && (
-                    <Button 
-                      onClick={() => removeProperty(index)} 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+            <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
+            <p className="text-blue-600 text-lg mb-4">OPERATIONAL INSIGHT</p>
+            <h2 className="text-2xl font-semibold text-gray-800">Let's get you set up.</h2>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Company & Role */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold">Company & Role</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium">Property Name</Label>
-                    <Input
-                      value={property.name}
-                      onChange={(e) => updateProperty(index, { name: e.target.value })}
-                      placeholder="Greenview Apts"
-                      className="mt-1"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm font-medium">Units</Label>
-                    <Input
-                      type="number"
-                      value={property.units}
-                      onChange={(e) => updateProperty(index, { units: e.target.value })}
-                      placeholder="100"
-                      className="mt-1"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm font-medium">Address</Label>
-                    <Input
-                      value={property.address}
-                      onChange={(e) => updateProperty(index, { address: e.target.value })}
-                      placeholder="123 Main St, City, State"
-                      className="mt-1"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium">PM Software</Label>
-                    <Select 
-                      value={property.pmSoftware} 
-                      onValueChange={(value) => updateProperty(index, { pmSoftware: value })}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select PM Software" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {pmSoftwareOptions.map((software) => (
-                          <SelectItem key={software} value={software}>
-                            {software}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Payment Method</Label>
-                    <Select 
-                      value={property.paymentMethod} 
-                      onValueChange={(value: 'card' | 'ach') => updateProperty(index, { paymentMethod: value })}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="card">
-                          <div className="flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
-                            Credit Card (3% discount)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="ach">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            ACH/Bank (5% discount)
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Pricing Tier</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {pricingTiers.map((tier) => {
-                      const isSelected = property.tier === tier.id;
-                      const units = parseInt(property.units || '0');
-                      const monthlyCost = units * tier.price;
-                      
-                      return (
-                        <div
-                          key={tier.id}
-                          className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                            isSelected 
-                              ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-100' 
-                              : 'border-gray-200 hover:border-blue-300'
-                          }`}
-                          onClick={() => updateProperty(index, { tier: tier.id as any })}
-                        >
-                          <div className="text-center">
-                            <h5 className="font-medium">{tier.name}</h5>
-                            <p className="text-sm text-gray-600">${tier.price}/unit/month</p>
-                            {units > 0 && (
-                              <p className="text-sm font-medium text-blue-600 mt-1">
-                                {formatCurrency(monthlyCost)}/month
-                              </p>
-                            )}
-                            {isSelected && (
-                              <Check className="h-4 w-4 text-blue-600 mx-auto mt-2" />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <Label className="text-sm">Company Name:</Label>
+                  <Input
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Jordan Equity Partners"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Role</Label>
+                  <Select value={role} onValueChange={setRole}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="GP" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gp">GP</SelectItem>
+                      <SelectItem value="lp">LP</SelectItem>
+                      <SelectItem value="pm">Property Manager</SelectItem>
+                      <SelectItem value="investor">Investor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold">Property Details</h3>
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Property Name</Label>
+                  <Input
+                    value={propertyName}
+                    onChange={(e) => setPropertyName(e.target.value)}
+                    placeholder="Greenview Apts"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Units</Label>
+                  <Input
+                    type="number"
+                    value={units}
+                    onChange={(e) => setUnits(e.target.value)}
+                    placeholder="100"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Address</Label>
+                  <Input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="123 Main St"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Login Setup */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold">Login Setup</h3>
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Email</Label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="jordan@example.co"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-sm">Password</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 mb-6">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Database className="h-5 w-5 text-blue-600" />
-              Data Source Setup
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <RadioGroup value={dataSource} onValueChange={setDataSource} className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="connect" id="connect" />
-                <Label htmlFor="connect" className="text-sm">
-                  Connect My PM System <span className="text-blue-600">(recommended)</span>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="upload" id="upload" />
-                <Label htmlFor="upload" className="text-sm">Upload Reports Manually</Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
-
-        {totalCost > 0 && (
-          <Card className="border-2 border-blue-200 bg-blue-50 mb-6">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Monthly Cost Summary</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Total Units: {properties.reduce((sum, prop) => sum + parseInt(prop.units || '0'), 0)}</span>
-                  <span className="font-medium">{formatCurrency(totalCost)}</span>
-                </div>
-                {discount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Payment Discounts:</span>
-                    <span>-{formatCurrency(discount)}</span>
+                
+                <div>
+                  <Label className="text-sm">Confirm Password</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••••"
+                      className={`pr-10 ${!passwordsMatch && confirmPassword ? 'border-red-500' : ''}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                )}
-                <div className="border-t pt-2 flex justify-between text-lg font-bold">
-                  <span>Monthly Total:</span>
-                  <span>{formatCurrency(finalCost)}</span>
+                  {!passwordsMatch && confirmPassword && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertCircle className="h-3 w-3" />
+                      Passwords do not match
+                    </div>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
 
-        <div className="text-center">
-          <Button 
-            onClick={handleGetStarted}
-            disabled={!passwordsMatch || !password || !confirmPassword || isSaving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 text-lg font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSaving ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Saving Setup...
+              {/* Data Source Setup */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Database className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold">Data Source Setup</h3>
+                </div>
+                
+                <RadioGroup value={dataSource} onValueChange={setDataSource} className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="connect" id="connect" />
+                    <Label htmlFor="connect" className="text-sm">
+                      Connect My PM System <span className="text-blue-600">(recommended)</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="upload" id="upload" />
+                    <Label htmlFor="upload" className="text-sm">Upload Reports Manually</Label>
+                  </div>
+                </RadioGroup>
               </div>
-            ) : (
-              'Continue to Payment'
-            )}
-          </Button>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <Button 
+                onClick={handleGetStarted}
+                disabled={!passwordsMatch || !password || !confirmPassword}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold rounded-lg"
+              >
+                Get Started
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (step === 2) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-5xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Plan</h2>
+            <p className="text-gray-600">Start your 14-day free trial • No charges until day 15</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="mb-6">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <h3 className="font-semibold text-green-800">14-Day Free Trial</h3>
+                </div>
+                <p className="text-green-700 text-sm mt-1">
+                  We won't charge your card during the trial period. On day 15, you'll be charged for your selected plan.
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="font-semibold text-lg mb-2">📊 Calculate Your Cost</h3>
+                <div className="flex items-center gap-4">
+                  <Label>Number of Units/Doors</Label>
+                  <Input
+                    type="number"
+                    value={unitCount}
+                    onChange={(e) => setUnitCount(e.target.value)}
+                    className="w-32"
+                    placeholder="100"
+                  />
+                </div>
+                <p className="text-sm text-gray-600 mt-2">
+                  Enter the total number of units across your entire portfolio.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className={`border rounded-lg p-6 cursor-pointer transition-all ${selectedPlan === 'basic' ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                     onClick={() => setSelectedPlan('basic')}>
+                  <h3 className="font-bold text-xl mb-2">Basic</h3>
+                  <div className="text-3xl font-bold mb-2">
+                    ${(parseInt(unitCount || '0') * 3).toLocaleString()}
+                    <span className="text-lg text-gray-600">/monthly</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">$3 per door/month</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Essential monitoring
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Basic KPI tracking
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Standard alerts
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Monthly reporting
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Email support
+                    </li>
+                  </ul>
+                  <Button 
+                    variant={selectedPlan === 'basic' ? 'default' : 'outline'} 
+                    className="w-full mt-4"
+                    onClick={() => setSelectedPlan('basic')}
+                  >
+                    Select Plan
+                  </Button>
+                </div>
+
+                <div className={`border rounded-lg p-6 cursor-pointer transition-all relative ${selectedPlan === 'professional' ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                     onClick={() => setSelectedPlan('professional')}>
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      Most Popular
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-xl mb-2">Professional</h3>
+                  <div className="text-3xl font-bold mb-2">
+                    ${(parseInt(unitCount || '0') * 4).toLocaleString()}
+                    <span className="text-lg text-gray-600">/monthly</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">$4 per door/month</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Everything in Basic
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Real-time KPI tracking
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Predictive alerts
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      AI-powered insights
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      24/7 support
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => setSelectedPlan('professional')}
+                  >
+                    Selected Plan
+                  </Button>
+                </div>
+
+                <div className={`border rounded-lg p-6 cursor-pointer transition-all ${selectedPlan === 'enterprise' ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                     onClick={() => setSelectedPlan('enterprise')}>
+                  <h3 className="font-bold text-xl mb-2">Enterprise</h3>
+                  <div className="text-3xl font-bold mb-2">
+                    ${(parseInt(unitCount || '0') * 5).toLocaleString()}
+                    <span className="text-lg text-gray-600">/monthly</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">$5 per door/month</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Everything in Professional
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Advanced analytics
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Custom integrations
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Dedicated account manager
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Priority support
+                    </li>
+                  </ul>
+                  <Button 
+                    variant={selectedPlan === 'enterprise' ? 'default' : 'outline'} 
+                    className="w-full mt-4"
+                    onClick={() => setSelectedPlan('enterprise')}
+                  >
+                    Select Plan
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                <h4 className="font-semibold text-blue-800 mb-2">Your Selected Plan</h4>
+                <p className="text-blue-700">
+                  Professional • {unitCount} units • monthly billing
+                </p>
+                <div className="text-2xl font-bold text-blue-800 mt-2">
+                  ${(parseInt(unitCount || '0') * 4).toLocaleString()}/monthly
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Button 
+                onClick={handleContinueToPayment}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold"
+              >
+                Continue to Payment
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 3) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-black mb-2">OPSIGHT</h1>
+            <p className="text-sm text-gray-600">OPERATIONAL INSIGHT</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Choose Your Plan</h2>
+            <p className="text-gray-600">Start your 14-day free trial • No charges until day 15</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="mb-6">
+              <h3 className="font-semibold text-lg mb-4">Payment Information</h3>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <h4 className="font-semibold text-green-800 mb-1">Payment Schedule</h4>
+                <p className="text-green-700 text-sm">
+                  We won't charge your card during the trial period. First payment of $400,800 on your card ending in 2424.
+                </p>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">  
+                <h4 className="font-semibold text-green-800 mb-1">Pay with Credit Card & Save 3%!</h4>
+                <p className="text-green-700 text-sm">
+                  Get instant rebate activation when purchasing with your credit card online.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">💳 Payment Method 1 (required)</Label>
+                  <div className="flex gap-4 mt-2">
+                    <Button variant="default" className="bg-green-600 hover:bg-green-700">
+                      Credit Card
+                    </Button>
+                    <Button variant="outline">
+                      ACH/Bank
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm">Card Number</Label>
+                    <Input
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      placeholder="1234567890"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm">Expiry</Label>
+                    <Input
+                      value={expiryDate}
+                      onChange={(e) => setExpiryDate(e.target.value)}
+                      placeholder="12/25"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm">CVV</Label>
+                    <Input
+                      value={cvv}
+                      onChange={(e) => setCvv(e.target.value)}
+                      placeholder="123"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm">Name on Card</Label>
+                    <Input
+                      value={nameOnCard}
+                      onChange={(e) => setNameOnCard(e.target.value)}
+                      placeholder="JOHN DOE"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  <p>• Payment Manager will process charges during free trial</p>
+                  <p>• First payment will show on your credit card statement within</p>
+                  <p>  two business days of our billing cycle</p>
+                </div>
+
+                <div className="text-sm">
+                  <p>Assign Properties to this Payment Method:</p>
+                  <p className="text-gray-600">All applicable units</p>
+                </div>
+
+                <div className="flex items-center space-x-2 text-sm">
+                  <input type="checkbox" className="rounded" />
+                  <span>Add CVV (AMZ)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setStep(2)}>
+                Back to Pricing
+              </Button>
+              <Button 
+                onClick={handleCompleteSetup}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              >
+                Complete & Start Trial
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 4) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT Logo" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-black mb-2">OPSIGHT</h1>
+            <p className="text-sm text-gray-600">OPERATIONAL INSIGHT</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">Connecting Your Data</h2>
+            <p className="text-gray-600">We're connecting to your property management system to sync your data.</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>PM System Connection</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>Payment processed successfully</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>Credentials verified and encrypted</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>Properties configured 2</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>PM Software revision</span>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+              <h4 className="font-semibold text-blue-800 mb-1">📊 Syncing Your Data...</h4>
+              <p className="text-blue-700 text-sm">
+                This process can take a few minutes. We're importing your properties, units, tenants, and financial data.
+              </p>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <Button 
+                onClick={handleFinishSetup}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold"
+              >
+                Complete Setup & Access Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default OnboardingSetup;
