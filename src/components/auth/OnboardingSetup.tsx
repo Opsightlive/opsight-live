@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,15 +51,24 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
   const passwordsMatch = password === confirmPassword;
 
+  // Pricing Calculator
+  const calculateMonthlyPrice = (plan: string, units: number) => {
+    const pricePerUnit = plan === 'basic' ? 3 : plan === 'professional' ? 4 : 5;
+    return units * pricePerUnit;
+  };
+
   const handleGetStarted = () => {
+    console.log('Getting started with:', { companyName, role, propertyName, units, email, dataSource });
     setStep(2);
   };
 
   const handleContinueToPayment = () => {
+    console.log('Selected plan:', { selectedPlan, unitCount, monthlyPrice: calculateMonthlyPrice(selectedPlan, parseInt(unitCount)) });
     setStep(3);
   };
 
   const handleCompleteSetup = () => {
+    console.log('Completing setup with payment info');
     setStep(4);
     startDataSync();
   };
@@ -68,18 +76,14 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const startDataSync = () => {
     setLoading(true);
     
-    // Simulate the sync process
     const processSteps = async () => {
       for (let i = 0; i < syncSteps.length; i++) {
-        // Set current step as loading
         setSyncSteps(prev => prev.map((step, index) => 
           index === i ? { ...step, loading: true } : step
         ));
         
-        // Simulate processing time
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
         
-        // Mark as completed
         setSyncSteps(prev => prev.map((step, index) => 
           index === i ? { ...step, loading: false, completed: true } : step
         ));
@@ -87,7 +91,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
         setSyncProgress((i + 1) / syncSteps.length * 100);
       }
       
-      // Final step - show completion
       setTimeout(() => {
         setStep(5);
       }, 1000);
@@ -98,7 +101,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
   const handleFinishSetup = () => {
     setLoading(true);
-    // Simulate final setup
     setTimeout(() => {
       onComplete();
     }, 2000);
@@ -285,7 +287,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
             <div className="flex justify-center mt-8">
               <Button 
                 onClick={handleGetStarted}
-                disabled={!passwordsMatch || !password || !confirmPassword}
+                disabled={!passwordsMatch || !password || !confirmPassword || !email || !companyName}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold rounded-lg"
               >
                 Get Started
@@ -298,6 +300,11 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   }
 
   if (step === 2) {
+    const currentUnits = parseInt(unitCount) || 0;
+    const basicPrice = calculateMonthlyPrice('basic', currentUnits);
+    const professionalPrice = calculateMonthlyPrice('professional', currentUnits);
+    const enterprisePrice = calculateMonthlyPrice('enterprise', currentUnits);
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="w-full max-w-5xl">
@@ -340,8 +347,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                      onClick={() => setSelectedPlan('basic')}>
                   <h3 className="font-bold text-xl mb-2">Basic</h3>
                   <div className="text-3xl font-bold mb-2">
-                    ${(parseInt(unitCount || '0') * 3).toLocaleString()}
-                    <span className="text-lg text-gray-600">/monthly</span>
+                    ${basicPrice.toLocaleString()}
+                    <span className="text-lg text-gray-600">/month</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">$3 per door/month</p>
                   <ul className="space-y-2 text-sm">
@@ -371,7 +378,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     className="w-full mt-4"
                     onClick={() => setSelectedPlan('basic')}
                   >
-                    Select Plan
+                    {selectedPlan === 'basic' ? 'Selected' : 'Select Plan'}
                   </Button>
                 </div>
 
@@ -384,8 +391,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   </div>
                   <h3 className="font-bold text-xl mb-2">Professional</h3>
                   <div className="text-3xl font-bold mb-2">
-                    ${(parseInt(unitCount || '0') * 4).toLocaleString()}
-                    <span className="text-lg text-gray-600">/monthly</span>
+                    ${professionalPrice.toLocaleString()}
+                    <span className="text-lg text-gray-600">/month</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">$4 per door/month</p>
                   <ul className="space-y-2 text-sm">
@@ -414,7 +421,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
                     onClick={() => setSelectedPlan('professional')}
                   >
-                    Selected Plan
+                    {selectedPlan === 'professional' ? 'Selected' : 'Select Plan'}
                   </Button>
                 </div>
 
@@ -422,8 +429,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                      onClick={() => setSelectedPlan('enterprise')}>
                   <h3 className="font-bold text-xl mb-2">Enterprise</h3>
                   <div className="text-3xl font-bold mb-2">
-                    ${(parseInt(unitCount || '0') * 5).toLocaleString()}
-                    <span className="text-lg text-gray-600">/monthly</span>
+                    ${enterprisePrice.toLocaleString()}
+                    <span className="text-lg text-gray-600">/month</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">$5 per door/month</p>
                   <ul className="space-y-2 text-sm">
@@ -453,7 +460,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     className="w-full mt-4"
                     onClick={() => setSelectedPlan('enterprise')}
                   >
-                    Select Plan
+                    {selectedPlan === 'enterprise' ? 'Selected' : 'Select Plan'}
                   </Button>
                 </div>
               </div>
@@ -461,15 +468,21 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
                 <h4 className="font-semibold text-blue-800 mb-2">Your Selected Plan</h4>
                 <p className="text-blue-700">
-                  {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} • {unitCount} units • monthly billing
+                  {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} • {unitCount} units • Monthly billing
                 </p>
                 <div className="text-2xl font-bold text-blue-800 mt-2">
-                  ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()}/monthly
+                  ${calculateMonthlyPrice(selectedPlan, currentUnits).toLocaleString()}/month
                 </div>
+                <p className="text-sm text-blue-600 mt-1">
+                  14-day free trial • First payment on day 15
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setStep(1)}>
+                Back to Setup
+              </Button>
               <Button 
                 onClick={handleContinueToPayment}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold"
@@ -484,6 +497,9 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   }
 
   if (step === 3) {
+    const currentUnits = parseInt(unitCount) || 0;
+    const monthlyPrice = calculateMonthlyPrice(selectedPlan, currentUnits);
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="w-full max-w-2xl">
@@ -506,7 +522,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                 <h4 className="font-semibold text-green-800 mb-1">Payment Schedule</h4>
                 <p className="text-green-700 text-sm">
-                  We won't charge your card during the trial period. First payment of ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()} will be processed after your trial ends.
+                  We won't charge your card during the trial period. First payment of ${monthlyPrice.toLocaleString()} will be processed after your trial ends.
                 </p>
               </div>
 
@@ -583,7 +599,7 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                   <div className="text-sm text-blue-700">
                     <p>Plan: {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}</p>
                     <p>Units: {unitCount}</p>
-                    <p>Monthly Cost: ${(parseInt(unitCount || '0') * (selectedPlan === 'basic' ? 3 : selectedPlan === 'professional' ? 4 : 5)).toLocaleString()}</p>
+                    <p>Monthly Cost: ${monthlyPrice.toLocaleString()}</p>
                     <p className="font-semibold mt-2">Trial Period: 14 days (Free)</p>
                   </div>
                 </div>
@@ -626,7 +642,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
-            {/* Progress Bar */}
             <div className="mb-8">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Setup Progress</span>
@@ -640,7 +655,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               </div>
             </div>
 
-            {/* Sync Steps */}
             <div className="space-y-4 mb-8">
               {syncSteps.map((syncStep, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
@@ -664,7 +678,6 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
               ))}
             </div>
 
-            {/* Status Messages */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">📊 What's Happening</h4>
               <div className="text-blue-700 text-sm space-y-1">
