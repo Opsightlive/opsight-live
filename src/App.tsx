@@ -18,6 +18,7 @@ import PlaceholderModule from '@/pages/PlaceholderModule';
 import NotFound from '@/pages/NotFound';
 import CompanyPage from '@/pages/CompanyPage';
 import DemoMode from '@/pages/DemoMode';
+import DemoPage from '@/pages/DemoPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
 
@@ -58,8 +59,10 @@ function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   
-                  {/* Demo Route */}
+                  {/* Demo Routes */}
                   <Route path="/demo" element={<DemoMode />} />
+                  <Route path="/demo-page" element={<DemoPage />} />
+                  <Route path="/book-demo" element={<DemoPage />} />
                   
                   {/* Dashboard Routes */}
                   <Route path="/dashboard" element={<Dashboard />} />

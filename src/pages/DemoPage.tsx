@@ -1,15 +1,17 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, User, Mail, Phone, Building2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CalendarBooking from '@/components/demo/CalendarBooking';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
 
 const DemoPage = () => {
-  const [currentStep, setCurrentStep] = useState<'form' | 'calendar'>('form');
+  const [currentStep, setCurrentStep] = useState<'form' | 'calendar' | 'confirmation'>('form');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,30 +21,74 @@ const DemoPage = () => {
     properties: '',
     message: ''
   });
-  const isMobile = useIsMobile();
+  const [bookingDetails, setBookingDetails] = useState<{
+    date: Date;
+    time: string;
+  } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Demo request submitted:', formData);
     setCurrentStep('calendar');
   };
 
   const handleBookingComplete = (date: Date, time: string) => {
-    console.log('Demo booked for:', date, time, 'Contact:', formData);
-    // The email service now handles sending the data
+    setBookingDetails({ date, time });
+    setCurrentStep('confirmation');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  if (currentStep === 'confirmation') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
+        {/* Header */}
+        <div className="bg-transparent border-b border-white/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <Link to="/" className="flex items-center">
+                <img 
+                  src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                  alt="OPSIGHT" 
+                  className="h-8 w-8 mr-3"
+                />
+                <span className="text-2xl font-bold text-white">OPSIGHT</span>
+              </Link>
+              <Link to="/" className="text-blue-200 hover:text-white transition-colors">
+                ← Back to Home
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Confirmation */}
+        <div className="flex-1 flex items-center justify-center py-12 px-4">
+          <Card className="max-w-md mx-auto">
+            <CardContent className="p-8 text-center">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Demo Scheduled!</h3>
+              <p className="text-gray-600 mb-4">
+                Your demo is scheduled for {bookingDetails?.date.toLocaleDateString()} at {bookingDetails?.time}
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                We'll send you a calendar invite and join link shortly.
+              </p>
+              <div className="space-y-3">
+                <Button asChild className="w-full">
+                  <Link to="/signup">Try Free Version</Link>
+                </Button>
+                <Button variant="outline" asChild className="w-full">
+                  <Link to="/">Back to Home</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-transparent border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
@@ -51,223 +97,146 @@ const DemoPage = () => {
                 alt="OPSIGHT" 
                 className="h-8 w-8 mr-3"
               />
-              <span className="text-2xl font-bold text-black">OPSIGHT</span>
+              <span className="text-2xl font-bold text-white">OPSIGHT</span>
             </Link>
-            <Link to="/" className="text-gray-600 hover:text-gray-900">
+            <Link to="/" className="text-blue-200 hover:text-white transition-colors">
               ← Back to Home
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Demo Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {currentStep === 'form' ? (
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-2'} gap-12`}>
-            {/* ... keep existing code (left column information) */}
+      {/* Main Content */}
+      <div className="flex-1 py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          {currentStep === 'form' && (
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-6">
-                Schedule Your Personal Demo
-              </h1>
-              <p className="text-xl text-gray-600 mb-8">
-                See how OPSIGHT can transform your real estate portfolio management 
-                in just 30 minutes.
-              </p>
-
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
-                    <Calendar className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Personalized Walkthrough</h3>
-                    <p className="text-gray-600">
-                      We'll show you exactly how OPSIGHT works with your specific portfolio needs.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
-                    <Clock className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">30-Minute Session</h3>
-                    <p className="text-gray-600">
-                      Quick, focused demo that respects your time while covering all key features.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
-                    <User className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Expert Guidance</h3>
-                    <p className="text-gray-600">
-                      Get insights from our real estate technology experts and ask any questions.
-                    </p>
-                  </div>
-                </div>
+              <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold text-white mb-4">Schedule Your Demo</h1>
+                <p className="text-xl text-blue-200">
+                  See how OPSIGHT can transform your property management operations
+                </p>
               </div>
+
+              <Card className="max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle>Tell us about your portfolio</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="firstName">First Name *</Label>
+                        <Input
+                          id="firstName"
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName">Last Name *</Label>
+                        <Input
+                          id="lastName"
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="company">Company/Organization *</Label>
+                      <Input
+                        id="company"
+                        value={formData.company}
+                        onChange={(e) => setFormData({...formData, company: e.target.value})}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="properties">Number of Properties</Label>
+                      <Select onValueChange={(value) => setFormData({...formData, properties: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select number of properties" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1-5">1-5 properties</SelectItem>
+                          <SelectItem value="6-20">6-20 properties</SelectItem>
+                          <SelectItem value="21-50">21-50 properties</SelectItem>
+                          <SelectItem value="51-100">51-100 properties</SelectItem>
+                          <SelectItem value="100+">100+ properties</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="message">Tell us about your biggest operational challenges</Label>
+                      <Textarea
+                        id="message"
+                        value={formData.message}
+                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        placeholder="What keeps you up at night? What manual processes would you love to automate?"
+                        rows={4}
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full" size="lg">
+                      <Calendar className="h-5 w-5 mr-2" />
+                      Continue to Schedule
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
             </div>
+          )}
 
-            {/* Right Column - Form */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Tell Us About Yourself</h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* ... keep existing code (form fields) */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <div className="relative mt-1">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        className="pl-10"
-                        placeholder="John"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <div className="relative mt-1">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        className="pl-10"
-                        placeholder="Doe"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Work Email</Label>
-                  <div className="relative mt-1">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="pl-10"
-                      placeholder="john@company.com"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="relative mt-1">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="pl-10"
-                      placeholder="(555) 123-4567"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="company">Company Name</Label>
-                  <div className="relative mt-1">
-                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="company"
-                      name="company"
-                      type="text"
-                      value={formData.company}
-                      onChange={handleChange}
-                      className="pl-10"
-                      placeholder="ABC Real Estate"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="properties">Number of Properties</Label>
-                  <Input
-                    id="properties"
-                    name="properties"
-                    type="number"
-                    value={formData.properties}
-                    onChange={handleChange}
-                    placeholder="10"
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="message">Tell us about your portfolio (optional)</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={3}
-                    placeholder="Brief description of your portfolio, current challenges, or specific interests..."
-                  />
-                </div>
-
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3">
-                  Continue to Schedule
+          {currentStep === 'calendar' && (
+            <div>
+              <div className="text-center mb-8">
+                <Button
+                  variant="ghost"
+                  onClick={() => setCurrentStep('form')}
+                  className="text-white hover:text-blue-200"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Form
                 </Button>
-              </form>
+                <h1 className="text-4xl font-bold text-white mb-4">Pick Your Time</h1>
+                <p className="text-xl text-blue-200">
+                  Choose a convenient time for your personalized demo
+                </p>
+              </div>
 
-              <p className="text-sm text-gray-500 text-center mt-4">
-                Next, you'll select your preferred demo time.
-              </p>
+              <CalendarBooking
+                contactData={formData}
+                onBookingComplete={handleBookingComplete}
+              />
             </div>
-          </div>
-        ) : (
-          <div>
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Select Your Demo Time
-              </h1>
-              <p className="text-xl text-gray-600">
-                Choose a convenient time for your 30-minute OPSIGHT demo
-              </p>
-            </div>
-            
-            <CalendarBooking 
-              onBookingComplete={handleBookingComplete}
-              contactData={formData}
-            />
-            
-            <div className="text-center mt-8">
-              <Button 
-                variant="outline" 
-                onClick={() => setCurrentStep('form')}
-                className="mr-4"
-              >
-                ← Back to Form
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
