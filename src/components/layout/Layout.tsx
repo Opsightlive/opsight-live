@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import PermanentSidebar from '../navigation/PermanentSidebar';
 import Header from './Header';
 import ResponsiveContainer from './ResponsiveContainer';
 import { useAdaptiveLayoutContext } from '@/contexts/AdaptiveLayoutContext';
@@ -37,21 +37,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // Add safe area padding for devices with notches
       screenInfo.hasNotch && "pt-safe-area-inset-top pb-safe-area-inset-bottom"
     )}>
-      {/* Sidebar */}
-      {!screenInfo.isMobile && (
-        <div className="flex-shrink-0">
-          <Sidebar />
-        </div>
-      )}
+      {/* Permanent Sidebar - Always present */}
+      <PermanentSidebar />
 
-      {/* Mobile Sidebar - rendered conditionally in Sidebar component */}
-      {screenInfo.isMobile && <Sidebar />}
-
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Header />
         
-        {/* Page Content */}
+        {/* Page Content with Module Loading */}
         <main className={cn(
           "flex-1 overflow-auto",
           screenInfo.isMobile ? "p-2" : "p-4 md:p-6",
