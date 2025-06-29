@@ -41,7 +41,7 @@ const SafeModeScreen: React.FC<SafeModeScreenProps> = ({
             <AlertDescription className="text-sm">
               <strong>Error Details:</strong><br />
               {errorMessage}
-            </CardDescription>
+            </AlertDescription>
           </Alert>
 
           <div className="space-y-2">
