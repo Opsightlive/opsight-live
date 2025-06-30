@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, User, Eye, EyeOff, AlertCircle, CheckCircle, CreditCard, Loader2, Building2 } from 'lucide-react';
+import { Mail, User, Eye, EyeOff, AlertCircle, CheckCircle, CreditCard, Loader2, Building2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import MultiPropertySetup from './MultiPropertySetup';
 
 interface OnboardingSetupProps {
@@ -26,6 +27,7 @@ interface Property {
 }
 
 const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   
@@ -48,6 +50,10 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [nameOnCard, setNameOnCard] = useState('');
 
   const passwordsMatch = password === confirmPassword;
+
+  const handleBackToHome = () => {
+    navigate('/');
+  };
 
   const handleContinueToProperties = () => {
     console.log('Login setup complete:', { companyName, role, email });
@@ -87,7 +93,19 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   // Step 1: Login Setup
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 sm:p-6 relative">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBackToHome}
+            className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </Button>
+        </div>
+
         <div className="w-full max-w-sm sm:max-w-md">
           <div className="text-center mb-6 sm:mb-8">
             <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
@@ -210,17 +228,43 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   // Step 2: Properties Setup  
   if (step === 2) {
     return (
-      <MultiPropertySetup 
-        onComplete={handlePropertiesComplete}
-        onBack={() => setStep(1)}
-      />
+      <div className="relative">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBackToHome}
+            className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </Button>
+        </div>
+        
+        <MultiPropertySetup 
+          onComplete={handlePropertiesComplete}
+          onBack={() => setStep(1)}
+        />
+      </div>
     );
   }
 
   // Step 3: Payment Setup
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 relative">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBackToHome}
+            className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </Button>
+        </div>
+
         <div className="w-full max-w-xl sm:max-w-2xl">
           <div className="text-center mb-6 sm:mb-8">
             <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
@@ -330,7 +374,19 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   // Step 4: Processing
   if (step === 4) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 relative">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBackToHome}
+            className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </Button>
+        </div>
+
         <div className="w-full max-w-xl sm:max-w-2xl text-center">
           <Card>
             <CardContent className="p-6 sm:p-8">
