@@ -13,7 +13,7 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ 
   showBackButton = true, 
   onBack, 
-  className = "fixed top-4 left-4 z-50" 
+  className = "absolute top-4 left-4 z-50" 
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,9 +44,9 @@ const Navigation: React.FC<NavigationProps> = ({
         variant="ghost"
         size="icon"
         onClick={handleBack}
-        className="bg-white/95 backdrop-blur-sm hover:bg-white border border-gray-200 shadow-lg h-10 w-10 sm:h-12 sm:w-12"
+        className="bg-white/95 backdrop-blur-sm hover:bg-white border border-gray-200 shadow-lg h-12 w-12 rounded-full flex items-center justify-center"
       >
-        <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+        <ArrowLeft className="h-6 w-6 text-gray-700" />
       </Button>
     </div>
   );
