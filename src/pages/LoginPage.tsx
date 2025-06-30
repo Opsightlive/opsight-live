@@ -23,14 +23,14 @@ const LoginPage = () => {
   
   const { login } = useAuth();
 
-  // Pre-fill email when switching to company login
-  React.useEffect(() => {
-    if (loginType === 'company') {
-      setEmail('opsightlive@gmail.com');
-    } else {
-      setEmail('');
-    }
-  }, [loginType]);
+  // Remove the email pre-fill effect for company login
+  // React.useEffect(() => {
+  //   if (loginType === 'company') {
+  //     setEmail('opsightlive@gmail.com');
+  //   } else {
+  //     setEmail('');
+  //   }
+  // }, [loginType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +125,7 @@ const LoginPage = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder={loginType === 'company' ? 'opsightlive@gmail.com' : 'Enter your email'}
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 bg-gray-800/50 border-gray-600/50 text-white placeholder-gray-500 focus:border-blue-500"

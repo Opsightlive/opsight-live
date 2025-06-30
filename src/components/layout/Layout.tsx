@@ -41,8 +41,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Global Navigation Back Button */}
       <Navigation />
       
-      {/* Permanent Sidebar - Always present */}
-      <PermanentSidebar />
+      {/* Permanent Sidebar - Always present and visible */}
+      <div className="flex-shrink-0">
+        <PermanentSidebar />
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
