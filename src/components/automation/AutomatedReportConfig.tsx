@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,7 +120,7 @@ const AutomatedReportConfig = () => {
 
         if (error) throw error;
       } else {
-        const { data, error } = await supabase
+        const { data: insertData, error } = await supabase
           .from('automated_report_configs' as any)
           .insert(configData)
           .select()
@@ -130,11 +129,13 @@ const AutomatedReportConfig = () => {
         if (error) throw error;
 
         // Update local state with new ID
-        setConfigs(prev => prev.map(c => 
-          c.report_type === config.report_type 
-            ? { ...c, id: data.id }
-            : c
-        ));
+        if (insertData) {
+          setConfigs(prev => prev.map(c => 
+            c.report_type === config.report_type 
+              ? { ...c, id: insertData.id }
+              : c
+          ));
+        }
       }
 
       toast({
