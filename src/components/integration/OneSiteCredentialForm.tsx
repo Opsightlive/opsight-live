@@ -32,6 +32,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const validateCredentials = () => {
     if (!credentials.username || !credentials.password) {
@@ -55,11 +56,13 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
     const validationError = validateCredentials();
     if (validationError) {
       setTestResult('error');
+      setErrorMessage(validationError);
       return;
     }
 
     setIsSubmitting(true);
     setTestResult(null);
+    setErrorMessage('');
 
     try {
       console.log('Creating OneSite integration with credentials:', { username: credentials.username });
@@ -83,12 +86,14 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
         // Call the parent callback
         onCredentialsSubmit(credentials);
       } else {
-        throw new Error('Failed to create integration');
+        setTestResult('error');
+        setErrorMessage('Integration creation returned no result. Please check your credentials and try again.');
       }
       
     } catch (error: any) {
       console.error('Error creating integration:', error);
       setTestResult('error');
+      setErrorMessage(error.message || 'An unexpected error occurred while creating the integration.');
     } finally {
       setIsSubmitting(false);
     }
@@ -118,8 +123,8 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <ul className="text-sm text-blue-800 space-y-2">
                 <li>• Use your OneSite portal email address as the username</li>
                 <li>• Use your regular OneSite password</li>
-                <li>• Ensure your account has API access enabled</li>
-                <li>• Contact your OneSite administrator if you encounter access issues</li>
+                <li>• This will run in test mode first to validate your credentials</li>
+                <li>• Contact your OneSite administrator if you need API access enabled</li>
               </ul>
             </div>
           </div>
@@ -178,7 +183,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Failed to create integration. Please verify your credentials and try again.
+                  {errorMessage || 'Failed to create integration. Please verify your credentials and try again.'}
                 </AlertDescription>
               </Alert>
             )}

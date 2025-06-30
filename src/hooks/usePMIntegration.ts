@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -57,11 +56,17 @@ export const usePMIntegration = () => {
     syncFrequency: string = 'daily'
   ) => {
     if (!user) {
-      toast.error('Please log in to create integrations');
-      return;
+      const errorMsg = 'Please log in to create integrations';
+      console.error(errorMsg);
+      toast.error(errorMsg);
+      throw new Error(errorMsg);
     }
 
     try {
+      console.log('Starting integration creation process...');
+      console.log('User ID:', user.id);
+      console.log('PM Software:', pmSoftware);
+      
       // Validate credentials before storing
       if (!credentials.username || !credentials.password) {
         throw new Error('Username and password are required');
@@ -74,6 +79,8 @@ export const usePMIntegration = () => {
         }
       }
 
+      console.log('Credentials validated, encrypting...');
+
       // Encrypt credentials using base64 encoding (in production, use proper encryption)
       const encryptedCredentials = btoa(JSON.stringify({
         username: credentials.username,
@@ -82,6 +89,8 @@ export const usePMIntegration = () => {
         endpoint: credentials.endpoint || null,
         encrypted_at: new Date().toISOString()
       }));
+
+      console.log('Credentials encrypted, inserting into database...');
 
       const { data, error } = await supabase
         .from('pm_integrations')
@@ -102,20 +111,32 @@ export const usePMIntegration = () => {
         .single();
 
       if (error) {
-        throw error;
+        console.error('Database error:', error);
+        throw new Error(`Database error: ${error.message}`);
       }
 
+      if (!data) {
+        console.error('No data returned from insert operation');
+        throw new Error('No data returned from database insert');
+      }
+
+      console.log('Integration created successfully:', data);
       setIntegrations(prev => [data, ...prev]);
       toast.success(`Integration "${integrationName}" created successfully`);
       
       // Test the integration immediately
-      await testIntegration(data.id);
+      try {
+        await testIntegration(data.id);
+      } catch (testError) {
+        console.warn('Integration created but test failed:', testError);
+        // Don't throw here - integration was created successfully
+      }
       
       return data;
     } catch (error: any) {
       console.error('Error creating integration:', error);
       toast.error(`Failed to create integration: ${error.message}`);
-      return null;
+      throw error; // Re-throw so the calling component can handle it
     }
   }, [user]);
 
