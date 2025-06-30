@@ -140,23 +140,27 @@ export const usePMIntegration = () => {
     }
   }, [user]);
 
-  const testIntegration = useCallback(async (integrationId: string, testMode: boolean = false) => {
+  const testIntegration = useCallback(async (integrationId: string, testMode: boolean = true) => {
     if (!user) return;
 
     try {
+      console.log(`Testing integration ${integrationId} in ${testMode ? 'test' : 'production'} mode`)
+      
       // Update status to testing
       await supabase
         .from('pm_integrations')
         .update({ sync_status: 'testing' })
         .eq('id', integrationId);
 
-      // Call the sync function - default to production mode
+      toast.info(`Starting ${testMode ? 'test' : 'production'} scraping...`)
+
+      // Call the sync function with proper test mode
       const { data, error } = await supabase.functions
         .invoke('sync-pm-data', {
           body: {
             integrationId,
             userId: user.id,
-            testMode: testMode // Use the parameter, default is false (production)
+            testMode: testMode
           }
         });
 
@@ -165,13 +169,14 @@ export const usePMIntegration = () => {
       }
 
       if (data.success) {
-        toast.success('Integration test successful');
+        const mode = testMode ? 'Test' : 'Production'
+        toast.success(`${mode} scraping successful! Extracted ${data.syncedKPIs} KPIs from ${data.pmSoftware}`)
         await loadIntegrations(); // Refresh the list
       } else {
-        throw new Error(data.error || 'Test failed');
+        throw new Error(data.error || 'Scraping failed')
       }
     } catch (error: any) {
-      console.error('Error testing integration:', error);
+      console.error('Error testing integration:', error)
       
       // Update integration with error status
       await supabase
@@ -182,12 +187,12 @@ export const usePMIntegration = () => {
         })
         .eq('id', integrationId);
       
-      toast.error(`Integration test failed: ${error.message}`);
+      toast.error(`Integration test failed: ${error.message}`)
       await loadIntegrations(); // Refresh to show error status
     }
   }, [user, loadIntegrations]);
 
-  const syncIntegration = useCallback(async (integrationId: string) => {
+  const syncIntegration = useCallback(async (integrationId: string, useTestMode: boolean = false) => {
     if (!user) return;
 
     try {
@@ -197,15 +202,16 @@ export const usePMIntegration = () => {
         .update({ sync_status: 'syncing' })
         .eq('id', integrationId);
 
-      toast.info('Starting data sync...');
+      const mode = useTestMode ? 'test' : 'production'
+      toast.info(`Starting ${mode} data scraping...`)
 
-      // Call sync in production mode (not test mode)
+      // Call sync with specified mode
       const { data, error } = await supabase.functions
         .invoke('sync-pm-data', {
           body: {
             integrationId,
             userId: user.id,
-            testMode: false // Always use production mode for manual sync
+            testMode: useTestMode
           }
         });
 
@@ -214,7 +220,8 @@ export const usePMIntegration = () => {
       }
 
       if (data.success) {
-        toast.success(`Successfully synced ${data.syncedKPIs} KPIs from ${data.pmSoftware}`);
+        const modeText = useTestMode ? 'Test sync' : 'Production sync'
+        toast.success(`${modeText} completed! Extracted ${data.syncedKPIs} KPIs from ${data.pmSoftware}`)
       } else {
         throw new Error(data.error || 'Sync failed');
       }

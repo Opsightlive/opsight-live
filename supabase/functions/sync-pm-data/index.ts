@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,27 +12,6 @@ interface PMSyncRequest {
   integrationId: string;
   userId: string;
   testMode?: boolean;
-}
-
-interface OneSiteAuthResponse {
-  access_token?: string;
-  token_type?: string;
-  expires_in?: number;
-  error?: string;
-  sessionId?: string;
-  cookies?: string[];
-}
-
-interface OneSiteProperty {
-  id: string;
-  name: string;
-  address: string;
-  total_units: number;
-  occupied_units: number;
-  occupancy_rate: number;
-  monthly_rent_roll: number;
-  collection_rate: number;
-  maintenance_requests: number;
 }
 
 serve(async (req) => {
@@ -47,7 +27,7 @@ serve(async (req) => {
 
     const { integrationId, userId, testMode = false } = await req.json() as PMSyncRequest
 
-    console.log(`Syncing PM data for integration ${integrationId}, testMode: ${testMode}`)
+    console.log(`Starting PM data sync for integration ${integrationId}, testMode: ${testMode}`)
 
     // Get integration details
     const { data: integration, error: integrationError } = await supabase
@@ -73,36 +53,25 @@ serve(async (req) => {
     let syncedData: any = {}
     let extractedKPIs: any[] = []
 
-    // Sync based on PM software type
     try {
       switch (integration.pm_software.toLowerCase()) {
         case 'onesite':
-          const oneSiteResult = await syncOneSiteData(integration, testMode)
+          const oneSiteResult = await scrapeOneSiteData(integration, testMode)
           syncedData = oneSiteResult.data
           extractedKPIs = oneSiteResult.kpis
           break
         case 'yardi':
-          const yardiResult = await syncYardiData(integration)
+          const yardiResult = await scrapeYardiData(integration, testMode)
           syncedData = yardiResult.data
           extractedKPIs = yardiResult.kpis
           break
         case 'appfolio':
-          const appfolioResult = await syncAppFolioData(integration)
+          const appfolioResult = await scrapeAppFolioData(integration, testMode)
           syncedData = appfolioResult.data
           extractedKPIs = appfolioResult.kpis
           break
-        case 'resman':
-          const resmanResult = await syncResManData(integration)
-          syncedData = resmanResult.data
-          extractedKPIs = resmanResult.kpis
-          break
-        case 'entrata':
-          const entrataResult = await syncEntrataData(integration)
-          syncedData = entrataResult.data
-          extractedKPIs = entrataResult.kpis
-          break
         default:
-          throw new Error(`Unsupported PM software: ${integration.pm_software}`)
+          throw new Error(`PM software ${integration.pm_software} not yet supported for web scraping`)
       }
 
       // Store extracted KPIs
@@ -119,7 +88,7 @@ serve(async (req) => {
             period_end: kpi.period_end,
             property_name: kpi.property_name,
             extraction_confidence: kpi.confidence,
-            raw_text: `Synced from ${integration.pm_software} via web login`
+            raw_text: `Scraped from ${integration.pm_software} on ${new Date().toISOString()}`
           })
       }
 
@@ -139,12 +108,12 @@ serve(async (req) => {
         })
         .eq('id', integrationId)
 
-      console.log(`Successfully synced ${extractedKPIs.length} KPIs from ${integration.pm_software}`)
+      console.log(`Successfully scraped ${extractedKPIs.length} KPIs from ${integration.pm_software}`)
 
       return new Response(
         JSON.stringify({
           success: true,
-          message: 'PM data synced successfully',
+          message: 'PM data scraped successfully',
           syncedKPIs: extractedKPIs.length,
           pmSoftware: integration.pm_software,
           testMode
@@ -155,6 +124,8 @@ serve(async (req) => {
       )
 
     } catch (syncError) {
+      console.error('Scraping error:', syncError)
+      
       // Update integration with error status
       await supabase
         .from('pm_integrations')
@@ -173,7 +144,7 @@ serve(async (req) => {
     }
 
   } catch (error) {
-    console.error('Error syncing PM data:', error)
+    console.error('Error in PM sync function:', error)
 
     return new Response(
       JSON.stringify({ 
@@ -188,514 +159,354 @@ serve(async (req) => {
   }
 })
 
-async function syncOneSiteData(integration: any, testMode: boolean = false) {
+async function scrapeOneSiteData(integration: any, testMode: boolean = false) {
+  console.log('Starting OneSite web scraping...')
+  
+  // Decrypt credentials
+  const credentials = JSON.parse(atob(integration.credentials_encrypted))
+  
+  if (testMode) {
+    console.log('Test mode: Returning mock OneSite data')
+    return getMockOneSiteData()
+  }
+
+  let browser
   try {
-    console.log('Starting OneSite/RealPage sync...')
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      headless: true
+    })
+
+    const page = await browser.newPage()
     
-    // Decrypt credentials
-    const credentials = JSON.parse(atob(integration.credentials_encrypted))
+    // Set viewport and user agent
+    await page.setViewport({ width: 1200, height: 800 })
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+
+    console.log('Navigating to OneSite login page...')
+    await page.goto('https://www.realpage.com/login', { waitUntil: 'networkidle0' })
+
+    // Fill login form
+    console.log('Filling login credentials...')
+    await page.waitForSelector('input[name="Email"], input[type="email"], #Email', { timeout: 10000 })
+    await page.type('input[name="Email"], input[type="email"], #Email', credentials.username)
     
-    if (testMode) {
-      // Only use test mode if explicitly requested
-      console.log('Test mode: Validating credentials format')
+    await page.waitForSelector('input[name="Password"], input[type="password"], #Password', { timeout: 5000 })
+    await page.type('input[name="Password"], input[type="password"], #Password', credentials.password)
+
+    // Submit login form
+    console.log('Submitting login form...')
+    const loginButton = await page.$('button[type="submit"], input[type="submit"], .login-button')
+    if (loginButton) {
+      await loginButton.click()
+    } else {
+      await page.keyboard.press('Enter')
+    }
+
+    // Wait for navigation after login
+    try {
+      await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 })
+    } catch (navError) {
+      console.log('Navigation timeout, checking current page...')
+    }
+
+    // Check if login was successful
+    const currentUrl = page.url()
+    console.log('Current URL after login:', currentUrl)
+    
+    if (currentUrl.includes('login') || currentUrl.includes('signin')) {
+      throw new Error('Login failed - still on login page')
+    }
+
+    // Navigate to dashboard/properties page
+    console.log('Navigating to properties dashboard...')
+    const dashboardUrls = [
+      'https://www.realpage.com/dashboard',
+      'https://www.realpage.com/properties',
+      'https://leasing.realpage.com/dashboard'
+    ]
+
+    let dashboardLoaded = false
+    for (const url of dashboardUrls) {
+      try {
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 10000 })
+        dashboardLoaded = true
+        console.log(`Successfully loaded dashboard: ${url}`)
+        break
+      } catch (error) {
+        console.log(`Failed to load ${url}, trying next...`)
+      }
+    }
+
+    if (!dashboardLoaded) {
+      throw new Error('Could not load dashboard page')
+    }
+
+    // Extract property data from the page
+    console.log('Extracting property data...')
+    const propertyData = await page.evaluate(() => {
+      const properties = []
       
-      if (!credentials.username || !credentials.password) {
-        throw new Error('Invalid credentials: missing username or password')
+      // Look for property cards, tables, or lists
+      const propertyElements = document.querySelectorAll(
+        '.property-card, .property-item, .property-row, [data-property], .building-item'
+      )
+
+      propertyElements.forEach((element, index) => {
+        const property = {
+          id: `property-${index + 1}`,
+          name: '',
+          occupancy: null,
+          rent_roll: null,
+          collection_rate: null,
+          maintenance_requests: null
+        }
+
+        // Extract property name
+        const nameElement = element.querySelector('.property-name, .building-name, h3, h4, .title')
+        if (nameElement) {
+          property.name = nameElement.textContent?.trim() || `Property ${index + 1}`
+        }
+
+        // Extract occupancy data
+        const occupancyElement = element.querySelector('[class*="occupancy"], [data-metric="occupancy"]')
+        if (occupancyElement) {
+          const occupancyText = occupancyElement.textContent || ''
+          const occupancyMatch = occupancyText.match(/(\d+\.?\d*)%/)
+          if (occupancyMatch) {
+            property.occupancy = parseFloat(occupancyMatch[1])
+          }
+        }
+
+        // Extract rent roll data
+        const rentElement = element.querySelector('[class*="rent"], [class*="revenue"], [data-metric="rent"]')
+        if (rentElement) {
+          const rentText = rentElement.textContent || ''
+          const rentMatch = rentText.match(/\$?([\d,]+)/)
+          if (rentMatch) {
+            property.rent_roll = parseFloat(rentMatch[1].replace(/,/g, ''))
+          }
+        }
+
+        if (property.name) {
+          properties.push(property)
+        }
+      })
+
+      // If no structured data found, try to extract from tables
+      if (properties.length === 0) {
+        const tables = document.querySelectorAll('table')
+        tables.forEach(table => {
+          const rows = table.querySelectorAll('tr')
+          rows.forEach((row, index) => {
+            if (index === 0) return // Skip header
+            
+            const cells = row.querySelectorAll('td, th')
+            if (cells.length >= 2) {
+              const property = {
+                id: `table-property-${index}`,
+                name: cells[0]?.textContent?.trim() || `Property ${index}`,
+                occupancy: null,
+                rent_roll: null
+              }
+
+              // Try to parse numeric data from other cells
+              for (let i = 1; i < cells.length; i++) {
+                const cellText = cells[i]?.textContent || ''
+                
+                // Check for percentage (occupancy)
+                const percentMatch = cellText.match(/(\d+\.?\d*)%/)
+                if (percentMatch && !property.occupancy) {
+                  property.occupancy = parseFloat(percentMatch[1])
+                }
+
+                // Check for dollar amounts (rent)
+                const dollarMatch = cellText.match(/\$?([\d,]+)/)
+                if (dollarMatch && !property.rent_roll) {
+                  property.rent_roll = parseFloat(dollarMatch[1].replace(/,/g, ''))
+                }
+              }
+
+              if (property.name !== `Property ${index}`) {
+                properties.push(property)
+              }
+            }
+          })
+        })
       }
 
-      if (!credentials.username.includes('@')) {
-        throw new Error('Invalid credentials: username must be an email address')
-      }
+      return properties
+    })
 
-      // Return mock data for testing
-      const mockKPIs = [
-        {
+    console.log('Extracted property data:', propertyData)
+
+    // Convert to KPIs
+    const kpis = []
+    const currentDate = new Date()
+    const firstOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+
+    propertyData.forEach(property => {
+      if (property.occupancy !== null) {
+        kpis.push({
           type: 'leasing',
           name: 'Occupancy Rate',
-          value: 95.2,
+          value: property.occupancy,
           unit: '%',
-          property_name: 'Test Property',
-          confidence: 0.98,
-          period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-          period_end: new Date().toISOString().split('T')[0]
-        },
-        {
+          property_name: property.name,
+          confidence: 0.85,
+          period_start: firstOfMonth.toISOString().split('T')[0],
+          period_end: currentDate.toISOString().split('T')[0]
+        })
+      }
+
+      if (property.rent_roll !== null) {
+        kpis.push({
           type: 'financial',
           name: 'Monthly Rent Roll',
-          value: 125000,
+          value: property.rent_roll,
           unit: '$',
-          property_name: 'Test Property',
-          confidence: 0.95,
-          period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-          period_end: new Date().toISOString().split('T')[0]
-        }
-      ]
-
-      return {
-        data: {
-          properties: [{
-            name: 'Test Property',
-            occupancy: 95.2,
-            rent_roll: 125000,
-            sync_timestamp: new Date().toISOString(),
-            test_mode: true
-          }],
-          sync_timestamp: new Date().toISOString(),
-          total_properties: 1
-        },
-        kpis: mockKPIs
-      }
-    }
-
-    // Production mode - attempt real RealPage/OneSite login
-    console.log('Production mode: Connecting to RealPage/OneSite')
-    const authResult = await authenticateRealPage(credentials)
-    const properties = await fetchRealPageProperties(authResult)
-    
-    const detailedData = []
-    const kpis = []
-    
-    for (const property of properties) {
-      try {
-        const propertyDetails = await fetchRealPagePropertyDetails(authResult, property.id)
-        const financialData = await fetchRealPageFinancialData(authResult, property.id)
-        const maintenanceData = await fetchRealPageMaintenanceData(authResult, property.id)
-        
-        detailedData.push({
-          ...property,
-          ...propertyDetails,
-          ...financialData,
-          ...maintenanceData
+          property_name: property.name,
+          confidence: 0.80,
+          period_start: firstOfMonth.toISOString().split('T')[0],
+          period_end: currentDate.toISOString().split('T')[0]
         })
-        
-        kpis.push(...extractRealPageKPIs(property, propertyDetails, financialData, maintenanceData))
-        
-      } catch (propertyError) {
-        console.error(`Error fetching data for property ${property.id}:`, propertyError)
       }
-    }
-    
+    })
+
+    await browser.close()
+
     return {
       data: {
-        properties: detailedData,
+        properties: propertyData,
         sync_timestamp: new Date().toISOString(),
-        total_properties: detailedData.length
+        total_properties: propertyData.length,
+        scraping_method: 'puppeteer'
       },
       kpis
     }
-    
+
   } catch (error) {
-    console.error('OneSite/RealPage sync error:', error)
-    throw new Error(`OneSite/RealPage sync failed: ${error.message}`)
-  }
-}
-
-async function authenticateRealPage(credentials: any): Promise<OneSiteAuthResponse> {
-  const loginUrl = 'https://www.realpage.com/login/identity/Account/SignIn'
-  
-  console.log('Authenticating with RealPage at:', loginUrl)
-  
-  // First, get the login page to extract any required tokens/cookies
-  const loginPageResponse = await fetch(loginUrl, {
-    method: 'GET',
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Connection': 'keep-alive',
-      'Upgrade-Insecure-Requests': '1'
+    if (browser) {
+      await browser.close()
     }
-  })
-  
-  if (!loginPageResponse.ok) {
-    throw new Error(`Failed to access login page: ${loginPageResponse.status}`)
-  }
-  
-  const loginPageContent = await loginPageResponse.text()
-  const cookies = loginPageResponse.headers.get('set-cookie') || ''
-  
-  // Extract any hidden form fields or tokens
-  const tokenMatch = loginPageContent.match(/<input[^>]*name="__RequestVerificationToken"[^>]*value="([^"]*)"/)
-  const viewStateMatch = loginPageContent.match(/<input[^>]*name="__VIEWSTATE"[^>]*value="([^"]*)"/)
-  
-  // Prepare login form data
-  const formData = new URLSearchParams()
-  formData.append('Email', credentials.username)
-  formData.append('Password', credentials.password)
-  formData.append('RememberMe', 'false')
-  
-  if (tokenMatch) {
-    formData.append('__RequestVerificationToken', tokenMatch[1])
-  }
-  if (viewStateMatch) {
-    formData.append('__VIEWSTATE', viewStateMatch[1])
-  }
-  
-  console.log('Attempting login with form data')
-  
-  // Perform the login
-  const loginResponse = await fetch(loginUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Connection': 'keep-alive',
-      'Upgrade-Insecure-Requests': '1',
-      'Referer': loginUrl,
-      'Cookie': cookies
-    },
-    body: formData.toString(),
-    redirect: 'manual' // Handle redirects manually to capture session info
-  })
-  
-  console.log(`Login response status: ${loginResponse.status}`)
-  
-  // Handle different response scenarios
-  if (loginResponse.status === 302) {
-    // Successful login - redirect to dashboard
-    const location = loginResponse.headers.get('location')
-    const authCookies = loginResponse.headers.get('set-cookie') || ''
-    
-    console.log('Login successful, redirected to:', location)
-    
-    return {
-      sessionId: 'authenticated',
-      cookies: [cookies, authCookies],
-      access_token: 'web-session-authenticated'
-    }
-  } else if (loginResponse.status === 200) {
-    // Check if login was successful by examining response content
-    const responseContent = await loginResponse.text()
-    
-    if (responseContent.includes('dashboard') || responseContent.includes('properties') || !responseContent.includes('login')) {
-      const authCookies = loginResponse.headers.get('set-cookie') || ''
-      return {
-        sessionId: 'authenticated',
-        cookies: [cookies, authCookies],
-        access_token: 'web-session-authenticated'
-      }
-    } else {
-      throw new Error('Login failed: Invalid credentials or login error')
-    }
-  } else {
-    const errorText = await loginResponse.text()
-    console.error('RealPage login error response:', errorText)
-    throw new Error(`RealPage authentication failed: ${loginResponse.status} - ${errorText}`)
+    console.error('OneSite scraping error:', error)
+    throw new Error(`OneSite scraping failed: ${error.message}`)
   }
 }
 
-async function fetchRealPageProperties(authResult: OneSiteAuthResponse): Promise<OneSiteProperty[]> {
-  // After successful login, navigate to properties page
-  const propertiesUrl = 'https://www.realpage.com/properties'
-  
-  const response = await fetch(propertiesUrl, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Cookie': authResult.cookies?.join('; ') || ''
-    }
-  })
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch properties: ${response.status}`)
+async function scrapeYardiData(integration: any, testMode: boolean = false) {
+  if (testMode) {
+    return getMockYardiData()
   }
   
-  const content = await response.text()
-  
-  // Parse the HTML content to extract property information
-  // This is a simplified example - the actual parsing would depend on RealPage's HTML structure
-  const properties = parsePropertiesFromHTML(content)
-  
-  return properties
+  console.log('Yardi scraping not yet implemented')
+  throw new Error('Yardi web scraping is not yet implemented. Please use test mode or contact support.')
 }
 
-function parsePropertiesFromHTML(html: string): OneSiteProperty[] {
-  // This is a simplified parser - in reality, you'd need to parse the actual HTML structure
-  // For now, return sample data that would be extracted from the page
-  const properties: OneSiteProperty[] = []
-  
-  // Look for property data patterns in the HTML
-  // This would need to be customized based on the actual RealPage HTML structure
-  
-  // For now, create a sample property from the authenticated session
-  properties.push({
-    id: 'property-1',
-    name: 'Authenticated Property',
-    address: '123 Main St',
-    total_units: 100,
-    occupied_units: 92,
-    occupancy_rate: 92.0,
-    monthly_rent_roll: 150000,
-    collection_rate: 98.5,
-    maintenance_requests: 8
-  })
-  
-  return properties
-}
-
-async function fetchRealPagePropertyDetails(authResult: OneSiteAuthResponse, propertyId: string) {
-  // Fetch detailed property information
-  return {
-    occupancy_rate: 92.0,
-    total_units: 100,
-    occupied_units: 92,
-    available_units: 8
+async function scrapeAppFolioData(integration: any, testMode: boolean = false) {
+  if (testMode) {
+    return getMockAppFolioData()
   }
+  
+  console.log('AppFolio scraping not yet implemented')
+  throw new Error('AppFolio web scraping is not yet implemented. Please use test mode or contact support.')
 }
 
-async function fetchRealPageFinancialData(authResult: OneSiteAuthResponse, propertyId: string) {
-  // Fetch financial data for the property
-  return {
-    monthly_rent_roll: 150000,
-    collection_rate: 98.5,
-    total_revenue: 147750
-  }
-}
-
-async function fetchRealPageMaintenanceData(authResult: OneSiteAuthResponse, propertyId: string) {
-  // Fetch maintenance data for the property
-  return {
-    active_requests: 8,
-    completed_this_month: 15,
-    average_completion_time: 2.5
-  }
-}
-
-function extractRealPageKPIs(property: any, details: any, financial: any, maintenance: any) {
+function getMockOneSiteData() {
   const currentDate = new Date()
   const firstOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-  const kpis = []
   
-  // Occupancy Rate KPI
-  if (details.occupancy_rate !== undefined) {
-    kpis.push({
-      type: 'leasing',
-      name: 'Occupancy Rate',
-      value: details.occupancy_rate,
-      unit: '%',
-      property_name: property.name,
-      confidence: 0.98,
-      period_start: firstOfMonth.toISOString().split('T')[0],
-      period_end: currentDate.toISOString().split('T')[0]
-    })
-  }
-  
-  // Rent Roll KPI
-  if (financial.monthly_rent_roll !== undefined) {
-    kpis.push({
-      type: 'financial',
-      name: 'Monthly Rent Roll',
-      value: financial.monthly_rent_roll,
-      unit: '$',
-      property_name: property.name,
-      confidence: 0.95,
-      period_start: firstOfMonth.toISOString().split('T')[0],
-      period_end: currentDate.toISOString().split('T')[0]
-    })
-  }
-  
-  // Collection Rate KPI
-  if (financial.collection_rate !== undefined) {
-    kpis.push({
-      type: 'collections',
-      name: 'Collection Rate',
-      value: financial.collection_rate,
-      unit: '%',
-      property_name: property.name,
-      confidence: 0.92,
-      period_start: firstOfMonth.toISOString().split('T')[0],
-      period_end: currentDate.toISOString().split('T')[0]
-    })
-  }
-  
-  // Maintenance Requests KPI
-  if (maintenance.active_requests !== undefined) {
-    kpis.push({
-      type: 'operations',
-      name: 'Active Maintenance Requests',
-      value: maintenance.active_requests,
-      unit: 'requests',
-      property_name: property.name,
-      confidence: 0.90,
-      period_start: firstOfMonth.toISOString().split('T')[0],
-      period_end: currentDate.toISOString().split('T')[0]
-    })
-  }
-  
-  return kpis
-}
-
-// Keep existing mock functions for other PM software
-async function syncYardiData(integration: any) {
-  // Simulate Yardi API integration
-  const mockData = {
-    properties: [
-      {
-        name: "Sunset Gardens",
-        occupancy: 94.2,
-        rent_roll: 145000,
-        collections: 98.5,
-        maintenance_requests: 12
-      }
-    ]
-  }
-
-  const kpis = [
-    {
-      type: 'leasing',
-      name: 'Occupancy Rate',
-      value: 94.2,
-      unit: '%',
-      property_name: 'Sunset Gardens',
-      confidence: 0.95,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    },
-    {
-      type: 'financial',
-      name: 'Rent Roll',
-      value: 145000,
-      unit: '$',
-      property_name: 'Sunset Gardens',
-      confidence: 0.98,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    },
-    {
-      type: 'collections',
-      name: 'Collection Rate',
-      value: 98.5,
-      unit: '%',
-      property_name: 'Sunset Gardens',
-      confidence: 0.95,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    }
-  ]
-
-  return { data: mockData, kpis }
-}
-
-async function syncAppFolioData(integration: any) {
-  // Simulate AppFolio API integration
-  const mockData = {
-    properties: [
-      {
-        name: "Metro Apartments",
-        occupancy: 91.8,
-        rent_roll: 167000,
-        collections: 96.2,
+  return {
+    data: {
+      properties: [{
+        id: 'mock-onesite-1',
+        name: 'OneSite Demo Property',
+        occupancy: 94.5,
+        rent_roll: 125000,
+        collection_rate: 97.2,
         maintenance_requests: 8
+      }],
+      sync_timestamp: new Date().toISOString(),
+      total_properties: 1,
+      scraping_method: 'mock'
+    },
+    kpis: [
+      {
+        type: 'leasing',
+        name: 'Occupancy Rate',
+        value: 94.5,
+        unit: '%',
+        property_name: 'OneSite Demo Property',
+        confidence: 0.95,
+        period_start: firstOfMonth.toISOString().split('T')[0],
+        period_end: currentDate.toISOString().split('T')[0]
+      },
+      {
+        type: 'financial',
+        name: 'Monthly Rent Roll',
+        value: 125000,
+        unit: '$',
+        property_name: 'OneSite Demo Property',
+        confidence: 0.95,
+        period_start: firstOfMonth.toISOString().split('T')[0],
+        period_end: currentDate.toISOString().split('T')[0]
       }
     ]
   }
-
-  const kpis = [
-    {
-      type: 'leasing',
-      name: 'Occupancy Rate',
-      value: 91.8,
-      unit: '%',
-      property_name: 'Metro Apartments',
-      confidence: 0.95,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    },
-    {
-      type: 'financial',
-      name: 'Rent Roll',
-      value: 167000,
-      unit: '$',
-      property_name: 'Metro Apartments',
-      confidence: 0.98,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    }
-  ]
-
-  return { data: mockData, kpis }
 }
 
-async function syncResManData(integration: any) {
-  // Simulate ResMan API integration
-  const mockData = {
-    properties: [
+function getMockYardiData() {
+  const currentDate = new Date()
+  const firstOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+  
+  return {
+    data: {
+      properties: [{
+        name: 'Yardi Demo Property',
+        occupancy: 91.8,
+        rent_roll: 145000,
+        collection_rate: 98.1
+      }]
+    },
+    kpis: [
       {
-        name: "Downtown Towers",
-        occupancy: 89.5,
-        rent_roll: 201000,
-        collections: 97.8,
-        maintenance_requests: 15
+        type: 'leasing',
+        name: 'Occupancy Rate',
+        value: 91.8,
+        unit: '%',
+        property_name: 'Yardi Demo Property',
+        confidence: 0.95,
+        period_start: firstOfMonth.toISOString().split('T')[0],
+        period_end: currentDate.toISOString().split('T')[0]
       }
     ]
   }
-
-  const kpis = [
-    {
-      type: 'leasing',
-      name: 'Occupancy Rate',
-      value: 89.5,
-      unit: '%',
-      property_name: 'Downtown Towers',
-      confidence: 0.95,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    },
-    {
-      type: 'operations',
-      name: 'Maintenance Requests',
-      value: 15,
-      unit: 'requests',
-      property_name: 'Downtown Towers',
-      confidence: 0.90,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    }
-  ]
-
-  return { data: mockData, kpis }
 }
 
-async function syncEntrataData(integration: any) {
-  // Simulate Entrata API integration
-  const mockData = {
-    properties: [
+function getMockAppFolioData() {
+  const currentDate = new Date()
+  const firstOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+  
+  return {
+    data: {
+      properties: [{
+        name: 'AppFolio Demo Property',
+        occupancy: 89.3,
+        rent_roll: 167000,
+        collection_rate: 96.8
+      }]
+    },
+    kpis: [
       {
-        name: "Riverside Commons",
-        occupancy: 96.1,
-        rent_roll: 182000,
-        collections: 99.1,
-        maintenance_requests: 6
+        type: 'leasing',
+        name: 'Occupancy Rate',
+        value: 89.3,
+        unit: '%',
+        property_name: 'AppFolio Demo Property',
+        confidence: 0.95,
+        period_start: firstOfMonth.toISOString().split('T')[0],
+        period_end: currentDate.toISOString().split('T')[0]
       }
     ]
   }
-
-  const kpis = [
-    {
-      type: 'leasing',
-      name: 'Occupancy Rate',
-      value: 96.1,
-      unit: '%',
-      property_name: 'Riverside Commons',
-      confidence: 0.95,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    },
-    {
-      type: 'collections',
-      name: 'Collection Rate',
-      value: 99.1,
-      unit: '%',
-      property_name: 'Riverside Commons',
-      confidence: 0.98,
-      period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-      period_end: new Date().toISOString().split('T')[0]
-    }
-  ]
-
-  return { data: mockData, kpis }
 }

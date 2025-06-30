@@ -1,205 +1,138 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertTriangle, Clock, RefreshCw, Database } from 'lucide-react';
-
-interface IntegrationStatus {
-  id: string;
-  name: string;
-  status: 'connected' | 'syncing' | 'error' | 'pending';
-  lastSync: Date;
-  properties: number;
-  dataTypes: string[];
-  healthScore: number;
-}
+import { Badge } from '@/components/ui/badge';
+import { RefreshCw, Settings, Trash2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { usePMIntegration } from '@/hooks/usePMIntegration';
+import ScrapingTestPanel from './ScrapingTestPanel';
 
 const PMIntegrationStatus = () => {
-  const [integrations, setIntegrations] = useState<IntegrationStatus[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { integrations, isLoading, loadIntegrations, deleteIntegration } = usePMIntegration();
 
   useEffect(() => {
-    // Simulate fetching integration status
-    setIntegrations([
-      {
-        id: 'yardi',
-        name: 'Yardi Voyager',
-        status: 'connected',
-        lastSync: new Date(Date.now() - 30 * 60 * 1000),
-        properties: 12,
-        dataTypes: ['Financial', 'Occupancy', 'Maintenance', 'Leasing'],
-        healthScore: 98
-      },
-      {
-        id: 'appfolio',
-        name: 'AppFolio',
-        status: 'syncing',
-        lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        properties: 8,
-        dataTypes: ['Financial', 'Occupancy'],
-        healthScore: 92
-      },
-      {
-        id: 'buildium',
-        name: 'Buildium',
-        status: 'error',
-        lastSync: new Date(Date.now() - 12 * 60 * 60 * 1000),
-        properties: 5,
-        dataTypes: ['Financial'],
-        healthScore: 45
-      }
-    ]);
-  }, []);
+    loadIntegrations();
+  }, [loadIntegrations]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'connected': return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case 'syncing': return <RefreshCw className="h-5 w-5 text-blue-600 animate-spin" />;
-      case 'error': return <AlertTriangle className="h-5 w-5 text-red-600" />;
-      case 'pending': return <Clock className="h-5 w-5 text-yellow-600" />;
-      default: return <Database className="h-5 w-5 text-gray-600" />;
+      case 'active':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'syncing':
+      case 'testing':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <AlertCircle className="h-4 w-4 text-gray-500" />;
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      connected: 'bg-green-100 text-green-800',
-      syncing: 'bg-blue-100 text-blue-800',
-      error: 'bg-red-100 text-red-800',
-      pending: 'bg-yellow-100 text-yellow-800'
-    };
-    
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'syncing':
+      case 'testing':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'error':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (isLoading) {
     return (
-      <Badge className={colors[status as keyof typeof colors]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
+      <div className="flex items-center justify-center p-8">
+        <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+        Loading integrations...
+      </div>
     );
-  };
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsRefreshing(false);
-  };
-
-  const totalProperties = integrations.reduce((sum, int) => sum + int.properties, 0);
-  const connectedIntegrations = integrations.filter(int => int.status === 'connected').length;
-  const avgHealthScore = Math.round(integrations.reduce((sum, int) => sum + int.healthScore, 0) / integrations.length);
+  }
 
   return (
     <div className="space-y-6">
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Connected Systems</p>
-                <p className="text-2xl font-bold">{connectedIntegrations}/{integrations.length}</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Properties Synced</p>
-                <p className="text-2xl font-bold">{totalProperties}</p>
-              </div>
-              <Database className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Health Score</p>
-                <p className="text-2xl font-bold">{avgHealthScore}%</p>
-              </div>
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                avgHealthScore >= 90 ? 'bg-green-100' : avgHealthScore >= 70 ? 'bg-yellow-100' : 'bg-red-100'
-              }`}>
-                <span className={`text-sm font-bold ${
-                  avgHealthScore >= 90 ? 'text-green-600' : avgHealthScore >= 70 ? 'text-yellow-600' : 'text-red-600'
-                }`}>
-                  {avgHealthScore}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">PM Integration Status</h2>
+        <Button onClick={loadIntegrations} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
-      {/* Integration Details */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>PM System Integrations</CardTitle>
-          <Button 
-            variant="outline" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {integrations.map((integration) => (
-              <div key={integration.id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(integration.status)}
+      {integrations.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No Integrations Found</h3>
+            <p className="text-gray-600 mb-4">
+              You haven't connected any property management software yet.
+            </p>
+            <Button onClick={() => window.location.href = '/data-integration'}>
+              Add Integration
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          {integrations.map((integration) => (
+            <Card key={integration.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    {integration.integration_name}
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getStatusColor(integration.sync_status)}>
+                      {getStatusIcon(integration.sync_status)}
+                      <span className="ml-1 capitalize">{integration.sync_status}</span>
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm font-medium">PM Software</p>
+                    <p className="text-sm text-gray-600 capitalize">{integration.pm_software}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium">Sync Frequency</p>
+                    <p className="text-sm text-gray-600 capitalize">{integration.sync_frequency}</p>
+                  </div>
+                  
+                  {integration.last_sync && (
                     <div>
-                      <h4 className="font-semibold">{integration.name}</h4>
+                      <p className="text-sm font-medium">Last Sync</p>
                       <p className="text-sm text-gray-600">
-                        {integration.properties} properties • Last sync: {integration.lastSync.toLocaleTimeString()}
+                        {new Date(integration.last_sync).toLocaleDateString()} at{' '}
+                        {new Date(integration.last_sync).toLocaleTimeString()}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Health: {integration.healthScore}%</span>
-                    {getStatusBadge(integration.status)}
-                  </div>
+                  )}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteIntegration(integration.id)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {integration.dataTypes.map((type) => (
-                    <Badge key={type} variant="secondary" className="text-xs">
-                      {type}
-                    </Badge>
-                  ))}
-                </div>
-
-                {integration.status === 'error' && (
-                  <div className="bg-red-50 border border-red-200 rounded p-3 text-sm">
-                    <p className="text-red-800 font-medium">Connection Error</p>
-                    <p className="text-red-700">Authentication failed. Please check credentials and reconnect.</p>
-                    <Button size="sm" className="mt-2">Reconnect</Button>
-                  </div>
-                )}
-
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                  <div 
-                    className={`h-2 rounded-full ${
-                      integration.healthScore >= 90 ? 'bg-green-600' : 
-                      integration.healthScore >= 70 ? 'bg-yellow-600' : 'bg-red-600'
-                    }`}
-                    style={{ width: `${integration.healthScore}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                {/* Add the scraping test panel */}
+                <ScrapingTestPanel integration={integration} />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
