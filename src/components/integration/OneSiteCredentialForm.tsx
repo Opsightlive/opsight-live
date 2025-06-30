@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Shield, AlertCircle, CheckCircle, Building } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { usePMIntegration } from '@/hooks/usePMIntegration';
 
 interface OneSiteCredentials {
   username: string;
@@ -24,7 +24,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   onBack,
   isLoading = false
 }) => {
-  const { toast } = useToast();
+  const { createIntegration } = usePMIntegration();
   const [credentials, setCredentials] = useState<OneSiteCredentials>({
     username: '',
     password: ''
@@ -54,11 +54,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
     
     const validationError = validateCredentials();
     if (validationError) {
-      toast({
-        title: "Validation Error",
-        description: validationError,
-        variant: "destructive",
-      });
+      setTestResult('error');
       return;
     }
 
@@ -66,17 +62,33 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
     setTestResult(null);
 
     try {
-      // Submit credentials to parent component
-      onCredentialsSubmit(credentials);
-      setTestResult('success');
+      console.log('Creating OneSite integration with credentials:', { username: credentials.username });
       
-    } catch (error) {
+      // Create the integration using the hook
+      const integration = await createIntegration(
+        'OneSite',
+        'OneSite Integration',
+        {
+          username: credentials.username,
+          password: credentials.password,
+          endpoint: 'https://api.onesite.com' // Default OneSite API endpoint
+        },
+        'daily'
+      );
+
+      if (integration) {
+        setTestResult('success');
+        console.log('Integration created successfully:', integration.id);
+        
+        // Call the parent callback
+        onCredentialsSubmit(credentials);
+      } else {
+        throw new Error('Failed to create integration');
+      }
+      
+    } catch (error: any) {
+      console.error('Error creating integration:', error);
       setTestResult('error');
-      toast({
-        title: "Connection error",
-        description: "Unable to validate credentials. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsSubmitting(false);
     }
@@ -157,7 +169,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription className="text-green-800">
-                  Credentials validated successfully! Setting up integration...
+                  Credentials saved successfully! Integration is being set up...
                 </AlertDescription>
               </Alert>
             )}
@@ -166,7 +178,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Failed to validate credentials. Please verify your login information and try again.
+                  Failed to create integration. Please verify your credentials and try again.
                 </AlertDescription>
               </Alert>
             )}
@@ -186,7 +198,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
                 disabled={isSubmitting || isLoading}
                 className="flex-1"
               >
-                {isSubmitting || isLoading ? 'Connecting...' : 'Connect & Test'}
+                {isSubmitting || isLoading ? 'Creating Integration...' : 'Connect OneSite'}
               </Button>
             </div>
           </form>

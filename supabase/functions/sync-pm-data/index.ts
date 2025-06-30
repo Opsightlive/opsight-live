@@ -9,12 +9,14 @@ const corsHeaders = {
 interface PMSyncRequest {
   integrationId: string;
   userId: string;
+  testMode?: boolean;
 }
 
 interface OneSiteAuthResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+  error?: string;
 }
 
 interface OneSiteProperty {
@@ -40,9 +42,9 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { integrationId, userId } = await req.json() as PMSyncRequest
+    const { integrationId, userId, testMode = false } = await req.json() as PMSyncRequest
 
-    console.log(`Syncing PM data for integration ${integrationId}`)
+    console.log(`Syncing PM data for integration ${integrationId}, testMode: ${testMode}`)
 
     // Get integration details
     const { data: integration, error: integrationError } = await supabase
@@ -69,82 +71,103 @@ serve(async (req) => {
     let extractedKPIs: any[] = []
 
     // Sync based on PM software type
-    switch (integration.pm_software.toLowerCase()) {
-      case 'onesite':
-        const oneSiteResult = await syncOneSiteData(integration)
-        syncedData = oneSiteResult.data
-        extractedKPIs = oneSiteResult.kpis
-        break
-      case 'yardi':
-        const yardiResult = await syncYardiData(integration)
-        syncedData = yardiResult.data
-        extractedKPIs = yardiResult.kpis
-        break
-      case 'appfolio':
-        const appfolioResult = await syncAppFolioData(integration)
-        syncedData = appfolioResult.data
-        extractedKPIs = appfolioResult.kpis
-        break
-      case 'resman':
-        const resmanResult = await syncResManData(integration)
-        syncedData = resmanResult.data
-        extractedKPIs = resmanResult.kpis
-        break
-      case 'entrata':
-        const entrataResult = await syncEntrataData(integration)
-        syncedData = entrataResult.data
-        extractedKPIs = entrataResult.kpis
-        break
-      default:
-        throw new Error(`Unsupported PM software: ${integration.pm_software}`)
-    }
-
-    // Store extracted KPIs
-    for (const kpi of extractedKPIs) {
-      await supabase
-        .from('extracted_kpis')
-        .insert({
-          user_id: userId,
-          kpi_type: kpi.type,
-          kpi_name: kpi.name,
-          kpi_value: kpi.value,
-          kpi_unit: kpi.unit,
-          period_start: kpi.period_start,
-          period_end: kpi.period_end,
-          property_name: kpi.property_name,
-          extraction_confidence: kpi.confidence,
-          raw_text: `Synced from ${integration.pm_software}`
-        })
-    }
-
-    // Update integration with success status
-    await supabase
-      .from('pm_integrations')
-      .update({
-        sync_status: 'active',
-        last_sync: new Date().toISOString(),
-        error_log: null,
-        settings: {
-          ...integration.settings,
-          last_sync_data: syncedData,
-          last_sync_kpis: extractedKPIs.length
-        }
-      })
-      .eq('id', integrationId)
-
-    console.log(`Successfully synced ${extractedKPIs.length} KPIs from ${integration.pm_software}`)
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'PM data synced successfully',
-        syncedKPIs: extractedKPIs.length,
-        pmSoftware: integration.pm_software
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    try {
+      switch (integration.pm_software.toLowerCase()) {
+        case 'onesite':
+          const oneSiteResult = await syncOneSiteData(integration, testMode)
+          syncedData = oneSiteResult.data
+          extractedKPIs = oneSiteResult.kpis
+          break
+        case 'yardi':
+          const yardiResult = await syncYardiData(integration)
+          syncedData = yardiResult.data
+          extractedKPIs = yardiResult.kpis
+          break
+        case 'appfolio':
+          const appfolioResult = await syncAppFolioData(integration)
+          syncedData = appfolioResult.data
+          extractedKPIs = appfolioResult.kpis
+          break
+        case 'resman':
+          const resmanResult = await syncResManData(integration)
+          syncedData = resmanResult.data
+          extractedKPIs = resmanResult.kpis
+          break
+        case 'entrata':
+          const entrataResult = await syncEntrataData(integration)
+          syncedData = entrataResult.data
+          extractedKPIs = entrataResult.kpis
+          break
+        default:
+          throw new Error(`Unsupported PM software: ${integration.pm_software}`)
       }
-    )
+
+      // Store extracted KPIs
+      for (const kpi of extractedKPIs) {
+        await supabase
+          .from('extracted_kpis')
+          .insert({
+            user_id: userId,
+            kpi_type: kpi.type,
+            kpi_name: kpi.name,
+            kpi_value: kpi.value,
+            kpi_unit: kpi.unit,
+            period_start: kpi.period_start,
+            period_end: kpi.period_end,
+            property_name: kpi.property_name,
+            extraction_confidence: kpi.confidence,
+            raw_text: `Synced from ${integration.pm_software} via API`
+          })
+      }
+
+      // Update integration with success status
+      await supabase
+        .from('pm_integrations')
+        .update({
+          sync_status: 'active',
+          last_sync: new Date().toISOString(),
+          error_log: null,
+          settings: {
+            ...integration.settings,
+            last_sync_data: syncedData,
+            last_sync_kpis: extractedKPIs.length,
+            last_sync_success: true
+          }
+        })
+        .eq('id', integrationId)
+
+      console.log(`Successfully synced ${extractedKPIs.length} KPIs from ${integration.pm_software}`)
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'PM data synced successfully',
+          syncedKPIs: extractedKPIs.length,
+          pmSoftware: integration.pm_software,
+          testMode
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+
+    } catch (syncError) {
+      // Update integration with error status
+      await supabase
+        .from('pm_integrations')
+        .update({
+          sync_status: 'error',
+          error_log: syncError.message,
+          settings: {
+            ...integration.settings,
+            last_sync_success: false,
+            last_sync_error: syncError.message
+          }
+        })
+        .eq('id', integrationId)
+
+      throw syncError
+    }
 
   } catch (error) {
     console.error('Error syncing PM data:', error)
@@ -162,20 +185,69 @@ serve(async (req) => {
   }
 })
 
-async function syncOneSiteData(integration: any) {
+async function syncOneSiteData(integration: any, testMode: boolean = false) {
   try {
     console.log('Starting OneSite API sync...')
     
     // Decrypt credentials (simple base64 decoding for now)
     const credentials = JSON.parse(atob(integration.credentials_encrypted))
     
-    // Step 1: Authenticate with OneSite API
+    if (testMode) {
+      // In test mode, just validate credentials format and return mock data
+      console.log('Test mode: Validating credentials format')
+      
+      if (!credentials.username || !credentials.password) {
+        throw new Error('Invalid credentials: missing username or password')
+      }
+
+      if (!credentials.username.includes('@')) {
+        throw new Error('Invalid credentials: username must be an email address')
+      }
+
+      // Return mock data for testing
+      const mockKPIs = [
+        {
+          type: 'leasing',
+          name: 'Occupancy Rate',
+          value: 95.2,
+          unit: '%',
+          property_name: 'Test Property',
+          confidence: 0.98,
+          period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+          period_end: new Date().toISOString().split('T')[0]
+        },
+        {
+          type: 'financial',
+          name: 'Monthly Rent Roll',
+          value: 125000,
+          unit: '$',
+          property_name: 'Test Property',
+          confidence: 0.95,
+          period_start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+          period_end: new Date().toISOString().split('T')[0]
+        }
+      ]
+
+      return {
+        data: {
+          properties: [{
+            name: 'Test Property',
+            occupancy: 95.2,
+            rent_roll: 125000,
+            sync_timestamp: new Date().toISOString(),
+            test_mode: true
+          }],
+          sync_timestamp: new Date().toISOString(),
+          total_properties: 1
+        },
+        kpis: mockKPIs
+      }
+    }
+
+    // For production mode, attempt real API connection
     const authToken = await authenticateOneSite(credentials)
-    
-    // Step 2: Fetch properties
     const properties = await fetchOneSiteProperties(authToken)
     
-    // Step 3: Fetch detailed data for each property
     const detailedData = []
     const kpis = []
     
@@ -192,12 +264,10 @@ async function syncOneSiteData(integration: any) {
           ...maintenanceData
         })
         
-        // Extract KPIs from the property data
         kpis.push(...extractOneSiteKPIs(property, propertyDetails, financialData, maintenanceData))
         
       } catch (propertyError) {
         console.error(`Error fetching data for property ${property.id}:`, propertyError)
-        // Continue with other properties even if one fails
       }
     }
     
@@ -217,7 +287,11 @@ async function syncOneSiteData(integration: any) {
 }
 
 async function authenticateOneSite(credentials: any): Promise<string> {
-  const authUrl = `${Deno.env.get('ONESITE_API_URL')}/oauth/token`
+  // Use environment variable for OneSite API URL, fallback to demo URL
+  const baseUrl = Deno.env.get('ONESITE_API_URL') || 'https://demo-api.onesite.com'
+  const authUrl = `${baseUrl}/oauth/token`
+  
+  console.log('Authenticating with OneSite API at:', authUrl)
   
   const authResponse = await fetch(authUrl, {
     method: 'POST',
@@ -236,15 +310,22 @@ async function authenticateOneSite(credentials: any): Promise<string> {
   
   if (!authResponse.ok) {
     const errorText = await authResponse.text()
+    console.error('OneSite auth error response:', errorText)
     throw new Error(`OneSite authentication failed: ${authResponse.status} - ${errorText}`)
   }
   
   const authData: OneSiteAuthResponse = await authResponse.json()
+  
+  if (authData.error) {
+    throw new Error(`OneSite authentication error: ${authData.error}`)
+  }
+  
   return authData.access_token
 }
 
 async function fetchOneSiteProperties(token: string): Promise<OneSiteProperty[]> {
-  const propertiesUrl = `${Deno.env.get('ONESITE_API_URL')}/api/v1/properties`
+  const baseUrl = Deno.env.get('ONESITE_API_URL') || 'https://demo-api.onesite.com'
+  const propertiesUrl = `${baseUrl}/api/v1/properties`
   
   const response = await fetch(propertiesUrl, {
     headers: {
@@ -262,7 +343,8 @@ async function fetchOneSiteProperties(token: string): Promise<OneSiteProperty[]>
 }
 
 async function fetchOneSitePropertyDetails(token: string, propertyId: string) {
-  const detailsUrl = `${Deno.env.get('ONESITE_API_URL')}/api/v1/properties/${propertyId}/occupancy`
+  const baseUrl = Deno.env.get('ONESITE_API_URL') || 'https://demo-api.onesite.com'
+  const detailsUrl = `${baseUrl}/api/v1/properties/${propertyId}/occupancy`
   
   const response = await fetch(detailsUrl, {
     headers: {
@@ -279,7 +361,8 @@ async function fetchOneSitePropertyDetails(token: string, propertyId: string) {
 }
 
 async function fetchOneSiteFinancialData(token: string, propertyId: string) {
-  const financialUrl = `${Deno.env.get('ONESITE_API_URL')}/api/v1/properties/${propertyId}/financial`
+  const baseUrl = Deno.env.get('ONESITE_API_URL') || 'https://demo-api.onesite.com'
+  const financialUrl = `${baseUrl}/api/v1/properties/${propertyId}/financial`
   
   const response = await fetch(financialUrl, {
     headers: {
@@ -296,7 +379,8 @@ async function fetchOneSiteFinancialData(token: string, propertyId: string) {
 }
 
 async function fetchOneSiteMaintenanceData(token: string, propertyId: string) {
-  const maintenanceUrl = `${Deno.env.get('ONESITE_API_URL')}/api/v1/properties/${propertyId}/maintenance`
+  const baseUrl = Deno.env.get('ONESITE_API_URL') || 'https://demo-api.onesite.com'
+  const maintenanceUrl = `${baseUrl}/api/v1/properties/${propertyId}/maintenance`
   
   const response = await fetch(maintenanceUrl, {
     headers: {
@@ -376,7 +460,7 @@ function extractOneSiteKPIs(property: any, details: any, financial: any, mainten
   return kpis
 }
 
-// Keep existing mock functions for other PM software until we implement them
+// Keep existing mock functions for other PM software
 async function syncYardiData(integration: any) {
   // Simulate Yardi API integration
   const mockData = {
