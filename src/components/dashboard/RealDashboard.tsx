@@ -8,7 +8,7 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import { useNavigate } from 'react-router-dom';
 
 const RealDashboard = () => {
-  const { dashboardData, isLoading, hasRealData } = useDashboardData();
+  const { dashboardData, isLoading, hasRealData, currentProperty } = useDashboardData();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -100,7 +100,10 @@ const RealDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Portfolio Dashboard</h1>
-          <p className="text-gray-600 mt-2">Real-time data from your connected property management systems</p>
+          <p className="text-gray-600 mt-2">
+            Real-time data from your connected property management systems
+            {currentProperty && ` - Currently viewing: ${currentProperty.name}`}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -140,7 +143,7 @@ const RealDashboard = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.occupancyRate}%</div>
+            <div className="text-2xl font-bold">{dashboardData.occupancyRate.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground">
               {dashboardData.occupancyRate > 90 ? 'Above target' : 'Below target'}
             </p>
@@ -198,6 +201,9 @@ const RealDashboard = () => {
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-4" />
                 <p className="text-gray-600">All systems operating normally</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Your {currentProperty?.name || 'property'} is performing well
+                </p>
               </div>
             )}
           </CardContent>
@@ -218,10 +224,21 @@ const RealDashboard = () => {
                   <CheckCircle className="h-4 w-4 text-green-500" />
                   <div>
                     <p className="font-medium text-sm">OneSite Integration</p>
-                    <p className="text-xs text-gray-500">Last sync: Just now</p>
+                    <p className="text-xs text-gray-500">
+                      {currentProperty?.name ? `Syncing ${currentProperty.name}` : 'Active'}
+                    </p>
                   </div>
                 </div>
                 <Badge className="bg-green-100 text-green-800">Active</Badge>
+              </div>
+              
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <div className="text-sm font-medium text-blue-900 mb-1">Latest KPIs</div>
+                <div className="text-xs text-blue-700 space-y-1">
+                  <div>• Occupancy: {dashboardData.occupancyRate.toFixed(1)}%</div>
+                  <div>• Revenue: ${dashboardData.monthlyRevenue.toLocaleString()}</div>
+                  <div>• NOI: ${Math.round(dashboardData.noi).toLocaleString()}</div>
+                </div>
               </div>
               
               <Button 
