@@ -21,6 +21,15 @@ const LoginPage = () => {
   
   const { login } = useAuth();
 
+  // Pre-fill email when switching to company login
+  React.useEffect(() => {
+    if (loginType === 'company') {
+      setEmail('opsightlive@gmail.com');
+    } else {
+      setEmail('');
+    }
+  }, [loginType]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -29,12 +38,8 @@ const LoginPage = () => {
     try {
       const success = await login(email, password, loginType === 'company');
       if (success) {
-        const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-        if (onboardingCompleted) {
-          navigate('/dashboard');
-        } else {
-          navigate('/signup');
-        }
+        // Always redirect to dashboard for existing accounts
+        navigate('/dashboard');
       } else {
         setError('Invalid email or password. Please try again.');
       }
