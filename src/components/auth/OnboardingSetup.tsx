@@ -28,6 +28,12 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [dataSource, setDataSource] = useState('connect');
   
+  // PM Software Selection
+  const [pmSoftware, setPmSoftware] = useState('');
+  const [pmUsername, setPmUsername] = useState('');
+  const [pmPassword, setPmPassword] = useState('');
+  const [showPmPassword, setShowPmPassword] = useState(false);
+  
   // Step 2: Plan Selection
   const [selectedPlan, setSelectedPlan] = useState('professional');
   const [unitCount, setUnitCount] = useState('100');
@@ -51,6 +57,18 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
 
   const passwordsMatch = password === confirmPassword;
 
+  // PM Software Options
+  const pmSoftwareOptions = [
+    { value: 'yardi', label: 'Yardi', supported: true },
+    { value: 'appfolio', label: 'AppFolio', supported: true },
+    { value: 'buildium', label: 'Buildium', supported: true },
+    { value: 'propertyware', label: 'Propertyware', supported: true },
+    { value: 'resman', label: 'RESMan', supported: true },
+    { value: 'entrata', label: 'Entrata', supported: true },
+    { value: 'onesite', label: 'OneSite', supported: false },
+    { value: 'rentmanager', label: 'Rent Manager', supported: false }
+  ];
+
   // Pricing Calculator
   const calculateMonthlyPrice = (plan: string, units: number) => {
     const pricePerUnit = plan === 'basic' ? 3 : plan === 'professional' ? 4 : 5;
@@ -58,7 +76,16 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
   };
 
   const handleGetStarted = () => {
-    console.log('Getting started with:', { companyName, role, propertyName, units, email, dataSource });
+    console.log('Getting started with:', { 
+      companyName, 
+      role, 
+      propertyName, 
+      units, 
+      email, 
+      dataSource,
+      pmSoftware: dataSource === 'connect' ? pmSoftware : null,
+      pmCredentials: dataSource === 'connect' ? { username: pmUsername, password: pmPassword } : null
+    });
     setStep(2);
   };
 
@@ -281,13 +308,79 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
                     <Label htmlFor="upload" className="text-sm">Upload Reports Manually</Label>
                   </div>
                 </RadioGroup>
+
+                {dataSource === 'connect' && (
+                  <div className="space-y-3 mt-4 pt-4 border-t border-gray-200">
+                    <div>
+                      <Label className="text-sm">PM Software</Label>
+                      <Select value={pmSoftware} onValueChange={setPmSoftware}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select your PM software" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {pmSoftwareOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex items-center justify-between w-full">
+                                <span>{option.label}</span>
+                                {!option.supported && (
+                                  <span className="text-xs text-gray-500 ml-2">(Coming Soon)</span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {pmSoftware && (
+                      <>
+                        <div>
+                          <Label className="text-sm">PM Username</Label>
+                          <Input
+                            value={pmUsername}
+                            onChange={(e) => setPmUsername(e.target.value)}
+                            placeholder="Your PM software username"
+                            className="mt-1"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-sm">PM Password</Label>
+                          <div className="relative mt-1">
+                            <Input
+                              type={showPmPassword ? 'text' : 'password'}
+                              value={pmPassword}
+                              onChange={(e) => setPmPassword(e.target.value)}
+                              placeholder="Your PM software password"
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPmPassword(!showPmPassword)}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            >
+                              {showPmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex justify-center mt-8">
               <Button 
                 onClick={handleGetStarted}
-                disabled={!passwordsMatch || !password || !confirmPassword || !email || !companyName}
+                disabled={
+                  !passwordsMatch || 
+                  !password || 
+                  !confirmPassword || 
+                  !email || 
+                  !companyName ||
+                  (dataSource === 'connect' && (!pmSoftware || !pmUsername || !pmPassword))
+                }
                 className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold rounded-lg"
               >
                 Get Started
