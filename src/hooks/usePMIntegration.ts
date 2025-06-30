@@ -21,12 +21,12 @@ interface CreateIntegrationCredentials {
 }
 
 export const usePMIntegration = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [integrations, setIntegrations] = useState<PMIntegration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const loadIntegrations = useCallback(async () => {
-    if (!user) return;
+    if (!user || loading) return;
 
     setIsLoading(true);
     try {
@@ -47,7 +47,7 @@ export const usePMIntegration = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, loading]);
 
   const createIntegration = useCallback(async (
     pmSoftware: string,
@@ -55,6 +55,13 @@ export const usePMIntegration = () => {
     credentials: CreateIntegrationCredentials,
     syncFrequency: string = 'daily'
   ) => {
+    if (loading) {
+      const errorMsg = 'Authentication is loading, please wait...';
+      console.error(errorMsg);
+      toast.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
     if (!user) {
       const errorMsg = 'Please log in to create integrations';
       console.error(errorMsg);
@@ -138,7 +145,7 @@ export const usePMIntegration = () => {
       toast.error(`Failed to create integration: ${error.message}`);
       throw error; // Re-throw so the calling component can handle it
     }
-  }, [user]);
+  }, [user, loading]);
 
   const testIntegration = useCallback(async (integrationId: string, testMode: boolean = true) => {
     if (!user) return;

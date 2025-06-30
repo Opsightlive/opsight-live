@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Shield, AlertCircle, CheckCircle, Building } from 'lucide-react';
 import { usePMIntegration } from '@/hooks/usePMIntegration';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface OneSiteCredentials {
   username: string;
@@ -24,6 +25,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   onBack,
   isLoading = false
 }) => {
+  const { user, loading } = useAuth();
   const { createIntegration } = usePMIntegration();
   const [credentials, setCredentials] = useState<OneSiteCredentials>({
     username: '',
@@ -33,6 +35,17 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  // Check authentication status
+  useEffect(() => {
+    if (!loading && !user) {
+      setTestResult('error');
+      setErrorMessage('Please log in to create integrations. Redirecting to login...');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    }
+  }, [user, loading]);
 
   const validateCredentials = () => {
     if (!credentials.username || !credentials.password) {
@@ -52,6 +65,13 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check auth again before submitting
+    if (!user) {
+      setTestResult('error');
+      setErrorMessage('Authentication required. Please log in and try again.');
+      return;
+    }
     
     const validationError = validateCredentials();
     if (validationError) {
@@ -98,6 +118,40 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p>Checking authentication...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show auth error if not logged in
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Authentication Required</h3>
+            <p className="text-gray-600 mb-4">
+              You need to be logged in to create integrations.
+            </p>
+            <Button onClick={() => window.location.href = '/login'}>
+              Go to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -200,7 +254,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || isLoading}
+                disabled={isSubmitting || isLoading || !user}
                 className="flex-1"
               >
                 {isSubmitting || isLoading ? 'Creating Integration...' : 'Connect OneSite'}
