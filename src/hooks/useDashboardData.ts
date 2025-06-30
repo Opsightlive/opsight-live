@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePropertyData } from './usePropertyData';
 
 interface DashboardKPI {
   kpi_type: string;
@@ -24,6 +25,7 @@ interface DashboardData {
 
 export const useDashboardData = () => {
   const { user } = useAuth();
+  const { currentProperty } = usePropertyData();
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalProperties: 0,
     totalUnits: 0,
@@ -37,34 +39,33 @@ export const useDashboardData = () => {
   const [hasRealData, setHasRealData] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !currentProperty) {
+      setHasRealData(false);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
 
-        // Check if user has any PM integrations
-        const { data: integrations } = await supabase
-          .from('pm_integrations')
-          .select('*')
-          .eq('user_id', user.id);
-
-        // Fetch real KPI data
+        // Fetch KPI data for the current property
         const { data: kpiData } = await supabase
           .from('extracted_kpis')
           .select('*')
           .eq('user_id', user.id)
+          .eq('property_name', currentProperty.name)
           .order('created_at', { ascending: false });
 
         if (kpiData && kpiData.length > 0) {
           setHasRealData(true);
           
-          // Process real KPI data
+          // Process real KPI data for the current property
           const processedData = processKPIData(kpiData);
           setDashboardData(processedData);
         } else {
           setHasRealData(false);
-          // Show demo data with clear indication
+          // Show empty state for properties without data
           setDashboardData({
             totalProperties: 0,
             totalUnits: 0,
@@ -76,11 +77,12 @@ export const useDashboardData = () => {
           });
         }
 
-        // Fetch recent alerts
+        // Fetch recent alerts for the current property
         const { data: alertsData } = await supabase
           .from('alert_instances')
           .select('*')
           .eq('user_id', user.id)
+          .eq('property_name', currentProperty.name)
           .order('created_at', { ascending: false })
           .limit(5);
 
@@ -98,7 +100,7 @@ export const useDashboardData = () => {
     };
 
     fetchDashboardData();
-  }, [user]);
+  }, [user, currentProperty]);
 
   const processKPIData = (kpiData: DashboardKPI[]): DashboardData => {
     const latestKPIs = kpiData.reduce((acc, kpi) => {
@@ -111,16 +113,13 @@ export const useDashboardData = () => {
 
     const kpiArray = Object.values(latestKPIs);
     
-    // Extract key metrics
+    // Extract key metrics from real data
     const occupancyKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('occupancy'));
     const rentRollKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('rent'));
     const collectionKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('collection'));
     
-    // Count unique properties
-    const uniqueProperties = new Set(kpiArray.map(k => k.property_name).filter(Boolean));
-    
     return {
-      totalProperties: uniqueProperties.size,
+      totalProperties: 1, // Current property view
       totalUnits: 100, // This would come from property data
       monthlyRevenue: rentRollKPI?.kpi_value || 0,
       occupancyRate: occupancyKPI?.kpi_value || 0,
@@ -133,6 +132,7 @@ export const useDashboardData = () => {
   return {
     dashboardData,
     isLoading,
-    hasRealData
+    hasRealData,
+    currentProperty
   };
 };

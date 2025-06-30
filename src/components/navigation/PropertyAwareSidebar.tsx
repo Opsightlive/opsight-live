@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -33,8 +32,9 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { useDashboardData } from '@/hooks/useDashboardData';
+import { usePropertyData } from '@/hooks/usePropertyData';
 import { useAdaptiveLayoutContext } from '@/contexts/AdaptiveLayoutContext';
+import PropertySwitcher from './PropertySwitcher';
 
 interface PropertyAwareSidebarProps {
   className?: string;
@@ -42,70 +42,74 @@ interface PropertyAwareSidebarProps {
 
 const PropertyAwareSidebar: React.FC<PropertyAwareSidebarProps> = ({ className }) => {
   const { user } = useAuth();
-  const { dashboardData, hasRealData } = useDashboardData();
+  const { properties, currentProperty } = usePropertyData();
   const { screenInfo } = useAdaptiveLayoutContext();
   const location = useLocation();
   
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Property-specific navigation with Trinity Trace context
-  const propertyAwareNavigation = [
-    {
-      title: 'Trinity Trace Dashboard',
-      items: [
-        { name: 'Portfolio Overview', href: '/portfolio', icon: Home, description: 'Trinity Trace performance' },
-        { name: 'Trinity Trace KPIs', href: '/kpi-command-center', icon: BarChart3, description: 'Live Trinity Trace metrics' },
-        { name: 'Property Dashboard', href: '/dashboard', icon: Building2, description: 'Trinity Trace insights' },
-        { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart, description: 'Trinity Trace investor view' },
-      ]
-    },
-    {
-      title: 'Trinity Trace Operations',
-      items: [
-        { name: 'Property Alerts', href: '/red-flag-alerts', icon: AlertTriangle, description: 'Trinity Trace alert monitoring' },
-        { name: 'Occupancy Tracking', href: '/predictive', icon: Users, description: 'Trinity Trace occupancy insights' },
-        { name: 'Revenue Analysis', href: '/financials', icon: DollarSign, description: 'Trinity Trace financial performance' },
-        { name: 'Performance Trends', href: '/performance', icon: TrendingUp, description: 'Trinity Trace analytics' },
-      ]
-    },
-    {
-      title: 'Trinity Trace Management',
-      items: [
-        { name: 'Property Data Hub', href: '/data-integration', icon: Database, description: 'Trinity Trace data connections' },
-        { name: 'OneSite Integration', href: '/integration-status', icon: Activity, description: 'Trinity Trace PM system' },
-        { name: 'Tenant Communications', href: '/email-automation', icon: Mail, description: 'Trinity Trace tenant messaging' },
-        { name: 'Maintenance Tracking', href: '/maintenance', icon: Settings, description: 'Trinity Trace work orders' },
-      ]
-    },
-    {
-      title: 'Trinity Trace Intelligence',
-      items: [
-        { name: 'AI Property Insights', href: '/ai-tools', icon: Bot, description: 'Trinity Trace AI analysis' },
-        { name: 'Investment Analysis', href: '/deal-vetting', icon: Target, description: 'Trinity Trace investment tools' },
-        { name: 'Document Processing', href: '/ai-reader', icon: FileText, description: 'Trinity Trace document AI' },
-        { name: 'Property Reports', href: '/lp-reports', icon: FileText, description: 'Trinity Trace reporting' },
-      ]
-    },
-    {
-      title: 'Communications & Alerts',
-      items: [
-        { name: 'Alert Center', href: '/notifications', icon: Bell, description: 'Trinity Trace notifications' },
-        { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare, description: 'Trinity Trace SMS system' },
-        { name: 'Alert Timeline', href: '/timeline', icon: Clock, description: 'Trinity Trace alert history' },
-        { name: 'Resolution Tracking', href: '/resolutions', icon: Shield, description: 'Trinity Trace issue resolution' },
-      ]
-    },
-    {
-      title: 'Account & Settings',
-      items: [
-        { name: 'User Profile', href: '/profile', icon: User, description: 'Your account settings' },
-        { name: 'System Settings', href: '/settings', icon: Settings, description: 'Trinity Trace configuration' },
-        { name: 'Subscription', href: '/subscription', icon: CreditCard, description: 'Billing and subscription' },
-        { name: 'Help Center', href: '/help', icon: HelpCircle, description: 'Support and documentation' },
-      ]
-    }
-  ];
+  // Dynamic navigation based on current property
+  const getPropertyAwareNavigation = () => {
+    const propertyName = currentProperty?.name || 'Your Property';
+    
+    return [
+      {
+        title: `${propertyName} Dashboard`,
+        items: [
+          { name: 'Portfolio Overview', href: '/portfolio', icon: Home, description: `${propertyName} performance` },
+          { name: `${propertyName} KPIs`, href: '/kpi-command-center', icon: BarChart3, description: `Live ${propertyName} metrics` },
+          { name: 'Property Dashboard', href: '/dashboard', icon: Building2, description: `${propertyName} insights` },
+          { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart, description: `${propertyName} investor view` },
+        ]
+      },
+      {
+        title: `${propertyName} Operations`,
+        items: [
+          { name: 'Property Alerts', href: '/red-flag-alerts', icon: AlertTriangle, description: `${propertyName} alert monitoring` },
+          { name: 'Occupancy Tracking', href: '/predictive', icon: Users, description: `${propertyName} occupancy insights` },
+          { name: 'Revenue Analysis', href: '/financials', icon: DollarSign, description: `${propertyName} financial performance` },
+          { name: 'Performance Trends', href: '/performance', icon: TrendingUp, description: `${propertyName} analytics` },
+        ]
+      },
+      {
+        title: `${propertyName} Management`,
+        items: [
+          { name: 'Property Data Hub', href: '/data-integration', icon: Database, description: `${propertyName} data connections` },
+          { name: `${currentProperty?.pm_software || 'PM'} Integration`, href: '/integration-status', icon: Activity, description: `${propertyName} PM system` },
+          { name: 'Tenant Communications', href: '/email-automation', icon: Mail, description: `${propertyName} tenant messaging` },
+          { name: 'Maintenance Tracking', href: '/maintenance', icon: Settings, description: `${propertyName} work orders` },
+        ]
+      },
+      {
+        title: `${propertyName} Intelligence`,
+        items: [
+          { name: 'AI Property Insights', href: '/ai-tools', icon: Bot, description: `${propertyName} AI analysis` },
+          { name: 'Investment Analysis', href: '/deal-vetting', icon: Target, description: `${propertyName} investment tools` },
+          { name: 'Document Processing', href: '/ai-reader', icon: FileText, description: `${propertyName} document AI` },
+          { name: 'Property Reports', href: '/lp-reports', icon: FileText, description: `${propertyName} reporting` },
+        ]
+      },
+      {
+        title: 'Communications & Alerts',
+        items: [
+          { name: 'Alert Center', href: '/notifications', icon: Bell, description: `${propertyName} notifications` },
+          { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare, description: `${propertyName} SMS system` },
+          { name: 'Alert Timeline', href: '/timeline', icon: Clock, description: `${propertyName} alert history` },
+          { name: 'Resolution Tracking', href: '/resolutions', icon: Shield, description: `${propertyName} issue resolution` },
+        ]
+      },
+      {
+        title: 'Account & Settings',
+        items: [
+          { name: 'User Profile', href: '/profile', icon: User, description: 'Your account settings' },
+          { name: 'System Settings', href: '/settings', icon: Settings, description: `${propertyName} configuration` },
+          { name: 'Subscription', href: '/subscription', icon: CreditCard, description: 'Billing and subscription' },
+          { name: 'Help Center', href: '/help', icon: HelpCircle, description: 'Support and documentation' },
+        ]
+      }
+    ];
+  };
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -154,10 +158,9 @@ const PropertyAwareSidebar: React.FC<PropertyAwareSidebarProps> = ({ className }
           isMobileOpen ? "translate-x-0" : "-translate-x-full"
         )}>
           <MobileSidebarContent 
-            propertyAwareNavigation={propertyAwareNavigation}
+            propertyAwareNavigation={getPropertyAwareNavigation()}
             isActive={isActive}
-            hasRealData={hasRealData}
-            propertyCount={dashboardData.totalProperties}
+            currentProperty={currentProperty}
             onClose={() => setIsMobileOpen(false)}
           />
         </div>
@@ -173,11 +176,10 @@ const PropertyAwareSidebar: React.FC<PropertyAwareSidebarProps> = ({ className }
       className
     )}>
       <DesktopSidebarContent
-        propertyAwareNavigation={propertyAwareNavigation}
+        propertyAwareNavigation={getPropertyAwareNavigation()}
         isActive={isActive}
         isCollapsed={isCollapsed}
-        hasRealData={hasRealData}
-        propertyCount={dashboardData.totalProperties}
+        currentProperty={currentProperty}
         onToggleCollapse={handleToggleCollapse}
       />
     </div>
@@ -188,17 +190,16 @@ const PropertyAwareSidebar: React.FC<PropertyAwareSidebarProps> = ({ className }
 const MobileSidebarContent: React.FC<{
   propertyAwareNavigation: any[];
   isActive: (href: string) => boolean;
-  hasRealData: boolean;
-  propertyCount: number;
+  currentProperty: any;
   onClose: () => void;
-}> = ({ propertyAwareNavigation, isActive, hasRealData, propertyCount, onClose }) => (
+}> = ({ propertyAwareNavigation, isActive, currentProperty, onClose }) => (
   <div className="flex flex-col h-full">
     {/* Header */}
     <div className="flex items-center justify-between p-4 border-b border-gray-200">
       <div className="flex items-center">
         <Building2 className="h-8 w-8 mr-3 text-blue-600" />
         <div>
-          <span className="text-lg font-bold text-gray-900">Trinity Trace</span>
+          <span className="text-lg font-bold text-gray-900">OPSIGHT</span>
           <div className="text-xs text-gray-500">Property Management</div>
         </div>
       </div>
@@ -207,18 +208,8 @@ const MobileSidebarContent: React.FC<{
       </Button>
     </div>
 
-    {/* Property Status */}
-    <div className="p-3 bg-blue-50 border-b border-blue-200">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center text-sm text-blue-800">
-          <div className={cn("w-2 h-2 rounded-full mr-2", hasRealData ? "bg-green-500" : "bg-orange-500")} />
-          <span>{hasRealData ? `${propertyCount} Properties Connected` : 'Connect Your Property'}</span>
-        </div>
-        {hasRealData && (
-          <Badge className="bg-green-100 text-green-800 text-xs">Live Data</Badge>
-        )}
-      </div>
-    </div>
+    {/* Property Switcher */}
+    <PropertySwitcher />
 
     {/* Navigation */}
     <div className="flex-1 overflow-y-auto p-2">
@@ -233,7 +224,7 @@ const MobileSidebarContent: React.FC<{
     <div className="p-4 border-t border-gray-200">
       <div className="text-xs text-gray-500">
         <p>© 2025 OPSIGHT</p>
-        <p>Trinity Trace Dashboard v2.1</p>
+        <p>Property Dashboard v2.1</p>
       </div>
     </div>
   </div>
@@ -244,10 +235,9 @@ const DesktopSidebarContent: React.FC<{
   propertyAwareNavigation: any[];
   isActive: (href: string) => boolean;
   isCollapsed: boolean;
-  hasRealData: boolean;
-  propertyCount: number;
+  currentProperty: any;
   onToggleCollapse: () => void;
-}> = ({ propertyAwareNavigation, isActive, isCollapsed, hasRealData, propertyCount, onToggleCollapse }) => (
+}> = ({ propertyAwareNavigation, isActive, isCollapsed, currentProperty, onToggleCollapse }) => (
   <>
     {/* Header */}
     <div className="flex items-center justify-between p-4 border-b border-gray-200 min-h-[60px]">
@@ -255,7 +245,7 @@ const DesktopSidebarContent: React.FC<{
         <div className="flex items-center">
           <Building2 className="h-8 w-8 mr-3 text-blue-600" />
           <div>
-            <span className="text-lg font-bold text-gray-900">Trinity Trace</span>
+            <span className="text-lg font-bold text-gray-900">OPSIGHT</span>
             <div className="text-xs text-gray-500">Property Management</div>
           </div>
         </div>
@@ -274,20 +264,8 @@ const DesktopSidebarContent: React.FC<{
       </button>
     </div>
 
-    {/* Property Status */}
-    {!isCollapsed && (
-      <div className="p-3 bg-blue-50 border-b border-blue-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm text-blue-800">
-            <div className={cn("w-2 h-2 rounded-full mr-2", hasRealData ? "bg-green-500" : "bg-orange-500")} />
-            <span>{hasRealData ? `${propertyCount} Properties Connected` : 'Connect Your Property'}</span>
-          </div>
-          {hasRealData && (
-            <Badge className="bg-green-100 text-green-800 text-xs">Live</Badge>
-          )}
-        </div>
-      </div>
-    )}
+    {/* Property Switcher */}
+    {!isCollapsed && <PropertySwitcher />}
 
     {/* Navigation */}
     <div className="flex-1 overflow-y-auto p-2">
@@ -303,7 +281,7 @@ const DesktopSidebarContent: React.FC<{
       <div className="p-4 border-t border-gray-200">
         <div className="text-xs text-gray-500">
           <p>© 2025 OPSIGHT</p>
-          <p>Trinity Trace Dashboard v2.1</p>
+          <p>Property Dashboard v2.1</p>
         </div>
       </div>
     )}
