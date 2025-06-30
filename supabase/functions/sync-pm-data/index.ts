@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -193,7 +194,7 @@ async function syncOneSiteData(integration: any, testMode: boolean = false) {
     const credentials = JSON.parse(atob(integration.credentials_encrypted))
     
     if (testMode) {
-      // In test mode, just validate credentials format and return mock data
+      // Only use test mode if explicitly requested
       console.log('Test mode: Validating credentials format')
       
       if (!credentials.username || !credentials.password) {
@@ -244,7 +245,8 @@ async function syncOneSiteData(integration: any, testMode: boolean = false) {
       }
     }
 
-    // For production mode, attempt real API connection
+    // Production mode - attempt real API connection
+    console.log('Production mode: Connecting to OneSite API')
     const authToken = await authenticateOneSite(credentials)
     const properties = await fetchOneSiteProperties(authToken)
     

@@ -124,9 +124,9 @@ export const usePMIntegration = () => {
       setIntegrations(prev => [data, ...prev]);
       toast.success(`Integration "${integrationName}" created successfully`);
       
-      // Test the integration immediately
+      // Test the integration immediately with production mode (not test mode)
       try {
-        await testIntegration(data.id);
+        await testIntegration(data.id, false); // false = production mode
       } catch (testError) {
         console.warn('Integration created but test failed:', testError);
         // Don't throw here - integration was created successfully
@@ -140,7 +140,7 @@ export const usePMIntegration = () => {
     }
   }, [user]);
 
-  const testIntegration = useCallback(async (integrationId: string) => {
+  const testIntegration = useCallback(async (integrationId: string, testMode: boolean = false) => {
     if (!user) return;
 
     try {
@@ -150,13 +150,13 @@ export const usePMIntegration = () => {
         .update({ sync_status: 'testing' })
         .eq('id', integrationId);
 
-      // Call the sync function to test the connection
+      // Call the sync function - default to production mode
       const { data, error } = await supabase.functions
         .invoke('sync-pm-data', {
           body: {
             integrationId,
             userId: user.id,
-            testMode: true
+            testMode: testMode // Use the parameter, default is false (production)
           }
         });
 
@@ -199,11 +199,13 @@ export const usePMIntegration = () => {
 
       toast.info('Starting data sync...');
 
+      // Call sync in production mode (not test mode)
       const { data, error } = await supabase.functions
         .invoke('sync-pm-data', {
           body: {
             integrationId,
-            userId: user.id
+            userId: user.id,
+            testMode: false // Always use production mode for manual sync
           }
         });
 
@@ -295,8 +297,8 @@ export const usePMIntegration = () => {
 
       toast.success('Credentials updated successfully');
       
-      // Test the updated integration
-      await testIntegration(integrationId);
+      // Test the updated integration in production mode
+      await testIntegration(integrationId, false);
       
       await loadIntegrations();
     } catch (error: any) {
