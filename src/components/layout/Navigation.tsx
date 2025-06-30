@@ -32,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({
     }
   };
 
-  // Show back button on all pages except the main landing page and dashboard
+  // Show back button on all pages except the main landing page
   const hideOnRoutes = ['/'];
   const shouldShow = showBackButton && !hideOnRoutes.includes(location.pathname);
 
