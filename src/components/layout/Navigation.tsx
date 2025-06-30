@@ -44,9 +44,9 @@ const Navigation: React.FC<NavigationProps> = ({
         variant="ghost"
         size="icon"
         onClick={handleBack}
-        className="bg-white/90 backdrop-blur-sm hover:bg-white border border-gray-200 shadow-sm"
+        className="bg-white/95 backdrop-blur-sm hover:bg-white border border-gray-200 shadow-lg h-10 w-10 sm:h-12 sm:w-12"
       >
-        <ArrowLeft className="h-5 w-5" />
+        <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
       </Button>
     </div>
   );

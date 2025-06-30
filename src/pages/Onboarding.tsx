@@ -5,7 +5,7 @@ import Navigation from '@/components/layout/Navigation';
 
 const Onboarding = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
       <Navigation />
       <div className="pt-16">
         <PlaceholderModule
