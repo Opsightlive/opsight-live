@@ -26,8 +26,8 @@ const Navigation: React.FC<NavigationProps> = ({
     }
   };
 
-  // Don't show back button on home/landing pages
-  const hideOnRoutes = ['/', '/login', '/signup'];
+  // Only hide back button on the main landing page
+  const hideOnRoutes = ['/'];
   const shouldShow = showBackButton && !hideOnRoutes.includes(location.pathname);
 
   if (!shouldShow) return null;

@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import OwnerOnboarding from '@/components/onboarding/OwnerOnboarding';
+import Navigation from '@/components/layout/Navigation';
 
 const OwnerOnboardingPage = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const OwnerOnboardingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
       <OwnerOnboarding onComplete={handleComplete} />
     </div>
   );

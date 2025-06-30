@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import RegisterForm from '@/components/auth/RegisterForm';
+import Navigation from '@/components/layout/Navigation';
 
 const SignupPage = () => {
   return (
@@ -18,9 +19,7 @@ const SignupPage = () => {
               />
               <span className="text-2xl font-bold text-white">OPSIGHT</span>
             </Link>
-            <Link to="/" className="text-blue-200 hover:text-white transition-colors">
-              ← Back to Home
-            </Link>
+            <Navigation className="text-blue-200 hover:text-white transition-colors" />
           </div>
         </div>
       </div>

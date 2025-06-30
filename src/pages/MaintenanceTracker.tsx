@@ -1,13 +1,16 @@
 
 import React from 'react';
 import PlaceholderModule from './PlaceholderModule';
+import Layout from '@/components/layout/Layout';
 
 const MaintenanceTracker = () => {
   return (
-    <PlaceholderModule
-      moduleName="Maintenance Tracker"
-      description="Property maintenance scheduling and tracking system."
-    />
+    <Layout>
+      <PlaceholderModule
+        moduleName="Maintenance Tracker"
+        description="Property maintenance scheduling and tracking system."
+      />
+    </Layout>
   );
 };
 

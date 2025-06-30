@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
+import Navigation from '@/components/layout/Navigation';
 
 const LoginPage = () => {
   return (
@@ -18,9 +19,7 @@ const LoginPage = () => {
               />
               <span className="text-2xl font-bold text-white">OPSIGHT</span>
             </Link>
-            <Link to="/" className="text-blue-200 hover:text-white transition-colors">
-              ← Back to Home
-            </Link>
+            <Navigation className="text-blue-200 hover:text-white transition-colors" />
           </div>
         </div>
       </div>
