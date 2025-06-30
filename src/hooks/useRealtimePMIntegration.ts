@@ -87,36 +87,10 @@ export const useRealtimePMIntegration = () => {
       )
       .subscribe();
 
-    // Listen to custom PostgreSQL notifications
-    const notificationChannel = supabase
-      .channel('integration-notifications')
-      .on('postgres_changes', { event: '*', schema: '*', table: '*' }, () => {})
-      .subscribe();
-
-    // Listen for PostgreSQL NOTIFY events
-    const setupNotificationListener = async () => {
-      try {
-        // Set up listener for integration status changes
-        const { error } = await supabase.rpc('pg_notify', {
-          channel: 'integration_status_change',
-          payload: JSON.stringify({ test: 'connection' })
-        });
-        
-        if (error) {
-          console.warn('Could not set up notification listener:', error);
-        }
-      } catch (error) {
-        console.warn('Notification setup error:', error);
-      }
-    };
-
-    setupNotificationListener();
-
     return () => {
       console.log('Cleaning up PM integration real-time subscriptions...');
       supabase.removeChannel(integrationsChannel);
       supabase.removeChannel(kpisChannel);
-      supabase.removeChannel(notificationChannel);
       setIsListening(false);
     };
   }, [user, loadIntegrations]);
