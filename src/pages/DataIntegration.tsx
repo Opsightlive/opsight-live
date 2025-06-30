@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Link2, CheckCircle, AlertCircle, Clock, Settings, Zap, Shield, Cloud } from 'lucide-react';
+import { Database, Link2, CheckCircle, AlertCircle, Clock, Settings, Zap, Shield, Cloud, Plus } from 'lucide-react';
+import Layout from '@/components/layout/Layout';
 
 const DataIntegration = () => {
+  const navigate = useNavigate();
   const [integrations, setIntegrations] = useState([
     {
       id: 1,
@@ -51,8 +54,9 @@ const DataIntegration = () => {
   ]);
 
   const availableIntegrations = [
+    { name: 'OneSite', type: 'Property Management', description: 'Connect your OneSite property management system', isRecommended: true },
     { name: 'Buildium', type: 'Property Management', description: 'Cloud-based property management software' },
-    { name: 'Rent Manager', type: 'Property Management', description: 'Comprehensive property management solution' },
+    { name: 'RentManager', type: 'Property Management', description: 'Comprehensive property management solution' },
     { name: 'MRI Software', type: 'Property Management', description: 'Real estate investment management' },
     { name: 'Sage Intacct', type: 'Accounting', description: 'Cloud financial management' },
     { name: 'Xero', type: 'Accounting', description: 'Online accounting software' },
@@ -85,8 +89,17 @@ const DataIntegration = () => {
     }
   };
 
+  const handleConnectPM = (pmName: string) => {
+    if (pmName === 'OneSite') {
+      navigate('/pm-integration');
+    } else {
+      // For other PM systems, show placeholder
+      alert(`${pmName} integration coming soon! OneSite is currently available for testing.`);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
@@ -115,119 +128,91 @@ const DataIntegration = () => {
                 </div>
               </div>
             </div>
+            <Button 
+              onClick={() => navigate('/pm-integration')}
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+              size="lg"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Connect Property Management
+            </Button>
           </div>
         </div>
 
-        <Tabs defaultValue="connected" className="space-y-6">
+        {/* Quick Start Card */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="text-blue-800">🚀 Quick Start: Connect Your OneSite System</CardTitle>
+            <CardDescription className="text-blue-600">
+              Ready to test the OneSite integration? Click below to connect your property management system and start syncing data.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => navigate('/pm-integration')}
+              className="bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              <Link2 className="h-5 w-5 mr-2" />
+              Set Up OneSite Integration
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Tabs defaultValue="available" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="connected">Connected Systems</TabsTrigger>
             <TabsTrigger value="available">Available Integrations</TabsTrigger>
+            <TabsTrigger value="connected">Connected Systems</TabsTrigger>
             <TabsTrigger value="settings">Sync Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="connected" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {integrations.map((integration) => (
-                <Card key={integration.id} className="hover:shadow-lg transition-shadow">
+          <TabsContent value="available" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {availableIntegrations.map((integration, index) => (
+                <Card key={index} className={`hover:shadow-lg transition-shadow ${integration.isRecommended ? 'border-blue-300 bg-blue-50' : ''}`}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <img 
-                          src={integration.logo} 
-                          alt={integration.name}
-                          className="w-10 h-10 rounded-lg"
-                        />
+                        <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <Database className="h-5 w-5 text-gray-600" />
+                        </div>
                         <div>
-                          <CardTitle className="text-lg">{integration.name}</CardTitle>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            {integration.name}
+                            {integration.isRecommended && (
+                              <Badge className="bg-blue-600 text-white">Recommended</Badge>
+                            )}
+                          </CardTitle>
                           <CardDescription>{integration.type}</CardDescription>
                         </div>
                       </div>
-                      {getStatusIcon(integration.status)}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Status</span>
-                      {getStatusBadge(integration.status)}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Last Sync</span>
-                      <span className="text-sm font-medium">{integration.lastSync}</span>
-                    </div>
-
-                    {integration.properties > 0 && (
-                      <>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Properties</span>
-                          <span className="text-sm font-medium">{integration.properties}</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Units</span>
-                          <span className="text-sm font-medium">{integration.units.toLocaleString()}</span>
-                        </div>
-                      </>
-                    )}
-
-                    {integration.status === 'syncing' && (
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Sync Progress</span>
-                          <span>67%</span>
-                        </div>
-                        <Progress value={67} className="h-2" />
-                      </div>
-                    )}
-
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Configure
-                      </Button>
-                      {integration.status === 'error' && (
-                        <Button size="sm" className="flex-1">
-                          <Zap className="h-4 w-4 mr-2" />
-                          Reconnect
-                        </Button>
-                      )}
-                      {integration.status === 'connected' && (
-                        <Button variant="outline" size="sm" className="flex-1">
-                          <Database className="h-4 w-4 mr-2" />
-                          Sync Now
-                        </Button>
-                      )}
-                    </div>
+                    <p className="text-sm text-gray-600">{integration.description}</p>
+                    <Button 
+                      className="w-full"
+                      onClick={() => handleConnectPM(integration.name)}
+                      variant={integration.isRecommended ? "default" : "outline"}
+                    >
+                      <Link2 className="h-4 w-4 mr-2" />
+                      {integration.name === 'OneSite' ? 'Connect Now' : 'Connect'}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </TabsContent>
 
-          <TabsContent value="available" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {availableIntegrations.map((integration, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <Database className="h-5 w-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">{integration.name}</CardTitle>
-                        <CardDescription>{integration.type}</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-gray-600">{integration.description}</p>
-                    <Button className="w-full">
-                      <Link2 className="h-4 w-4 mr-2" />
-                      Connect
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+          <TabsContent value="connected" className="space-y-4">
+            <div className="text-center py-8">
+              <Database className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No Integrations Connected Yet</h3>
+              <p className="text-gray-500 mb-4">Connect your first property management system to get started</p>
+              <Button onClick={() => navigate('/pm-integration')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Integration
+              </Button>
             </div>
           </TabsContent>
 
@@ -340,7 +325,7 @@ const DataIntegration = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </Layout>
   );
 };
 
