@@ -7,8 +7,8 @@ import Navigation from '@/components/layout/Navigation';
 const SignupPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 relative">
-      {/* Navigation Back Button - Positioned at the very top */}
-      <Navigation className="fixed top-4 left-4 z-[9999]" />
+      {/* Navigation Back Button - Must be visible */}
+      <Navigation />
       
       {/* Header with back to home */}
       <div className="bg-transparent border-b border-white/20">
