@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -112,7 +111,6 @@ const LandingPage = () => {
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
-              <Link to="/book-demo" className="text-blue-600 hover:text-blue-700 font-medium">Book Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
@@ -140,7 +138,6 @@ const LandingPage = () => {
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
-                <Link to="/book-demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Book Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
                   <Link to="/signup">
@@ -155,7 +152,7 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               {/* Trust Badge */}
@@ -344,7 +341,7 @@ const LandingPage = () => {
       </div>
 
       {/* Solutions Section */}
-      <div id="solutions" className="py-16 lg:py-24 bg-white">
+      <div id="solutions" className="py-20 lg:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">

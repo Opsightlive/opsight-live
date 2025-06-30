@@ -59,7 +59,7 @@ const LoginPage = () => {
         </Button>
       </div>
       
-      {/* Header with back to home */}
+      {/* Header with logo */}
       <div className="bg-transparent border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -156,6 +156,16 @@ const LoginPage = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+              </div>
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
               
               <Button 
