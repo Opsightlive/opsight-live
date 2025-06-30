@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [loginType, setLoginType] = useState<'user' | 'company'>('user');
@@ -36,7 +38,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password, loginType === 'company');
+      const success = await login(email, password, loginType === 'company', rememberMe);
       if (success) {
         // Always redirect to dashboard for existing accounts
         navigate('/dashboard');
@@ -74,7 +76,10 @@ const LoginPage = () => {
                 alt="OPSIGHT" 
                 className="h-8 w-8 mr-3"
               />
-              <span className="text-2xl font-bold text-white">OPSIGHT</span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-white">OPSIGHT</span>
+                <span className="text-sm text-gray-300">Operational Insight</span>
+              </div>
             </Link>
           </div>
         </div>
@@ -84,10 +89,15 @@ const LoginPage = () => {
       <div className="flex-1 flex items-center justify-center py-12">
         <Card className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm border-white/20">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-            <CardDescription className="text-gray-600">
-              Sign in to your OPSIGHT account
-            </CardDescription>
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT" 
+                className="h-12 w-12"
+              />
+            </div>
+            <CardTitle className="text-2xl font-bold text-gray-900">OPSIGHT</CardTitle>
+            <p className="text-gray-600 text-sm">Operational Insight</p>
           </CardHeader>
           <CardContent>
             {/* Login Type Toggle */}
@@ -161,6 +171,18 @@ const LoginPage = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+              </div>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label htmlFor="remember" className="text-sm text-gray-600">
+                  Remember me
+                </Label>
               </div>
 
               {/* Forgot Password Link */}

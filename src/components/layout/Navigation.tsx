@@ -26,13 +26,13 @@ const Navigation: React.FC<NavigationProps> = ({
       if (window.history.length > 1) {
         navigate(-1);
       } else {
-        // If no history, go to landing page
-        navigate('/');
+        // If no history, go to dashboard
+        navigate('/dashboard');
       }
     }
   };
 
-  // Show back button on all pages except the main landing page
+  // Show back button on all pages except the main landing page and dashboard
   const hideOnRoutes = ['/'];
   const shouldShow = showBackButton && !hideOnRoutes.includes(location.pathname);
 
