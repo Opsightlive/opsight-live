@@ -38,7 +38,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password, loginType === 'company', rememberMe);
+      const success = await login(email, password, loginType === 'company');
       if (success) {
         // Always redirect to dashboard for existing accounts
         navigate('/dashboard');
