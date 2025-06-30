@@ -5,7 +5,11 @@ import Header from './Header';
 import PropertyAwareSidebar from '@/components/navigation/PropertyAwareSidebar';
 import { useAdaptiveLayoutContext } from '@/contexts/AdaptiveLayoutContext';
 
-const Layout = () => {
+interface LayoutProps {
+  children?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { screenInfo } = useAdaptiveLayoutContext();
 
   return (
@@ -21,7 +25,7 @@ const Layout = () => {
         {/* Page Content */}
         <main className="flex-1 overflow-auto">
           <div className={screenInfo.isMobile ? "p-4" : "p-6"}>
-            <Outlet />
+            {children || <Outlet />}
           </div>
         </main>
       </div>
