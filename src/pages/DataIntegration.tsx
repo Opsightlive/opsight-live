@@ -1,58 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Link2, CheckCircle, AlertCircle, Clock, Settings, Zap, Shield, Cloud, Plus } from 'lucide-react';
+import { Database, Link2, CheckCircle, AlertCircle, Clock, Settings, Zap, Shield, Cloud, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import Navigation from '@/components/layout/Navigation';
+import { usePMIntegration } from '@/hooks/usePMIntegration';
+import RealtimePMIntegrationStatus from '@/components/integration/RealtimePMIntegrationStatus';
 
 const DataIntegration = () => {
   const navigate = useNavigate();
-  const [integrations, setIntegrations] = useState([
-    {
-      id: 1,
-      name: 'Yardi Voyager',
-      type: 'Property Management',
-      status: 'connected',
-      lastSync: '2 minutes ago',
-      properties: 12,
-      units: 847,
-      logo: '/api/placeholder/40/40'
-    },
-    {
-      id: 2,
-      name: 'AppFolio',
-      type: 'Property Management',
-      status: 'connected',
-      lastSync: '5 minutes ago',
-      properties: 8,
-      units: 623,
-      logo: '/api/placeholder/40/40'
-    },
-    {
-      id: 3,
-      name: 'RentManager',
-      type: 'Property Management',
-      status: 'syncing',
-      lastSync: 'In progress',
-      properties: 4,
-      units: 377,
-      logo: '/api/placeholder/40/40'
-    },
-    {
-      id: 4,
-      name: 'QuickBooks',
-      type: 'Accounting',
-      status: 'error',
-      lastSync: '2 hours ago',
-      properties: 0,
-      units: 0,
-      logo: '/api/placeholder/40/40'
-    }
-  ]);
+  const { integrations, isLoading, loadIntegrations, syncIntegration, deleteIntegration } = usePMIntegration();
+
+  useEffect(() => {
+    loadIntegrations();
+  }, [loadIntegrations]);
 
   const availableIntegrations = [
     { name: 'OneSite', type: 'Property Management', description: 'Connect your OneSite property management system', isRecommended: true },
@@ -66,7 +31,7 @@ const DataIntegration = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'connected':
+      case 'active':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'syncing':
         return <Clock className="h-5 w-5 text-yellow-500" />;
@@ -79,7 +44,7 @@ const DataIntegration = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'connected':
+      case 'active':
         return <Badge className="bg-green-100 text-green-800">Connected</Badge>;
       case 'syncing':
         return <Badge className="bg-yellow-100 text-yellow-800">Syncing</Badge>;
@@ -94,7 +59,6 @@ const DataIntegration = () => {
     if (pmName === 'OneSite') {
       navigate('/pm-integration?pm=onesite');
     } else {
-      // For other PM systems, show placeholder
       alert(`${pmName} integration coming soon! OneSite is currently available for testing.`);
     }
   };
@@ -142,30 +106,35 @@ const DataIntegration = () => {
             </div>
           </div>
 
-          {/* Quick Start Card */}
-          <Card className="border-blue-200 bg-blue-50">
-            <CardHeader>
-              <CardTitle className="text-blue-800">🚀 Quick Start: Connect Your OneSite System</CardTitle>
-              <CardDescription className="text-blue-600">
-                Ready to test the OneSite integration? Click below to connect your property management system and start syncing data.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => navigate('/pm-integration?pm=onesite')}
-                className="bg-blue-600 hover:bg-blue-700"
-                size="lg"
-              >
-                <Link2 className="h-5 w-5 mr-2" />
-                Set Up OneSite Integration
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Real-time Status */}
+          <RealtimePMIntegrationStatus />
 
-          <Tabs defaultValue="available" className="space-y-6">
+          {/* Quick Start Card - Only show if no integrations */}
+          {integrations.length === 0 && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader>
+                <CardTitle className="text-blue-800">🚀 Quick Start: Connect Your OneSite System</CardTitle>
+                <CardDescription className="text-blue-600">
+                  Ready to test the OneSite integration? Click below to connect your property management system and start syncing data.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={() => navigate('/pm-integration?pm=onesite')}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  size="lg"
+                >
+                  <Link2 className="h-5 w-5 mr-2" />
+                  Set Up OneSite Integration
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          <Tabs defaultValue={integrations.length > 0 ? "connected" : "available"} className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="available">Available Integrations</TabsTrigger>
-              <TabsTrigger value="connected">Connected Systems</TabsTrigger>
+              <TabsTrigger value="connected">Connected Systems ({integrations.length})</TabsTrigger>
               <TabsTrigger value="settings">Sync Settings</TabsTrigger>
             </TabsList>
 
@@ -208,15 +177,88 @@ const DataIntegration = () => {
             </TabsContent>
 
             <TabsContent value="connected" className="space-y-4">
-              <div className="text-center py-8">
-                <Database className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No Integrations Connected Yet</h3>
-                <p className="text-gray-500 mb-4">Connect your first property management system to get started</p>
-                <Button onClick={() => navigate('/pm-integration')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Integration
-                </Button>
-              </div>
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="mt-2 text-gray-600">Loading integrations...</p>
+                </div>
+              ) : integrations.length === 0 ? (
+                <div className="text-center py-8">
+                  <Database className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Integrations Connected Yet</h3>
+                  <p className="text-gray-500 mb-4">Connect your first property management system to get started</p>
+                  <Button onClick={() => navigate('/pm-integration')}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Integration
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {integrations.map((integration) => (
+                    <Card key={integration.id}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center gap-2">
+                            <Settings className="h-5 w-5" />
+                            {integration.integration_name}
+                          </CardTitle>
+                          {getStatusBadge(integration.sync_status)}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium">PM Software</p>
+                            <p className="text-sm text-gray-600 capitalize">{integration.pm_software}</p>
+                          </div>
+                          
+                          <div>
+                            <p className="text-sm font-medium">Sync Frequency</p>
+                            <p className="text-sm text-gray-600 capitalize">{integration.sync_frequency}</p>
+                          </div>
+                          
+                          {integration.last_sync && (
+                            <div>
+                              <p className="text-sm font-medium">Last Sync</p>
+                              <p className="text-sm text-gray-600">
+                                {new Date(integration.last_sync).toLocaleDateString()} at{' '}
+                                {new Date(integration.last_sync).toLocaleTimeString()}
+                              </p>
+                            </div>
+                          )}
+
+                          {integration.error_log && (
+                            <div>
+                              <p className="text-sm font-medium text-red-600">Error</p>
+                              <p className="text-sm text-red-600">{integration.error_log}</p>
+                            </div>
+                          )}
+                          
+                          <div className="flex gap-2 pt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => syncIntegration(integration.id)}
+                              disabled={integration.sync_status === 'syncing'}
+                            >
+                              <RefreshCw className="h-4 w-4 mr-1" />
+                              Sync Now
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteIntegration(integration.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">
