@@ -54,36 +54,168 @@ serve(async (req) => {
       .update({ sync_status: 'syncing' })
       .eq('id', integrationId)
 
-    console.log('Starting Puppeteer scraping for OneSite...')
+    if (testMode) {
+      console.log('Running in TEST MODE - generating realistic demo data')
+      
+      // Generate realistic demo data for Trinity Trace
+      const demoData = {
+        occupancyRate: 94.2,
+        totalUnits: 312,
+        availableUnits: 18,
+        monthlyRevenue: 485000,
+        avgRent: 1850
+      };
 
-    // Import Puppeteer dynamically for Deno edge functions
+      // Store demo KPIs in database
+      const kpiInserts = [
+        {
+          user_id: userId,
+          integration_id: integrationId,
+          kpi_type: 'leasing',
+          kpi_name: 'Occupancy Rate',
+          kpi_value: demoData.occupancyRate,
+          kpi_unit: '%',
+          property_name: 'Trinity Trace',
+          extraction_confidence: 1.0,
+          source_system: 'OneSite Demo'
+        },
+        {
+          user_id: userId,
+          integration_id: integrationId,
+          kpi_type: 'property',
+          kpi_name: 'Total Units',
+          kpi_value: demoData.totalUnits,
+          kpi_unit: 'units',
+          property_name: 'Trinity Trace',
+          extraction_confidence: 1.0,
+          source_system: 'OneSite Demo'
+        },
+        {
+          user_id: userId,
+          integration_id: integrationId,
+          kpi_type: 'financial',
+          kpi_name: 'Monthly Revenue',
+          kpi_value: demoData.monthlyRevenue,
+          kpi_unit: '$',
+          property_name: 'Trinity Trace',
+          extraction_confidence: 1.0,
+          source_system: 'OneSite Demo'
+        }
+      ];
+
+      const { error: kpiError } = await supabase
+        .from('extracted_kpis')
+        .insert(kpiInserts);
+
+      if (kpiError) {
+        console.error('Error inserting demo KPIs:', kpiError);
+      }
+
+      // Update integration status to active
+      await supabase
+        .from('pm_integrations')
+        .update({ 
+          sync_status: 'active',
+          last_sync: new Date().toISOString(),
+          error_log: null
+        })
+        .eq('id', integrationId)
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Demo data generated successfully',
+          syncedKPIs: kpiInserts.length,
+          pmSoftware: 'OneSite',
+          propertyName: 'Trinity Trace',
+          extractedData: demoData,
+          mode: 'demo'
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    console.log('Starting PRODUCTION scraping for OneSite...')
+
+    // Import Puppeteer for production scraping
     const puppeteer = await import('https://deno.land/x/puppeteer@16.2.0/mod.ts')
     
-    // Launch browser
-    const browser = await puppeteer.launch({
+    // Launch browser with proper configuration for Deno
+    const browser = await puppeteer.default.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-web-security',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding'
+      ]
     })
 
     const page = await browser.newPage()
     
     try {
+      // Set realistic user agent
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+      
       // Navigate to OneSite login
       console.log('Navigating to OneSite login...')
-      await page.goto('https://www.onesite.com/login', { waitUntil: 'networkidle2' })
+      await page.goto('https://www.onesite.com/login', { 
+        waitUntil: 'networkidle2',
+        timeout: 30000 
+      })
+
+      // Wait for login form to be visible
+      await page.waitForSelector('input[type="email"], input[name="username"], input[name="email"]', { timeout: 10000 })
 
       // Login with credentials
-      console.log('Logging into OneSite...')
-      await page.type('input[name="username"], input[type="email"]', credentials.username)
-      await page.type('input[name="password"], input[type="password"]', credentials.password)
+      console.log('Attempting login with provided credentials...')
+      
+      // Try different possible selectors for username/email
+      const usernameSelector = await page.$('input[type="email"], input[name="username"], input[name="email"]')
+      if (usernameSelector) {
+        await usernameSelector.type(credentials.username)
+      } else {
+        throw new Error('Could not find username/email input field')
+      }
+
+      // Try different possible selectors for password
+      const passwordSelector = await page.$('input[type="password"], input[name="password"]')
+      if (passwordSelector) {
+        await passwordSelector.type(credentials.password)
+      } else {
+        throw new Error('Could not find password input field')
+      }
       
       // Click login button
-      await page.click('button[type="submit"], input[type="submit"], .login-button')
-      await page.waitForNavigation({ waitUntil: 'networkidle2' })
+      const loginButton = await page.$('button[type="submit"], input[type="submit"], .login-button, button:contains("Login"), button:contains("Sign In")')
+      if (loginButton) {
+        await loginButton.click()
+      } else {
+        throw new Error('Could not find login button')
+      }
+
+      // Wait for navigation after login
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 20000 })
+
+      // Check if login was successful by looking for error messages
+      const errorElement = await page.$('.error, .alert-danger, [class*="error"]')
+      if (errorElement) {
+        const errorText = await errorElement.textContent()
+        throw new Error(`Login failed: ${errorText}`)
+      }
 
       // Look for Trinity Trace property
       console.log('Searching for Trinity Trace property...')
       
+      // Wait a bit for the page to fully load
+      await page.waitForTimeout(3000)
+
       // Try to find Trinity Trace in property list/dropdown
       const trinityTraceFound = await page.evaluate(() => {
         const elements = Array.from(document.querySelectorAll('*'));
@@ -93,23 +225,49 @@ serve(async (req) => {
       });
 
       if (!trinityTraceFound) {
-        throw new Error('Trinity Trace property not found in OneSite portal');
+        // Try common property switcher patterns
+        const propertySelectors = [
+          'select[name*="property"]',
+          '.property-selector',
+          '#property-select',
+          '[data-testid*="property"]'
+        ]
+
+        let propertyFound = false
+        for (const selector of propertySelectors) {
+          const element = await page.$(selector)
+          if (element) {
+            console.log(`Found property selector: ${selector}`)
+            // Try to select Trinity Trace from dropdown
+            try {
+              await page.select(selector, 'Trinity Trace')
+              propertyFound = true
+              break
+            } catch (e) {
+              // Continue to next selector
+            }
+          }
+        }
+
+        if (!propertyFound) {
+          throw new Error('Trinity Trace property not found in OneSite portal. Please verify the property name and access permissions.')
+        }
+      } else {
+        // Click on Trinity Trace property
+        await page.evaluate(() => {
+          const elements = Array.from(document.querySelectorAll('*'));
+          const trinityElement = elements.find(el => 
+            el.textContent && el.textContent.toLowerCase().includes('trinity trace')
+          );
+          if (trinityElement && trinityElement.click) {
+            trinityElement.click();
+          }
+        });
       }
 
-      // Click on Trinity Trace property
-      await page.evaluate(() => {
-        const elements = Array.from(document.querySelectorAll('*'));
-        const trinityElement = elements.find(el => 
-          el.textContent && el.textContent.toLowerCase().includes('trinity trace')
-        );
-        if (trinityElement) {
-          trinityElement.click();
-        }
-      });
+      await page.waitForTimeout(5000); // Wait for property to load
 
-      await page.waitForTimeout(3000); // Wait for property to load
-
-      // Extract key metrics
+      // Extract key metrics from the dashboard
       console.log('Extracting Trinity Trace data...')
       
       const propertyData = await page.evaluate(() => {
@@ -121,62 +279,47 @@ serve(async (req) => {
           avgRent: null
         };
 
-        // Look for common OneSite data patterns
-        const getText = (selector) => {
-          const el = document.querySelector(selector);
-          return el ? el.textContent.trim() : null;
+        // Helper function to extract numbers from text
+        const extractNumber = (text) => {
+          if (!text) return null;
+          const match = text.match(/[\d,]+\.?\d*/);
+          return match ? parseFloat(match[0].replace(/,/g, '')) : null;
         };
 
-        // Try various selectors that OneSite might use
-        const occupancySelectors = [
-          '[data-testid*="occupancy"]',
-          '.occupancy-rate',
-          '*[class*="occupancy"]',
-          '*[id*="occupancy"]'
-        ];
+        // Helper function to extract percentage
+        const extractPercentage = (text) => {
+          if (!text) return null;
+          const match = text.match(/([\d.]+)%/);
+          return match ? parseFloat(match[1]) : null;
+        };
 
-        const unitSelectors = [
-          '[data-testid*="units"]',
-          '.unit-count',
-          '*[class*="unit"]',
-          '*[id*="unit"]'
-        ];
-
-        const revenueSelectors = [
-          '[data-testid*="revenue"]',
-          '.revenue',
-          '*[class*="revenue"]',
-          '*[id*="revenue"]'
-        ];
-
-        // Extract occupancy rate
-        for (const selector of occupancySelectors) {
-          const text = getText(selector);
-          if (text && text.includes('%')) {
-            data.occupancyRate = parseFloat(text.replace('%', ''));
-            break;
+        // Try to find occupancy rate
+        const occupancyElements = document.querySelectorAll('*');
+        for (const el of occupancyElements) {
+          const text = el.textContent || '';
+          if (text.toLowerCase().includes('occupancy') && text.includes('%')) {
+            data.occupancyRate = extractPercentage(text);
+            if (data.occupancyRate) break;
           }
         }
 
-        // Extract unit counts
-        for (const selector of unitSelectors) {
-          const text = getText(selector);
-          if (text && /\d+/.test(text)) {
-            const numbers = text.match(/\d+/g);
-            if (numbers) {
-              data.totalUnits = parseInt(numbers[0]);
-              break;
-            }
+        // Try to find total units
+        const unitElements = document.querySelectorAll('*');
+        for (const el of unitElements) {
+          const text = el.textContent || '';
+          if ((text.toLowerCase().includes('total units') || text.toLowerCase().includes('unit count')) && /\d+/.test(text)) {
+            data.totalUnits = extractNumber(text);
+            if (data.totalUnits) break;
           }
         }
 
-        // Extract revenue data
-        for (const selector of revenueSelectors) {
-          const text = getText(selector);
-          if (text && /\$/.test(text)) {
-            const amount = text.replace(/[^\d.]/g, '');
-            data.monthlyRevenue = parseFloat(amount);
-            break;
+        // Try to find revenue data
+        const revenueElements = document.querySelectorAll('*');
+        for (const el of revenueElements) {
+          const text = el.textContent || '';
+          if ((text.toLowerCase().includes('revenue') || text.toLowerCase().includes('income')) && text.includes('$')) {
+            data.monthlyRevenue = extractNumber(text.replace('$', ''));
+            if (data.monthlyRevenue) break;
           }
         }
 
@@ -261,7 +404,8 @@ serve(async (req) => {
           syncedKPIs: kpiInserts.length,
           pmSoftware: 'OneSite',
           propertyName: 'Trinity Trace',
-          extractedData: propertyData
+          extractedData: propertyData,
+          mode: 'production'
         }),
         { 
           status: 200,
@@ -283,13 +427,18 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    await supabase
-      .from('pm_integrations')
-      .update({ 
-        sync_status: 'error',
-        error_log: error.message
-      })
-      .eq('id', req.json().integrationId)
+    try {
+      const { integrationId } = await req.json();
+      await supabase
+        .from('pm_integrations')
+        .update({ 
+          sync_status: 'error',
+          error_log: error.message
+        })
+        .eq('id', integrationId)
+    } catch (updateError) {
+      console.error('Error updating integration status:', updateError)
+    }
 
     return new Response(
       JSON.stringify({ 
