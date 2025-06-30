@@ -1,14 +1,26 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import OnboardingSetup from '@/components/auth/OnboardingSetup';
-import Navigation from '@/components/layout/Navigation';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 relative">
-      {/* Navigation Back Button - Must be visible */}
-      <Navigation />
+      {/* Back Button - Top Left */}
+      <div className="absolute top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-700" />
+        </Button>
+      </div>
       
       {/* Header with back to home */}
       <div className="bg-transparent border-b border-white/20">
