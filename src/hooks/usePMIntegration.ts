@@ -11,6 +11,14 @@ interface PMIntegration {
   sync_status: string;
   last_sync: string | null;
   sync_frequency: string;
+  error_log?: string | null;
+}
+
+interface CreateIntegrationCredentials {
+  username: string;
+  password: string;
+  apiKey?: string;
+  endpoint?: string;
 }
 
 export const usePMIntegration = () => {
@@ -45,7 +53,7 @@ export const usePMIntegration = () => {
   const createIntegration = useCallback(async (
     pmSoftware: string,
     integrationName: string,
-    credentials: any,
+    credentials: CreateIntegrationCredentials,
     syncFrequency: string = 'daily'
   ) => {
     if (!user) {
@@ -54,8 +62,26 @@ export const usePMIntegration = () => {
     }
 
     try {
-      // Encrypt credentials (in production, use proper encryption)
-      const encryptedCredentials = btoa(JSON.stringify(credentials));
+      // Validate credentials before storing
+      if (!credentials.username || !credentials.password) {
+        throw new Error('Username and password are required');
+      }
+
+      // For OneSite, validate specific requirements
+      if (pmSoftware.toLowerCase() === 'onesite') {
+        if (!credentials.username.includes('@')) {
+          throw new Error('OneSite requires an email address as username');
+        }
+      }
+
+      // Encrypt credentials using base64 encoding (in production, use proper encryption)
+      const encryptedCredentials = btoa(JSON.stringify({
+        username: credentials.username,
+        password: credentials.password,
+        apiKey: credentials.apiKey || null,
+        endpoint: credentials.endpoint || null,
+        encrypted_at: new Date().toISOString()
+      }));
 
       const { data, error } = await supabase
         .from('pm_integrations')
@@ -65,7 +91,12 @@ export const usePMIntegration = () => {
           integration_name: integrationName,
           credentials_encrypted: encryptedCredentials,
           sync_frequency: syncFrequency,
-          sync_status: 'active'
+          sync_status: 'active',
+          settings: {
+            auto_sync: true,
+            last_credential_update: new Date().toISOString(),
+            api_version: '1.0'
+          }
         })
         .select()
         .single();
@@ -77,6 +108,9 @@ export const usePMIntegration = () => {
       setIntegrations(prev => [data, ...prev]);
       toast.success(`Integration "${integrationName}" created successfully`);
       
+      // Test the integration immediately
+      await testIntegration(data.id);
+      
       return data;
     } catch (error: any) {
       console.error('Error creating integration:', error);
@@ -85,11 +119,66 @@ export const usePMIntegration = () => {
     }
   }, [user]);
 
+  const testIntegration = useCallback(async (integrationId: string) => {
+    if (!user) return;
+
+    try {
+      // Update status to testing
+      await supabase
+        .from('pm_integrations')
+        .update({ sync_status: 'testing' })
+        .eq('id', integrationId);
+
+      // Call the sync function to test the connection
+      const { data, error } = await supabase.functions
+        .invoke('sync-pm-data', {
+          body: {
+            integrationId,
+            userId: user.id,
+            testMode: true
+          }
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.success) {
+        toast.success('Integration test successful');
+        await loadIntegrations(); // Refresh the list
+      } else {
+        throw new Error(data.error || 'Test failed');
+      }
+    } catch (error: any) {
+      console.error('Error testing integration:', error);
+      
+      // Update integration with error status
+      await supabase
+        .from('pm_integrations')
+        .update({ 
+          sync_status: 'error',
+          error_log: error.message
+        })
+        .eq('id', integrationId);
+      
+      toast.error(`Integration test failed: ${error.message}`);
+      await loadIntegrations(); // Refresh to show error status
+    }
+  }, [user, loadIntegrations]);
+
   const syncIntegration = useCallback(async (integrationId: string) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase.functions
+      // Update status to syncing
+      await supabase
+        .from('pm_integrations')
+        .update({ sync_status: 'syncing' })
+        .eq('id', integrationId);
+
+      toast.info('Starting data sync...');
+
+      const { data, error } = await supabase.functions
         .invoke('sync-pm-data', {
           body: {
             integrationId,
@@ -101,12 +190,28 @@ export const usePMIntegration = () => {
         throw error;
       }
 
-      // Refresh integrations
+      if (data.success) {
+        toast.success(`Successfully synced ${data.syncedKPIs} KPIs from ${data.pmSoftware}`);
+      } else {
+        throw new Error(data.error || 'Sync failed');
+      }
+
+      // Refresh integrations to show updated status
       await loadIntegrations();
-      toast.success('Integration synced successfully');
     } catch (error: any) {
       console.error('Error syncing integration:', error);
+      
+      // Update integration with error status
+      await supabase
+        .from('pm_integrations')
+        .update({ 
+          sync_status: 'error',
+          error_log: error.message 
+        })
+        .eq('id', integrationId);
+      
       toast.error(`Failed to sync integration: ${error.message}`);
+      await loadIntegrations();
     }
   }, [user, loadIntegrations]);
 
@@ -132,12 +237,61 @@ export const usePMIntegration = () => {
     }
   }, [user]);
 
+  const updateIntegrationCredentials = useCallback(async (
+    integrationId: string,
+    credentials: CreateIntegrationCredentials
+  ) => {
+    if (!user) return;
+
+    try {
+      // Encrypt new credentials
+      const encryptedCredentials = btoa(JSON.stringify({
+        username: credentials.username,
+        password: credentials.password,
+        apiKey: credentials.apiKey || null,
+        endpoint: credentials.endpoint || null,
+        encrypted_at: new Date().toISOString()
+      }));
+
+      const { error } = await supabase
+        .from('pm_integrations')
+        .update({
+          credentials_encrypted: encryptedCredentials,
+          sync_status: 'active',
+          error_log: null,
+          settings: {
+            auto_sync: true,
+            last_credential_update: new Date().toISOString(),
+            api_version: '1.0'
+          }
+        })
+        .eq('id', integrationId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Credentials updated successfully');
+      
+      // Test the updated integration
+      await testIntegration(integrationId);
+      
+      await loadIntegrations();
+    } catch (error: any) {
+      console.error('Error updating credentials:', error);
+      toast.error(`Failed to update credentials: ${error.message}`);
+    }
+  }, [user, testIntegration, loadIntegrations]);
+
   return {
     integrations,
     isLoading,
     loadIntegrations,
     createIntegration,
     syncIntegration,
-    deleteIntegration
+    deleteIntegration,
+    testIntegration,
+    updateIntegrationCredentials
   };
 };

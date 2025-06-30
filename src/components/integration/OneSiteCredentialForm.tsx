@@ -1,0 +1,217 @@
+
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Shield, AlertCircle, CheckCircle, Building } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface OneSiteCredentials {
+  username: string;
+  password: string;
+}
+
+interface OneSiteCredentialFormProps {
+  onCredentialsSubmit: (credentials: OneSiteCredentials) => void;
+  onBack: () => void;
+  isLoading?: boolean;
+}
+
+const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({ 
+  onCredentialsSubmit, 
+  onBack,
+  isLoading = false
+}) => {
+  const { toast } = useToast();
+  const [credentials, setCredentials] = useState<OneSiteCredentials>({
+    username: '',
+    password: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
+
+  const validateCredentials = () => {
+    if (!credentials.username || !credentials.password) {
+      return 'Both username and password are required';
+    }
+    
+    if (!credentials.username.includes('@')) {
+      return 'Username must be a valid email address';
+    }
+    
+    if (credentials.password.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validationError = validateCredentials();
+    if (validationError) {
+      toast({
+        title: "Validation Error",
+        description: validationError,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setTestResult(null);
+
+    try {
+      // Submit credentials to parent component
+      onCredentialsSubmit(credentials);
+      setTestResult('success');
+      
+    } catch (error) {
+      setTestResult('error');
+      toast({
+        title: "Connection error",
+        description: "Unable to validate credentials. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building className="h-5 w-5 text-blue-600" />
+            Connect to OneSite
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Alert className="mb-6">
+            <Shield className="h-4 w-4" />
+            <AlertDescription>
+              Your OneSite credentials are encrypted and stored securely. OPSIGHT uses these credentials only to 
+              automatically sync your property data and generate reports.
+            </AlertDescription>
+          </Alert>
+
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-2">OneSite Integration Instructions</h3>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <ul className="text-sm text-blue-800 space-y-2">
+                <li>• Use your OneSite portal email address as the username</li>
+                <li>• Use your regular OneSite password</li>
+                <li>• Ensure your account has API access enabled</li>
+                <li>• Contact your OneSite administrator if you encounter access issues</li>
+              </ul>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Email Address</Label>
+              <Input
+                id="username"
+                type="email"
+                value={credentials.username}
+                onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
+                placeholder="your.email@company.com"
+                disabled={isSubmitting || isLoading}
+                required
+              />
+              <p className="text-xs text-gray-600">
+                Use the same email you use to log into OneSite
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={credentials.password}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter your OneSite password"
+                  className="pr-10"
+                  disabled={isSubmitting || isLoading}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  disabled={isSubmitting || isLoading}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {testResult === 'success' && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription className="text-green-800">
+                  Credentials validated successfully! Setting up integration...
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {testResult === 'error' && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Failed to validate credentials. Please verify your login information and try again.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onBack}
+                className="flex-1"
+                disabled={isSubmitting || isLoading}
+              >
+                Back
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting || isLoading}
+                className="flex-1"
+              >
+                {isSubmitting || isLoading ? 'Connecting...' : 'Connect & Test'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-sm mb-2">Security & Privacy</h3>
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li>• Credentials are encrypted using AES-256 encryption</li>
+                <li>• Only used for automated data synchronization</li>
+                <li>• Never shared with third parties</li>
+                <li>• You can revoke access at any time</li>
+                <li>• All API calls are logged for audit purposes</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default OneSiteCredentialForm;
