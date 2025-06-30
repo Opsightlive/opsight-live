@@ -92,7 +92,7 @@ const DataIntegration = () => {
 
   const handleConnectPM = (pmName: string) => {
     if (pmName === 'OneSite') {
-      navigate('/pm-integration');
+      navigate('/pm-integration?pm=onesite');
     } else {
       // For other PM systems, show placeholder
       alert(`${pmName} integration coming soon! OneSite is currently available for testing.`);
@@ -132,12 +132,12 @@ const DataIntegration = () => {
                 </div>
               </div>
               <Button 
-                onClick={() => navigate('/pm-integration')}
+                onClick={() => navigate('/pm-integration?pm=onesite')}
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
                 size="lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                Connect Property Management
+                Connect OneSite
               </Button>
             </div>
           </div>
@@ -152,7 +152,7 @@ const DataIntegration = () => {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => navigate('/pm-integration')}
+                onClick={() => navigate('/pm-integration?pm=onesite')}
                 className="bg-blue-600 hover:bg-blue-700"
                 size="lg"
               >

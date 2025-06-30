@@ -4,23 +4,30 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, ArrowRight, Building2, Zap } from 'lucide-react';
-import PMCredentialForm from './PMCredentialForm';
+import OneSiteCredentialForm from './OneSiteCredentialForm';
 import { useToast } from '@/hooks/use-toast';
 
 interface PMIntegrationWizardProps {
   onComplete: () => void;
+  preSelectedPM?: string; // Add prop to pre-select PM software
 }
 
-const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete }) => {
+const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete, preSelectedPM }) => {
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedPM, setSelectedPM] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState(preSelectedPM ? 2 : 1);
+  const [selectedPM, setSelectedPM] = useState<string>(preSelectedPM || '');
 
   const pmSoftwareOptions = [
     { 
+      name: 'OneSite', 
+      id: 'onesite', 
+      description: 'Leading property management platform',
+      popular: true 
+    },
+    { 
       name: 'Yardi Voyager', 
       id: 'yardi', 
-      description: 'Leading property management platform',
+      description: 'Industry standard property management',
       popular: true 
     },
     { 
@@ -68,6 +75,7 @@ const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete })
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...credentials,
+          pmSoftware: selectedPM,
           encrypted: true
         })
       });
@@ -142,12 +150,37 @@ const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete })
 
       case 2:
         const selectedPMData = pmSoftwareOptions.find(pm => pm.id === selectedPM);
+        
+        // Use OneSite specific form for OneSite
+        if (selectedPM === 'onesite') {
+          return (
+            <OneSiteCredentialForm
+              onCredentialsSubmit={handleCredentialsSubmit}
+              onBack={() => setCurrentStep(1)}
+            />
+          );
+        }
+        
+        // For other PM systems, show coming soon message
         return (
-          <PMCredentialForm
-            pmSoftware={selectedPMData?.name || selectedPM}
-            onCredentialsSubmit={handleCredentialsSubmit}
-            onBack={() => setCurrentStep(1)}
-          />
+          <div className="text-center space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {selectedPMData?.name} Integration Coming Soon
+              </h2>
+              <p className="text-gray-600">
+                We're working on this integration. OneSite is currently available for testing.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setCurrentStep(1)}>
+                Back to Selection
+              </Button>
+              <Button onClick={() => handlePMSelection('onesite')}>
+                Try OneSite Instead
+              </Button>
+            </div>
+          </div>
         );
 
       case 3:
