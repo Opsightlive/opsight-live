@@ -27,9 +27,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
     setIsLoading(true);
 
     try {
-      const { error } = await login(email, password);
-      if (error) {
-        setError(error.message);
+      const success = await login(email, password);
+      if (!success) {
+        setError('Invalid email or password. Please try again.');
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
