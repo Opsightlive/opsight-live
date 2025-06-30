@@ -1,19 +1,21 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import PMIntegrationWizard from '@/components/integration/PMIntegrationWizard';
 import Navigation from '@/components/layout/Navigation';
 import { Shield, Zap, BarChart3, AlertTriangle } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const PMIntegrationPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const preSelectedPM = searchParams.get('pm') || undefined;
 
   const handleIntegrationComplete = () => {
     console.log('PM Integration completed successfully');
-    // Redirect to dashboard or show success message
-    window.location.href = '/dashboard';
+    // Navigate to dashboard instead of using window.location.href
+    navigate('/dashboard');
   };
 
   return (

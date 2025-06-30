@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, ArrowRight, Building2, Zap } from 'lucide-react';
 import OneSiteCredentialForm from './OneSiteCredentialForm';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface PMIntegrationWizardProps {
   onComplete: () => void;
@@ -14,6 +14,7 @@ interface PMIntegrationWizardProps {
 
 const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete, preSelectedPM }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(preSelectedPM ? 2 : 1);
   const [selectedPM, setSelectedPM] = useState<string>(preSelectedPM || '');
 
@@ -73,11 +74,15 @@ const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete, p
       
       toast({
         title: "Integration Complete!",
-        description: `Successfully connected to ${selectedPM}. Data sync will begin automatically.`,
+        description: `Successfully connected to ${selectedPM}. Redirecting to your dashboard...`,
       });
       
       setCurrentStep(3);
-      setTimeout(() => onComplete(), 2000);
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
       
     } catch (error) {
       console.error('Error in wizard:', error);
@@ -186,15 +191,18 @@ const PMIntegrationWizard: React.FC<PMIntegrationWizardProps> = ({ onComplete, p
                 Integration Complete!
               </h2>
               <p className="text-gray-600">
-                Your PM software is now connected. Data synchronization will begin automatically.
+                Your PM software is now connected. Redirecting to your dashboard...
               </p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="flex items-center justify-center gap-2 text-blue-800">
                 <Zap className="h-4 w-4" />
-                <span className="text-sm font-medium">Automatic sync in progress...</span>
+                <span className="text-sm font-medium">Data sync completed successfully!</span>
               </div>
             </div>
+            <Button onClick={() => navigate('/dashboard')} className="w-full">
+              Go to Dashboard Now
+            </Button>
           </div>
         );
 
