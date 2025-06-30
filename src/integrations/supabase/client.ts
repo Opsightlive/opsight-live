@@ -3,16 +3,27 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Use Railway's environment variables - try multiple possible names
+// Railway environment variables - check multiple formats
 const SUPABASE_URL = 
   process.env.SUPABASE_URL ||
   process.env.VITE_SUPABASE_URL ||
+  process.env.REACT_APP_SUPABASE_URL ||
   "https://oafnvnczdrcuvbdizqif.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY = 
   process.env.SUPABASE_ANON_KEY ||
   process.env.VITE_SUPABASE_ANON_KEY ||
+  process.env.REACT_APP_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZm52bmN6ZHJjdXZiZGl6cWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTIxNDAsImV4cCI6MjA2NjYyODE0MH0.bD5-dSgYCpfmKxpLJSBd-05lio9KCZgGYKHoEXy0TAM";
+
+// Debug logging for Railway
+console.log('Environment check:', {
+  SUPABASE_URL: process.env.SUPABASE_URL ? 'Set' : 'Not set',
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? 'Set' : 'Not set',
+  REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL ? 'Set' : 'Not set',
+  finalUrl: SUPABASE_URL,
+  finalKey: SUPABASE_PUBLISHABLE_KEY ? 'Set' : 'Not set'
+});
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
