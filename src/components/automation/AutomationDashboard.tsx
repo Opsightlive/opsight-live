@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import AutomatedReportConfig from './AutomatedReportConfig';
 
 interface AutomationStatus {
   id: string;
@@ -37,6 +38,7 @@ const AutomationDashboard = () => {
   const [automations, setAutomations] = useState<AutomationStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     loadRealAutomationData();
@@ -285,149 +287,181 @@ const AutomationDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Automation Control</h1>
           <p className="text-gray-600 mt-2">Monitor and control your automated processes</p>
         </div>
-        <Button onClick={loadRealAutomationData} variant="outline" disabled={isProcessing}>
-          <Settings className="h-4 w-4 mr-2" />
-          {isProcessing ? 'Processing...' : 'Refresh Status'}
-        </Button>
+        <div className="flex items-center space-x-4">
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'overview' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('reports')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'reports' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Report Config
+            </button>
+          </div>
+          <Button onClick={loadRealAutomationData} variant="outline" disabled={isProcessing}>
+            <Settings className="h-4 w-4 mr-2" />
+            {isProcessing ? 'Processing...' : 'Refresh Status'}
+          </Button>
+        </div>
       </div>
 
-      {/* Real-time Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Zap className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Automations</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {automations.filter(a => a.status === 'active').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {activeTab === 'overview' && (
+        <>
+          {/* Real-time Overview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <Zap className="h-8 w-8 text-blue-600" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Active Automations</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {automations.filter(a => a.status === 'active').length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <FileText className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Processed</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {automations.reduce((sum, a) => sum + a.processedCount, 0)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <FileText className="h-8 w-8 text-green-600" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Processed</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {automations.reduce((sum, a) => sum + a.processedCount, 0)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Avg Success Rate</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {automations.length > 0 ? Math.round(automations.reduce((sum, a) => sum + a.successRate, 0) / automations.length) : 0}%
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Avg Success Rate</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {automations.length > 0 ? Math.round(automations.reduce((sum, a) => sum + a.successRate, 0) / automations.length) : 0}%
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-      {/* Real Automation Controls */}
-      <div className="grid gap-6">
-        {automations.map((automation) => (
-          <Card key={automation.id}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {getTypeIcon(automation.type)}
-                  <div>
-                    <CardTitle className="text-lg">{automation.name}</CardTitle>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className={`${getStatusColor(automation.status)} text-white border-0`}>
-                        {getStatusIcon(automation.status)}
-                        <span className="ml-1 capitalize">{automation.status}</span>
-                      </Badge>
+          {/* Real Automation Controls */}
+          <div className="grid gap-6">
+            {automations.map((automation) => (
+              <Card key={automation.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {getTypeIcon(automation.type)}
+                      <div>
+                        <CardTitle className="text-lg">{automation.name}</CardTitle>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge variant="outline" className={`${getStatusColor(automation.status)} text-white border-0`}>
+                            {getStatusIcon(automation.status)}
+                            <span className="ml-1 capitalize">{automation.status}</span>
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={automation.isEnabled}
+                          onCheckedChange={(checked) => toggleAutomation(automation.id, checked)}
+                          disabled={isProcessing}
+                        />
+                        <Label>Enable</Label>
+                      </div>
+                      <Button
+                        onClick={() => triggerManualRun(automation.id, automation.type)}
+                        size="sm"
+                        variant="outline"
+                        disabled={isProcessing}
+                      >
+                        <Play className="h-4 w-4 mr-1" />
+                        {isProcessing ? 'Running...' : 'Run Now'}
+                      </Button>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={automation.isEnabled}
-                      onCheckedChange={(checked) => toggleAutomation(automation.id, checked)}
-                      disabled={isProcessing}
-                    />
-                    <Label>Enable</Label>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Last Run</p>
+                      <p className="text-sm text-gray-900">
+                        {new Date(automation.lastRun).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Next Run</p>
+                      <p className="text-sm text-gray-900">
+                        {automation.nextRun === 'Continuous' ? 'Continuous' : 
+                         automation.nextRun.includes('T') ? new Date(automation.nextRun).toLocaleString() : 
+                         automation.nextRun}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Processed</p>
+                      <p className="text-sm text-gray-900">{automation.processedCount} items</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={automation.successRate} className="flex-1" />
+                        <span className="text-sm text-gray-900">{automation.successRate}%</span>
+                      </div>
+                    </div>
                   </div>
-                  <Button
-                    onClick={() => triggerManualRun(automation.id, automation.type)}
-                    size="sm"
-                    variant="outline"
-                    disabled={isProcessing}
-                  >
-                    <Play className="h-4 w-4 mr-1" />
-                    {isProcessing ? 'Running...' : 'Run Now'}
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Last Run</p>
-                  <p className="text-sm text-gray-900">
-                    {new Date(automation.lastRun).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Next Run</p>
-                  <p className="text-sm text-gray-900">
-                    {automation.nextRun === 'Continuous' ? 'Continuous' : 
-                     automation.nextRun.includes('T') ? new Date(automation.nextRun).toLocaleString() : 
-                     automation.nextRun}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Processed</p>
-                  <p className="text-sm text-gray-900">{automation.processedCount} items</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                  <div className="flex items-center space-x-2">
-                    <Progress value={automation.successRate} className="flex-1" />
-                    <span className="text-sm text-gray-900">{automation.successRate}%</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Show real data preview */}
-              {automation.realData && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs font-medium text-gray-500 mb-2">Recent Activity:</p>
-                  <div className="text-xs text-gray-700">
-                    {automation.type === 'document_processing' && automation.realData.documents?.length > 0 && (
-                      <div>Latest: {automation.realData.documents[0].filename} - {automation.realData.documents[0].processing_status}</div>
-                    )}
-                    {automation.type === 'pm_sync' && automation.realData.integrations?.length > 0 && (
-                      <div>Integrations: {automation.realData.integrations.map((i: any) => i.pm_software).join(', ')}</div>
-                    )}
-                    {automation.type === 'alert_monitoring' && automation.realData.recentKPIs?.length > 0 && (
-                      <div>Latest KPI: {automation.realData.recentKPIs[0].kpi_name} - {automation.realData.recentKPIs[0].kpi_value}</div>
-                    )}
-                    {automation.type === 'report_generation' && automation.realData.recentJobs?.length > 0 && (
-                      <div>Latest Job: {automation.realData.recentJobs[0].job_type} - {automation.realData.recentJobs[0].job_status}</div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                  
+                  {/* Show real data preview */}
+                  {automation.realData && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs font-medium text-gray-500 mb-2">Recent Activity:</p>
+                      <div className="text-xs text-gray-700">
+                        {automation.type === 'document_processing' && automation.realData.documents?.length > 0 && (
+                          <div>Latest: {automation.realData.documents[0].filename} - {automation.realData.documents[0].processing_status}</div>
+                        )}
+                        {automation.type === 'pm_sync' && automation.realData.integrations?.length > 0 && (
+                          <div>Integrations: {automation.realData.integrations.map((i: any) => i.pm_software).join(', ')}</div>
+                        )}
+                        {automation.type === 'alert_monitoring' && automation.realData.recentKPIs?.length > 0 && (
+                          <div>Latest KPI: {automation.realData.recentKPIs[0].kpi_name} - {automation.realData.recentKPIs[0].kpi_value}</div>
+                        )}
+                        {automation.type === 'report_generation' && automation.realData.recentJobs?.length > 0 && (
+                          <div>Latest Job: {automation.realData.recentJobs[0].job_type} - {automation.realData.recentJobs[0].job_status}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+
+      {activeTab === 'reports' && (
+        <AutomatedReportConfig />
+      )}
     </div>
   );
 };
