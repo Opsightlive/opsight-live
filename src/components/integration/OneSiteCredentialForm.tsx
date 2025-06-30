@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   onBack,
   isLoading = false
 }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { createIntegration } = usePMIntegration();
   const [credentials, setCredentials] = useState<OneSiteCredentials>({
     username: '',
@@ -38,14 +37,14 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
 
   // Check authentication status
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       setTestResult('error');
       setErrorMessage('Please log in to create integrations. Redirecting to login...');
       setTimeout(() => {
         window.location.href = '/login';
       }, 2000);
     }
-  }, [user, loading]);
+  }, [user, authLoading]);
 
   const validateCredentials = () => {
     if (!credentials.username || !credentials.password) {
@@ -120,7 +119,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
   };
 
   // Show loading while checking auth
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <Card>
