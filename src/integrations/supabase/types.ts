@@ -249,6 +249,48 @@ export type Database = {
           },
         ]
       }
+      automated_report_configs: {
+        Row: {
+          created_at: string
+          email_recipients: string[] | null
+          enabled: boolean
+          id: string
+          last_generated: string | null
+          report_name: string
+          report_type: string
+          schedule: string
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_recipients?: string[] | null
+          enabled?: boolean
+          id?: string
+          last_generated?: string | null
+          report_name: string
+          report_type: string
+          schedule?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_recipients?: string[] | null
+          enabled?: boolean
+          id?: string
+          last_generated?: string | null
+          report_name?: string
+          report_type?: string
+          schedule?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consistency_rules: {
         Row: {
           affected_modules: string[]

@@ -53,9 +53,9 @@ const AutomatedReportConfig = () => {
 
   const loadConfigurations = async () => {
     try {
-      // Load existing configurations from database
+      // Load existing configurations from database using raw query to avoid type issues
       const { data, error } = await supabase
-        .from('automated_report_configs')
+        .from('automated_report_configs' as any)
         .select('*')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
@@ -73,7 +73,7 @@ const AutomatedReportConfig = () => {
         }));
         setConfigs(defaultConfigs);
       } else {
-        setConfigs(data.map(config => ({
+        setConfigs(data.map((config: any) => ({
           id: config.id,
           report_type: config.report_type,
           report_name: config.report_name,
@@ -114,7 +114,7 @@ const AutomatedReportConfig = () => {
 
       if (config.id) {
         const { error } = await supabase
-          .from('automated_report_configs')
+          .from('automated_report_configs' as any)
           .update(configData)
           .eq('id', config.id)
           .eq('user_id', user?.id);
@@ -122,7 +122,7 @@ const AutomatedReportConfig = () => {
         if (error) throw error;
       } else {
         const { data, error } = await supabase
-          .from('automated_report_configs')
+          .from('automated_report_configs' as any)
           .insert(configData)
           .select()
           .single();
