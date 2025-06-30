@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +34,7 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [propertyTiers, setPropertyTiers] = useState<PropertyTier[]>([]);
   const [showPricingDetails, setShowPricingDetails] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1); // 1: Tier Selection, 2: Payment Setup
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -70,7 +72,11 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    if (currentStep === 2) {
+      setCurrentStep(1);
+    } else {
+      navigate(-1);
+    }
   };
 
   useEffect(() => {
@@ -111,7 +117,7 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
     return propertyTiers.find(pt => pt.propertyIndex === propertyIndex)?.tier || 'basic';
   };
 
-  const calculateTotalCost = () => {
+  const calculateSubtotal = () => {
     if (!registrationData?.userData?.properties) return 0;
     
     return registrationData.userData.properties.reduce((total: number, property: any, index: number) => {
@@ -120,6 +126,21 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
       const units = parseInt(property.units || '0');
       return total + (units * (tierData?.price || 3));
     }, 0);
+  };
+
+  const calculateDiscount = () => {
+    const subtotal = calculateSubtotal();
+    const hasInvoicePayment = paymentMethods.some(method => method.type === 'invoice');
+    
+    // 10% discount if no invoice payments (all card/ACH)
+    if (!hasInvoicePayment && paymentMethods.length > 0) {
+      return Math.round(subtotal * 0.10);
+    }
+    return 0;
+  };
+
+  const calculateTotal = () => {
+    return calculateSubtotal() - calculateDiscount();
   };
 
   const addPaymentMethod = () => {
@@ -150,6 +171,10 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
     })));
   };
 
+  const handleContinueToPayment = () => {
+    setCurrentStep(2);
+  };
+
   const handlePaymentComplete = async () => {
     setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -168,14 +193,190 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
   const { userData } = registrationData;
   const properties = userData?.properties || [];
   const totalUnits = properties.reduce((sum: number, prop: any) => sum + parseInt(prop.units || '0'), 0);
-  const monthlyTotal = calculateTotalCost();
-  
-  // Calculate credit card discount (10% off)
-  const creditCardDiscount = 0.10;
-  const hasAllCardPayments = paymentMethods.every(method => method.type === 'card');
-  const discountAmount = hasAllCardPayments ? Math.round(monthlyTotal * creditCardDiscount) : 0;
-  const finalTotal = monthlyTotal - discountAmount;
+  const subtotal = calculateSubtotal();
+  const discount = calculateDiscount();
+  const finalTotal = calculateTotal();
 
+  // Step 1: Tier Selection
+  if (currentStep === 1) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto p-6 space-y-6">
+          {/* Blue Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
+                <p className="text-xl text-blue-100 max-w-3xl">
+                  Select pricing tiers for your {properties.length} {properties.length === 1 ? 'property' : 'properties'}
+                </p>
+                <div className="mt-4 text-blue-100">
+                  <p className="text-lg">Total Units: {totalUnits}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBackClick}
+                className="text-white hover:bg-blue-600"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Pricing Details Dropdown */}
+          <Card>
+            <CardHeader>
+              <Button
+                variant="ghost"
+                onClick={() => setShowPricingDetails(!showPricingDetails)}
+                className="w-full flex items-center justify-between p-0 h-auto"
+              >
+                <CardTitle>View Pricing Details</CardTitle>
+                {showPricingDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </Button>
+            </CardHeader>
+            {showPricingDetails && (
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {pricingTiers.map((tier) => (
+                    <div key={tier.id} className="border rounded-lg p-4">
+                      <h3 className="font-bold text-lg mb-2">{tier.name}</h3>
+                      <p className="text-2xl font-bold mb-3">${tier.price}/unit/month</p>
+                      <ul className="space-y-2">
+                        {tier.features.map((feature, index) => (
+                          <li key={index} className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Property Tier Selection */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-gray-900">Select Pricing Tier for Each Property</h3>
+            <div className="space-y-4">
+              {properties.map((property: any, index: number) => {
+                const currentTier = getPropertyTier(index);
+                const units = parseInt(property.units || '0');
+                
+                return (
+                  <Card key={index} className="border-2">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xl">{property.name}</span>
+                          <span className="text-sm text-gray-600 ml-2">({units} units)</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold">
+                            {formatCurrency(units * (pricingTiers.find(t => t.id === currentTier)?.price || 3))}/month
+                          </p>
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        {pricingTiers.map((tier) => {
+                          const isSelected = currentTier === tier.id;
+                          return (
+                            <Card 
+                              key={tier.id}
+                              className={`cursor-pointer transition-all duration-200 ${
+                                isSelected 
+                                  ? 'border-2 border-blue-600 shadow-lg ring-2 ring-blue-100 bg-blue-50' 
+                                  : 'border-2 border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => updatePropertyTier(index, tier.id as any)}
+                            >
+                              <CardHeader className="text-center pb-2">
+                                <CardTitle className="text-lg">{tier.name}</CardTitle>
+                                <div className="text-2xl font-bold text-gray-900">
+                                  ${tier.price}/unit
+                                </div>
+                                <p className="text-sm text-gray-600">
+                                  Total: {formatCurrency(units * tier.price)}/month
+                                </p>
+                              </CardHeader>
+                              <CardContent className="pt-2">
+                                <Button 
+                                  variant={isSelected ? "default" : "outline"}
+                                  className={`w-full ${isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updatePropertyTier(index, tier.id as any);
+                                  }}
+                                >
+                                  {isSelected ? 'Selected' : 'Select Plan'}
+                                </Button>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Pricing Summary */}
+          <Card className="border-2 border-blue-200 bg-blue-50">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <DollarSign className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-blue-800 mb-2">Pricing Summary</h3>
+                <div className="bg-white rounded-lg p-4 text-left">
+                  <div className="space-y-2">
+                    {properties.map((property: any, index: number) => {
+                      const tier = getPropertyTier(index);
+                      const tierData = pricingTiers.find(t => t.id === tier);
+                      const units = parseInt(property.units || '0');
+                      const cost = units * (tierData?.price || 3);
+                      return (
+                        <div key={index} className="flex justify-between items-center">
+                          <span>{property.name} ({tierData?.name}):</span>
+                          <span className="font-semibold">{formatCurrency(cost)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
+                    <span>Total Units:</span>
+                    <span className="font-semibold">{totalUnits}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-lg font-bold border-t pt-2">
+                    <span>Monthly Subtotal:</span>
+                    <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="text-center">
+            <Button 
+              onClick={handleContinueToPayment}
+              disabled={propertyTiers.length === 0}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
+            >
+              Continue to Payment Setup
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Payment Setup
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -183,9 +384,9 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-4">Choose Your Plan & Payment</h1>
+              <h1 className="text-4xl font-bold mb-4">Payment Setup</h1>
               <p className="text-xl text-blue-100 max-w-3xl">
-                Select pricing tiers for your {properties.length} {properties.length === 1 ? 'property' : 'properties'} and configure payment
+                Configure payment methods for your properties
               </p>
               <div className="mt-4 text-blue-100">
                 <p className="text-lg">Total Units: {totalUnits}</p>
@@ -203,128 +404,25 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
           </div>
         </div>
 
-        {/* Pricing Details Dropdown */}
-        <Card>
-          <CardHeader>
-            <Button
-              variant="ghost"
-              onClick={() => setShowPricingDetails(!showPricingDetails)}
-              className="w-full flex items-center justify-between p-0 h-auto"
-            >
-              <CardTitle>View Pricing Details</CardTitle>
-              {showPricingDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-            </Button>
-          </CardHeader>
-          {showPricingDetails && (
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                {pricingTiers.map((tier) => (
-                  <div key={tier.id} className="border rounded-lg p-4">
-                    <h3 className="font-bold text-lg mb-2">{tier.name}</h3>
-                    <p className="text-2xl font-bold mb-3">${tier.price}/unit/month</p>
-                    <ul className="space-y-2">
-                      {tier.features.map((feature, index) => (
-                        <li key={index} className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Property Tier Selection */}
-        <div className="space-y-4">
-          <h3 className="text-2xl font-bold text-gray-900">1. Select Pricing Tier for Each Property</h3>
-          <div className="space-y-4">
-            {properties.map((property: any, index: number) => {
-              const currentTier = getPropertyTier(index);
-              const units = parseInt(property.units || '0');
-              
-              return (
-                <Card key={index} className="border-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <div>
-                        <span className="text-xl">{property.name}</span>
-                        <span className="text-sm text-gray-600 ml-2">({units} units)</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold">
-                          {formatCurrency(units * (pricingTiers.find(t => t.id === currentTier)?.price || 3))}/month
-                        </p>
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      {pricingTiers.map((tier) => {
-                        const isSelected = currentTier === tier.id;
-                        return (
-                          <Card 
-                            key={tier.id}
-                            className={`cursor-pointer transition-all duration-200 ${
-                              isSelected 
-                                ? 'border-2 border-blue-600 shadow-lg ring-2 ring-blue-100 bg-blue-50' 
-                                : 'border-2 border-gray-200 hover:border-gray-300'
-                            }`}
-                            onClick={() => updatePropertyTier(index, tier.id as any)}
-                          >
-                            <CardHeader className="text-center pb-2">
-                              <CardTitle className="text-lg">{tier.name}</CardTitle>
-                              <div className="text-2xl font-bold text-gray-900">
-                                ${tier.price}/unit
-                              </div>
-                              <p className="text-sm text-gray-600">
-                                Total: {formatCurrency(units * tier.price)}/month
-                              </p>
-                            </CardHeader>
-                            <CardContent className="pt-2">
-                              <Button 
-                                variant={isSelected ? "default" : "outline"}
-                                className={`w-full ${isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updatePropertyTier(index, tier.id as any);
-                                }}
-                              >
-                                {isSelected ? 'Selected' : 'Select Plan'}
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Payment Methods Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-gray-900">2. Configure Payment Methods</h3>
+            <h3 className="text-2xl font-bold text-gray-900">Configure Payment Methods</h3>
             <Button onClick={addPaymentMethod} variant="outline">
               <Plus className="h-4 w-4 mr-2" />
               Add Payment Method
             </Button>
           </div>
 
-          {/* Credit Card Promotion Banner */}
+          {/* Payment Speed Promotion Banner */}
           <Card className="border-2 border-green-200 bg-green-50">
             <CardContent className="p-4">
               <div className="flex items-center">
                 <Zap className="h-6 w-6 text-green-600 mr-3" />
                 <div>
-                  <h4 className="font-semibold text-green-800">Pay with Credit Card & Save 10%!</h4>
+                  <h4 className="font-semibold text-green-800">Pay with Credit Card or ACH & Save 10%!</h4>
                   <p className="text-sm text-green-700">
-                    Get instant processing and save money with our credit card discount.
+                    Faster processing than invoices. Get instant setup and save money.
                   </p>
                 </div>
               </div>
@@ -352,7 +450,7 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
                           ))}
                         </div>
                       )}
-                      {method.type === 'card' && (
+                      {method.type !== 'invoice' && (
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
                           10% DISCOUNT
                         </span>
@@ -382,16 +480,17 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
                     <Button 
                       variant={method.type === 'ach' ? 'default' : 'outline'}
                       onClick={() => updatePaymentMethod(method.id, { type: 'ach' })}
+                      className={method.type === 'ach' ? 'bg-green-600 hover:bg-green-700' : ''}
                     >
                       <Building2 className="h-4 w-4 mr-2" />
-                      ACH/Bank Transfer
+                      ACH/Bank (10% DISCOUNT)
                     </Button>
                     <Button 
                       variant={method.type === 'invoice' ? 'default' : 'outline'}
                       onClick={() => updatePaymentMethod(method.id, { type: 'invoice' })}
                     >
                       <FileText className="h-4 w-4 mr-2" />
-                      Invoice
+                      Invoice (Standard Rate)
                     </Button>
                   </div>
 
@@ -520,17 +619,15 @@ const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete 
                     <span>Total Units:</span>
                     <span className="font-semibold">{totalUnits}</span>
                   </div>
-                  {hasAllCardPayments && discountAmount > 0 && (
-                    <>
-                      <div className="flex justify-between items-center mb-2 text-gray-500">
-                        <span>Subtotal:</span>
-                        <span className="line-through">{formatCurrency(monthlyTotal)}</span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2 text-green-600">
-                        <span>Credit Card Discount (10%):</span>
-                        <span>-{formatCurrency(discountAmount)}</span>
-                      </div>
-                    </>
+                  <div className="flex justify-between items-center mb-2 pt-2 border-t">
+                    <span>Subtotal:</span>
+                    <span className="font-semibold">{formatCurrency(subtotal)}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between items-center mb-2 text-green-600">
+                      <span>Payment Method Discount (10%):</span>
+                      <span>-{formatCurrency(discount)}</span>
+                    </div>
                   )}
                   <div className="flex justify-between items-center text-lg font-bold border-t pt-2">
                     <span>Monthly Total:</span>
