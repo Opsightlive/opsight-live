@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -175,10 +176,37 @@ export const useRealtimeKPIs = () => {
       )
       .subscribe();
 
+    // Subscribe to extracted KPIs for real-time PM data updates
+    const extractedKPIsChannel = supabase
+      .channel('extracted-kpis-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'extracted_kpis',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('New extracted KPI from PM sync:', payload.new);
+          const extractedKPI = payload.new;
+          
+          // Show toast notification for new PM data
+          toast.success(`New ${extractedKPI.kpi_name} data synced`, {
+            description: `${extractedKPI.kpi_value} ${extractedKPI.kpi_unit || ''} from ${extractedKPI.property_name || 'PM system'}`
+          });
+          
+          // Optionally refresh metrics to include the new data
+          // This could trigger a re-fetch or update of aggregated metrics
+        }
+      )
+      .subscribe();
+
     return () => {
       console.log('Cleaning up KPI subscriptions...');
       supabase.removeChannel(metricsChannel);
       supabase.removeChannel(eventsChannel);
+      supabase.removeChannel(extractedKPIsChannel);
     };
   }, [user]);
 

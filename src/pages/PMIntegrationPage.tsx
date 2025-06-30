@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import PMIntegrationWizard from '@/components/integration/PMIntegrationWizard';
+import RealtimePMIntegrationStatus from '@/components/integration/RealtimePMIntegrationStatus';
 import Navigation from '@/components/layout/Navigation';
 import { Shield, Zap, BarChart3, AlertTriangle } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -34,6 +35,9 @@ const PMIntegrationPage = () => {
               real-time KPI tracking, and intelligent red flag detection.
             </p>
           </div>
+
+          {/* Real-time Status */}
+          <RealtimePMIntegrationStatus />
 
           {/* Benefits */}
           <div className="grid md:grid-cols-4 gap-6 mb-12">
