@@ -5,12 +5,14 @@ import Navigation from '@/components/layout/Navigation';
 
 const Onboarding = () => {
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <PlaceholderModule
-        moduleName="Onboarding"
-        description="New user onboarding and initial setup process."
-      />
+      <div className="pt-16">
+        <PlaceholderModule
+          moduleName="Onboarding"
+          description="New user onboarding and initial setup process."
+        />
+      </div>
     </div>
   );
 };

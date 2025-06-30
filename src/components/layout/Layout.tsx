@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import PermanentSidebar from '../navigation/PermanentSidebar';
 import Header from './Header';
 import ResponsiveContainer from './ResponsiveContainer';
+import Navigation from './Navigation';
 import { useAdaptiveLayoutContext } from '@/contexts/AdaptiveLayoutContext';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +38,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // Add safe area padding for devices with notches
       screenInfo.hasNotch && "pt-safe-area-inset-top pb-safe-area-inset-bottom"
     )}>
+      {/* Global Navigation Back Button */}
+      <Navigation />
+      
       {/* Permanent Sidebar - Always present */}
       <PermanentSidebar />
 
