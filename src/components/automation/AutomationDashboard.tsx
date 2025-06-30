@@ -81,7 +81,11 @@ const AutomationDashboard = () => {
           status: integrations.some(i => i.sync_status === 'active') ? 'active' : 'paused',
           lastRun: integrations[0]?.last_sync || new Date().toISOString(),
           nextRun: getNextSyncTime(integrations[0]?.sync_frequency || 'daily'),
-          processedCount: integrations.reduce((sum, i) => sum + (i.settings?.last_sync_kpis || 0), 0),
+          processedCount: integrations.reduce((sum, i) => {
+            // Safely access settings properties
+            const settings = i.settings as any;
+            return sum + (settings?.last_sync_kpis || 0);
+          }, 0),
           successRate: integrations.length > 0 ? Math.round((integrations.filter(i => i.sync_status === 'active').length / integrations.length) * 100) : 0,
           isEnabled: integrations.length > 0,
           realData: { integrations: integrations.slice(0, 3) }
@@ -89,7 +93,7 @@ const AutomationDashboard = () => {
         {
           id: 'alert-monitoring',
           name: 'Red Flag Monitoring',
-          type: 'alert_monitoring',
+          type: 'alert_monitoring', 
           status: 'active',
           lastRun: new Date().toISOString(),
           nextRun: 'Every 15 minutes',
