@@ -152,37 +152,37 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              {/* Trust Badge - Made bolder and moved higher */}
-              <div className="flex items-center">
-                <Shield className="h-7 w-7 text-blue-600 mr-3" />
-                <span className="text-blue-600 font-black text-xl">Trusted by Leading Real Estate Professionals</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            <div className="space-y-4">
+              {/* Trust Badge - Moved much higher and made bolder */}
+              <div className="flex items-center mb-2">
+                <Shield className="h-8 w-8 text-blue-600 mr-3" />
+                <span className="text-blue-600 font-black text-2xl">Trusted by Leading Real Estate Professionals</span>
               </div>
               
-              {/* Main Headline */}
+              {/* Main Headline - Reduced spacing */}
               <div>
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-5 leading-tight">
+                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
                   Transform Your 
                   <span className="text-blue-600 block">Portfolio Performance</span>
                 </h1>
-                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                <p className="text-lg text-gray-600 mb-5 leading-relaxed">
                   Property management software wasn't built for owners. OPSIGHT flips the power to you - 
                   Real-time red flags, KPI enforcement, and full operational visibility.
                 </p>
               </div>
 
-              {/* Quote Section */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-5 rounded-r-lg shadow-sm">
-                <blockquote className="text-base text-gray-700 italic mb-3">
+              {/* Quote Section - Reduced spacing */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-4 rounded-r-lg shadow-sm">
+                <blockquote className="text-base text-gray-700 italic mb-2">
                   "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
                   Property management software manages units. OPSIGHT manages outcomes."
                 </blockquote>
                 <p className="text-blue-600 font-semibold">- Built for ownership, not operations</p>
               </div>
 
-              {/* CTA Buttons */}
+              {/* CTA Buttons - Reduced spacing */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/signup">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
@@ -197,7 +197,7 @@ const LandingPage = () => {
                 </Link>
               </div>
 
-              {/* Trust Indicators - Removed "No credit card required" */}
+              {/* Trust Indicators - Reduced spacing */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
@@ -210,8 +210,8 @@ const LandingPage = () => {
               </div>
             </div>
             
-            {/* Enhanced Live Portfolio Dashboard */}
-            <div className="relative mt-6 lg:mt-0">
+            {/* Enhanced Live Portfolio Dashboard - Aligned with content */}
+            <div className="relative">
               <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 relative overflow-hidden">
                 {/* Animated background gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-indigo-50/20 pointer-events-none"></div>
