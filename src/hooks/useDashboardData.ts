@@ -4,10 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardKPI {
-  category: string;
-  metric_name: string;
-  metric_value: number;
-  metric_unit?: string;
+  kpi_type: string;
+  kpi_name: string;
+  kpi_value: number;
+  kpi_unit?: string;
   property_name?: string;
   created_at: string;
 }
@@ -102,7 +102,7 @@ export const useDashboardData = () => {
 
   const processKPIData = (kpiData: DashboardKPI[]): DashboardData => {
     const latestKPIs = kpiData.reduce((acc, kpi) => {
-      const key = `${kpi.category}-${kpi.metric_name}`;
+      const key = `${kpi.kpi_type}-${kpi.kpi_name}`;
       if (!acc[key] || new Date(kpi.created_at) > new Date(acc[key].created_at)) {
         acc[key] = kpi;
       }
@@ -112,9 +112,9 @@ export const useDashboardData = () => {
     const kpiArray = Object.values(latestKPIs);
     
     // Extract key metrics
-    const occupancyKPI = kpiArray.find(k => k.metric_name.toLowerCase().includes('occupancy'));
-    const rentRollKPI = kpiArray.find(k => k.metric_name.toLowerCase().includes('rent'));
-    const collectionKPI = kpiArray.find(k => k.metric_name.toLowerCase().includes('collection'));
+    const occupancyKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('occupancy'));
+    const rentRollKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('rent'));
+    const collectionKPI = kpiArray.find(k => k.kpi_name.toLowerCase().includes('collection'));
     
     // Count unique properties
     const uniqueProperties = new Set(kpiArray.map(k => k.property_name).filter(Boolean));
@@ -122,9 +122,9 @@ export const useDashboardData = () => {
     return {
       totalProperties: uniqueProperties.size,
       totalUnits: 100, // This would come from property data
-      monthlyRevenue: rentRollKPI?.metric_value || 0,
-      occupancyRate: occupancyKPI?.metric_value || 0,
-      noi: (rentRollKPI?.metric_value || 0) * 0.78, // Estimated NOI
+      monthlyRevenue: rentRollKPI?.kpi_value || 0,
+      occupancyRate: occupancyKPI?.kpi_value || 0,
+      noi: (rentRollKPI?.kpi_value || 0) * 0.78, // Estimated NOI
       recentAlerts: [],
       upcomingTasks: []
     };
