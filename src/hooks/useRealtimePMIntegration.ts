@@ -28,14 +28,18 @@ export const useRealtimePMIntegration = () => {
   const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user authenticated, skipping real-time setup');
+      setIsListening(false);
+      return;
+    }
 
-    console.log('Setting up real-time PM integration listeners...');
+    console.log('Setting up real-time PM integration listeners for user:', user.id);
     setIsListening(true);
 
     // Subscribe to real-time changes on pm_integrations table
     const integrationsChannel = supabase
-      .channel('pm-integrations-changes')
+      .channel(`pm-integrations-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -63,11 +67,13 @@ export const useRealtimePMIntegration = () => {
           loadIntegrations();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('PM Integrations channel status:', status);
+      });
 
     // Subscribe to real-time changes on extracted_kpis table
     const kpisChannel = supabase
-      .channel('extracted-kpis-changes')
+      .channel(`extracted-kpis-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -85,7 +91,9 @@ export const useRealtimePMIntegration = () => {
           });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('KPIs channel status:', status);
+      });
 
     return () => {
       console.log('Cleaning up PM integration real-time subscriptions...');
