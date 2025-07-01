@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Railway environment variables - check multiple formats
+// Railway environment variables - Railway injects these at runtime
 const SUPABASE_URL = 
   process.env.SUPABASE_URL ||
   process.env.VITE_SUPABASE_URL ||
@@ -16,14 +16,28 @@ const SUPABASE_PUBLISHABLE_KEY =
   process.env.REACT_APP_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZm52bmN6ZHJjdXZiZGl6cWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTIxNDAsImV4cCI6MjA2NjYyODE0MH0.bD5-dSgYCpfmKxpLJSBd-05lio9KCZgGYKHoEXy0TAM";
 
-// Debug logging for Railway
-console.log('Environment check:', {
-  SUPABASE_URL: process.env.SUPABASE_URL ? 'Set' : 'Not set',
+// Debug logging for Railway - this will help us see what's happening
+console.log('Supabase client initialization:', {
+  SUPABASE_URL: process.env.SUPABASE_URL ? 'Set from env' : 'Using fallback',
   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ? 'Set' : 'Not set',
   REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL ? 'Set' : 'Not set',
   finalUrl: SUPABASE_URL,
-  finalKey: SUPABASE_PUBLISHABLE_KEY ? 'Set' : 'Not set'
+  finalKey: SUPABASE_PUBLISHABLE_KEY ? 'Set' : 'Not set',
+  nodeEnv: process.env.NODE_ENV
 });
+
+// Validate that we have the required values
+if (!SUPABASE_URL) {
+  console.error('❌ SUPABASE_URL is not available');
+  throw new Error('Supabase URL is required but not found in environment variables');
+}
+
+if (!SUPABASE_PUBLISHABLE_KEY) {
+  console.error('❌ SUPABASE_PUBLISHABLE_KEY is not available');
+  throw new Error('Supabase publishable key is required but not found in environment variables');
+}
+
+console.log('✅ Supabase client created successfully');
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
