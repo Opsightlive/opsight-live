@@ -28,7 +28,9 @@ import {
   User,
   CreditCard,
   Menu,
-  X
+  X,
+  Eye,
+  Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -42,34 +44,49 @@ const Sidebar = () => {
 
   const navigationItems = [
     {
-      title: 'Dashboard',
+      title: 'Main Dashboard',
       items: [
-        { name: 'Main Dashboard', href: '/dashboard', icon: Home },
         { name: 'Portfolio Overview', href: '/portfolio', icon: Building2 },
+        { name: 'Property Dashboard', href: '/property-dashboard', icon: Home },
         { name: 'KPI Command Center', href: '/kpi-command-center', icon: BarChart3 },
-        { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart },
       ]
     },
     {
-      title: 'Risk & Monitoring',
+      title: 'Alert Systems',
       items: [
         { name: 'Red Flag Alerts', href: '/red-flag-alerts', icon: AlertTriangle },
-        { name: 'Predictive Signals', href: '/predictive', icon: TrendingUp },
-        { name: 'Risk Core', href: '/risk-core', icon: Shield },
-        { name: 'Forecast Alerts', href: '/forecast-alerts', icon: Clock },
+        { name: 'Forecasted Red Flag Alerts', href: '/forecast-alerts', icon: Clock },
+        { name: 'Predictive Alerts', href: '/predictive', icon: TrendingUp },
+        { name: 'Recognizable Alerts', href: '/recognizable-alerts', icon: Eye },
       ]
     },
     {
-      title: 'AI Intelligence',
+      title: 'AI Tools',
       items: [
-        { name: 'AI Intelligence Hub', href: '/ai-tools', icon: Bot },
         { name: 'AI Reader', href: '/ai-reader', icon: FileText },
         { name: 'Deal Vetting Toolkit', href: '/deal-vetting', icon: Target },
-        { name: 'AI Suggestions', href: '/ai-suggestions', icon: Zap },
+        { name: 'AI Intelligence Hub', href: '/ai-tools', icon: Bot },
       ]
     },
     {
-      title: 'Communications',
+      title: 'Data & Integration',
+      items: [
+        { name: 'Data Integrations', href: '/data-integration', icon: Database },
+        { name: 'Integration Status', href: '/integration-status', icon: Activity },
+        { name: 'Data Vault', href: '/data-vault', icon: Shield },
+      ]
+    },
+    {
+      title: 'Reports & Analytics',
+      items: [
+        { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart },
+        { name: 'LP Report Generator', href: '/lp-reports', icon: FileText },
+        { name: 'Performance Reports', href: '/performance', icon: TrendingUp },
+        { name: 'Red Flag Timeline', href: '/timeline', icon: Clock },
+      ]
+    },
+    {
+      title: 'Communication',
       items: [
         { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
         { name: 'Email Automation', href: '/email-automation', icon: Mail },
@@ -78,28 +95,10 @@ const Sidebar = () => {
       ]
     },
     {
-      title: 'Data & Operations',
-      items: [
-        { name: 'Data Integration', href: '/data-integration', icon: Database },
-        { name: 'Integration Status', href: '/integration-status', icon: Activity },
-        { name: 'Data Vault', href: '/data-vault', icon: Shield },
-      ]
-    },
-    {
-      title: 'Reports & Insights',
-      items: [
-        { name: 'LP Report Generator', href: '/lp-reports', icon: FileText },
-        { name: 'Red Flag Timeline', href: '/timeline', icon: Clock },
-        { name: 'Resolution Summary', href: '/resolutions', icon: Zap },
-        { name: 'Alert Delivery Logs', href: '/delivery-logs', icon: Activity },
-      ]
-    },
-    {
       title: 'Settings & Support',
       items: [
         { name: 'User Profile', href: '/profile', icon: User },
         { name: 'System Settings', href: '/settings', icon: Settings },
-        { name: 'Subscription', href: '/subscription', icon: CreditCard },
         { name: 'Help Center', href: '/help', icon: HelpCircle },
       ]
     }
