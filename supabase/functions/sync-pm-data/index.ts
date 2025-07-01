@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -19,10 +18,20 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    // Use the correct Supabase environment variables for edge functions
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    
+    console.log('PM Sync edge function environment check:', {
+      supabaseUrl: supabaseUrl ? 'Available' : 'Missing',
+      supabaseKey: supabaseKey ? 'Available' : 'Missing'
+    })
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase environment variables not configured properly')
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     const { integrationId, userId, testMode = false } = await req.json() as PMSyncRequest
 
@@ -422,10 +431,9 @@ serve(async (req) => {
     console.error('Error in PM sync function:', error)
 
     // Update integration with error status
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     try {
       const { integrationId } = await req.json();
