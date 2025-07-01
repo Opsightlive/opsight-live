@@ -18,20 +18,11 @@ serve(async (req) => {
   }
 
   try {
-    // Use the correct Supabase environment variables for edge functions
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    
-    console.log('PM Sync edge function environment check:', {
-      supabaseUrl: supabaseUrl ? 'Available' : 'Missing',
-      supabaseKey: supabaseKey ? 'Available' : 'Missing'
-    })
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase environment variables not configured properly')
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    // Use hardcoded values since Railway environment variables aren't working
+    const supabase = createClient(
+      'https://oafnvnczdrcuvbdizqif.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZm52bmN6ZHJjdXZiZGl6cWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTA1MjE0MCwiZXhwIjoyMDY2NjI4MTQwfQ.Xa2qJkF9_Nw5k7z_8gVDiNkHT8tBE1nKn4xkH0zXgJE'
+    )
 
     const { integrationId, userId, testMode = false } = await req.json() as PMSyncRequest
 
@@ -430,10 +421,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in PM sync function:', error)
 
-    // Update integration with error status
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    // Update integration with error status using hardcoded values too
+    const supabase = createClient(
+      'https://oafnvnczdrcuvbdizqif.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hZm52bmN6ZHJjdXZiZGl6cWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTA1MjE0MCwiZXhwIjoyMDY2NjI4MTQwfQ.Xa2qJkF9_Nw5k7z_8gVDiNkHT8tBE1nKn4xkH0zXgJE'
+    )
 
     try {
       const { integrationId } = await req.json();
