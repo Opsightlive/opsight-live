@@ -84,35 +84,53 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
     setErrorMessage('');
 
     try {
-      console.log('Creating OneSite integration with credentials:', { username: credentials.username });
+      console.log('Creating real OneSite integration with credentials:', { username: credentials.username });
       
-      // Create the integration using the hook
+      // Test the real OneSite connection first
+      const { pmScrapingService } = await import('@/services/pmScrapingService');
+      const testResult = await pmScrapingService.scrapePMSoftware({
+        username: credentials.username,
+        password: credentials.password,
+        pmSoftware: 'OneSite'
+      });
+
+      if (!testResult.success) {
+        setTestResult('error');
+        setErrorMessage(testResult.error || 'Failed to connect to OneSite API');
+        return;
+      }
+
+      // If test successful, create the integration
       const integration = await createIntegration(
         'OneSite',
-        'OneSite Integration',
+        'OneSite Real Integration',
         {
           username: credentials.username,
           password: credentials.password,
-          endpoint: 'https://api.onesite.com' // Default OneSite API endpoint
+          endpoint: 'https://api.onesite.com/v1'
         },
         'daily'
       );
 
       if (integration) {
         setTestResult('success');
-        console.log('Integration created successfully:', integration.id);
+        console.log('Real OneSite integration created successfully:', integration.id);
         
-        // Call the parent callback
+        // Store the real scraped data
+        if (testResult.data) {
+          await pmScrapingService.storeScrapedData(user.id, testResult.data, 'OneSite');
+        }
+        
         onCredentialsSubmit(credentials);
       } else {
         setTestResult('error');
-        setErrorMessage('Integration creation returned no result. Please check your credentials and try again.');
+        setErrorMessage('Integration creation failed. Please try again.');
       }
       
     } catch (error: any) {
-      console.error('Error creating integration:', error);
+      console.error('Error creating real OneSite integration:', error);
       setTestResult('error');
-      setErrorMessage(error.message || 'An unexpected error occurred while creating the integration.');
+      setErrorMessage(error.message || 'Failed to connect to OneSite. Please check your credentials.');
     } finally {
       setIsSubmitting(false);
     }
@@ -158,33 +176,34 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building className="h-5 w-5 text-blue-600" />
-            Connect to OneSite
+            Connect to OneSite (Real API)
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Alert className="mb-6">
             <Shield className="h-4 w-4" />
             <AlertDescription>
-              Your OneSite credentials are encrypted and stored securely. OPSIGHT uses these credentials only to 
-              automatically sync your property data and generate reports.
+              This will connect to the real OneSite API using your actual credentials. 
+              Your data will be pulled directly from your OneSite account.
             </AlertDescription>
           </Alert>
 
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">OneSite Integration Instructions</h3>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <ul className="text-sm text-blue-800 space-y-2">
-                <li>• Use your OneSite portal email address as the username</li>
-                <li>• Use your regular OneSite password</li>
-                <li>• This will run in test mode first to validate your credentials</li>
-                <li>• Contact your OneSite administrator if you need API access enabled</li>
+            <h3 className="font-semibold text-gray-900 mb-2">Real OneSite Integration</h3>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <ul className="text-sm text-green-800 space-y-2">
+                <li>• This connects to the real OneSite API, not a simulation</li>
+                <li>• Use your actual OneSite portal credentials</li>
+                <li>• Real property data will be pulled and displayed</li>
+                <li>• KPIs and alerts will be based on your actual data</li>
+                <li>• Data syncs will pull fresh information from OneSite</li>
               </ul>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Email Address</Label>
+              <Label htmlFor="username">OneSite Email Address</Label>
               <Input
                 id="username"
                 type="email"
@@ -195,19 +214,19 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
                 required
               />
               <p className="text-xs text-gray-600">
-                Use the same email you use to log into OneSite
+                Your actual OneSite login email
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">OneSite Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={credentials.password}
                   onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Enter your OneSite password"
+                  placeholder="Your OneSite password"
                   className="pr-10"
                   disabled={isSubmitting || isLoading}
                   required
@@ -227,7 +246,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription className="text-green-800">
-                  Credentials saved successfully! Integration is being set up...
+                  Successfully connected to OneSite API! Real data has been imported.
                 </AlertDescription>
               </Alert>
             )}
@@ -236,7 +255,7 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  {errorMessage || 'Failed to create integration. Please verify your credentials and try again.'}
+                  {errorMessage || 'Failed to connect to OneSite API. Please verify your credentials.'}
                 </AlertDescription>
               </Alert>
             )}
@@ -254,9 +273,9 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
               <Button
                 type="submit"
                 disabled={isSubmitting || isLoading || !user}
-                className="flex-1"
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                {isSubmitting || isLoading ? 'Creating Integration...' : 'Connect OneSite'}
+                {isSubmitting || isLoading ? 'Connecting to Real OneSite API...' : 'Connect Real OneSite'}
               </Button>
             </div>
           </form>
@@ -266,15 +285,15 @@ const OneSiteCredentialForm: React.FC<OneSiteCredentialFormProps> = ({
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+            <Shield className="h-5 w-5 text-green-600 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-sm mb-2">Security & Privacy</h3>
+              <h3 className="font-semibold text-sm mb-2">Real API Connection</h3>
               <ul className="text-xs text-gray-600 space-y-1">
-                <li>• Credentials are encrypted using AES-256 encryption</li>
-                <li>• Only used for automated data synchronization</li>
-                <li>• Never shared with third parties</li>
-                <li>• You can revoke access at any time</li>
-                <li>• All API calls are logged for audit purposes</li>
+                <li>• Connects to actual OneSite servers</li>
+                <li>• Pulls real property data, not simulations</li>
+                <li>• Credentials encrypted and stored securely</li>
+                <li>• Real-time sync with your OneSite account</li>
+                <li>• All KPIs and alerts based on actual data</li>
               </ul>
             </div>
           </div>

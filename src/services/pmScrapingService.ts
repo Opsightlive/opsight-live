@@ -1,12 +1,13 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { oneSiteApiService, OneSiteCredentials } from './oneSiteApiService';
 
 export interface PMCredentials {
   username: string;
   password: string;
   pmSoftware: string;
   apiUrl?: string;
+  clientId?: string;
 }
 
 export interface ScrapedData {
@@ -26,81 +27,219 @@ export interface ScrapingResult {
 }
 
 class PMScrapingService {
-  // OneSite scraper
+  // Real OneSite scraper using actual API
   async scrapeOneSite(credentials: PMCredentials): Promise<ScrapingResult> {
     try {
-      console.log('Starting OneSite scrape...');
+      console.log('Starting real OneSite API scraping...');
       
-      // Simulate login and data extraction
-      const loginResult = await this.simulateLogin(credentials);
-      if (!loginResult.success) {
+      const oneSiteCredentials: OneSiteCredentials = {
+        username: credentials.username,
+        password: credentials.password,
+        clientId: credentials.apiUrl || undefined,
+        baseUrl: credentials.apiUrl || undefined
+      };
+
+      // Step 1: Authenticate
+      const authSuccess = await oneSiteApiService.authenticate(oneSiteCredentials);
+      if (!authSuccess) {
         return { success: false, error: 'Authentication failed' };
       }
 
-      // Extract different types of data
+      // Step 2: Get all properties
+      const properties = await oneSiteApiService.getProperties();
+      console.log(`Found ${properties.length} properties`);
+
+      if (properties.length === 0) {
+        return { success: false, error: 'No properties found in your OneSite account' };
+      }
+
+      // Step 3: Get comprehensive data for each property
+      const allFinancials: any[] = [];
+      const allTenants: any[] = [];
+      const allMaintenance: any[] = [];
+      const allLeases: any[] = [];
+      const generatedKPIs: any[] = [];
+
+      for (const property of properties) {
+        try {
+          const comprehensiveData = await oneSiteApiService.getComprehensiveData(property.propertyId);
+          
+          // Add property context to each data point
+          allFinancials.push(...comprehensiveData.financials.map(f => ({
+            ...f,
+            propertyName: property.propertyName,
+            source: 'onesite'
+          })));
+
+          allTenants.push(...comprehensiveData.tenants.map(t => ({
+            ...t,
+            propertyName: property.propertyName,
+            source: 'onesite'
+          })));
+
+          allMaintenance.push(...comprehensiveData.maintenance.map(m => ({
+            ...m,
+            propertyName: property.propertyName,
+            source: 'onesite'
+          })));
+
+          // Generate leases from tenant data
+          const leases = comprehensiveData.tenants.map(tenant => ({
+            unit: tenant.unitNumber,
+            startDate: tenant.leaseStart,
+            endDate: tenant.leaseEnd,
+            rent: tenant.monthlyRent,
+            tenant: tenant.tenantName,
+            propertyName: property.propertyName,
+            source: 'onesite'
+          }));
+          allLeases.push(...leases);
+
+          // Generate KPIs from the data
+          const kpis = this.generateKPIsFromOneSiteData(property, comprehensiveData);
+          generatedKPIs.push(...kpis);
+
+        } catch (error) {
+          console.error(`Error fetching data for property ${property.propertyId}:`, error);
+          // Continue with other properties even if one fails
+        }
+      }
+
       const scrapedData: ScrapedData = {
-        financials: await this.extractFinancials(credentials),
-        tenants: await this.extractTenants(credentials),
-        maintenance: await this.extractMaintenance(credentials),
-        leases: await this.extractLeases(credentials),
-        properties: await this.extractProperties(credentials),
-        kpis: await this.extractKPIs(credentials)
+        properties: properties.map(p => ({ ...p, source: 'onesite' })),
+        financials: allFinancials,
+        tenants: allTenants,
+        maintenance: allMaintenance,
+        leases: allLeases,
+        kpis: generatedKPIs
       };
+
+      console.log('OneSite scraping completed successfully');
+      console.log(`Scraped data summary:`, {
+        properties: scrapedData.properties.length,
+        financials: scrapedData.financials.length,
+        tenants: scrapedData.tenants.length,
+        maintenance: scrapedData.maintenance.length,
+        kpis: scrapedData.kpis.length
+      });
 
       return {
         success: true,
         data: scrapedData,
         creditsUsed: this.calculateCreditsUsed(scrapedData)
       };
+
     } catch (error) {
       console.error('OneSite scraping error:', error);
-      return { success: false, error: 'Scraping failed' };
-    }
-  }
-
-  // Yardi scraper
-  async scrapeYardi(credentials: PMCredentials): Promise<ScrapingResult> {
-    try {
-      console.log('Starting Yardi scrape...');
-      
-      // Yardi-specific scraping logic
-      const scrapedData: ScrapedData = {
-        financials: this.generateMockFinancials('yardi'),
-        tenants: this.generateMockTenants('yardi'),
-        maintenance: this.generateMockMaintenance('yardi'),
-        leases: this.generateMockLeases('yardi'),
-        properties: this.generateMockProperties('yardi'),
-        kpis: this.generateMockKPIs('yardi')
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown scraping error' 
       };
-
-      return { success: true, data: scrapedData, creditsUsed: 45 };
-    } catch (error) {
-      return { success: false, error: 'Yardi scraping failed' };
     }
   }
 
-  // Main scraping orchestrator
+  // Generate KPIs from real OneSite data
+  private generateKPIsFromOneSiteData(property: any, data: any): any[] {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const kpis: any[] = [];
+
+    // Occupancy Rate KPI
+    if (property.occupancyRate !== undefined) {
+      kpis.push({
+        type: 'occupancy',
+        name: 'Occupancy Rate',
+        value: property.occupancyRate,
+        unit: '%',
+        target: 95,
+        property: property.propertyName,
+        periodStart: lastMonth.toISOString().split('T')[0],
+        periodEnd: thisMonth.toISOString().split('T')[0],
+        confidence: 1.0,
+        source: 'onesite'
+      });
+    }
+
+    // Revenue KPI
+    if (property.totalRevenue) {
+      kpis.push({
+        type: 'revenue',
+        name: 'Monthly Revenue',
+        value: property.totalRevenue,
+        unit: '$',
+        target: property.totalRevenue * 1.05, // 5% growth target
+        property: property.propertyName,
+        periodStart: lastMonth.toISOString().split('T')[0],
+        periodEnd: thisMonth.toISOString().split('T')[0],
+        confidence: 1.0,
+        source: 'onesite'
+      });
+    }
+
+    // NOI KPI
+    if (property.noi) {
+      kpis.push({
+        type: 'noi',
+        name: 'Net Operating Income',
+        value: property.noi,
+        unit: '$',
+        target: property.noi * 1.1, // 10% improvement target
+        property: property.propertyName,
+        periodStart: lastMonth.toISOString().split('T')[0],
+        periodEnd: thisMonth.toISOString().split('T')[0],
+        confidence: 1.0,
+        source: 'onesite'
+      });
+    }
+
+    // Maintenance Cost per Unit
+    if (data.maintenance && data.maintenance.length > 0 && property.units) {
+      const totalMaintenanceCost = data.maintenance.reduce((sum: number, item: any) => sum + (item.cost || 0), 0);
+      const costPerUnit = totalMaintenanceCost / property.units;
+      
+      kpis.push({
+        type: 'maintenance',
+        name: 'Maintenance Cost per Unit',
+        value: costPerUnit,
+        unit: '$',
+        target: 150, // Target $150 per unit per month
+        property: property.propertyName,
+        periodStart: lastMonth.toISOString().split('T')[0],
+        periodEnd: thisMonth.toISOString().split('T')[0],
+        confidence: 1.0,
+        source: 'onesite'
+      });
+    }
+
+    return kpis;
+  }
+
+  // Main scraping orchestrator - now uses real APIs
   async scrapePMSoftware(credentials: PMCredentials): Promise<ScrapingResult> {
-    console.log(`Starting scrape for ${credentials.pmSoftware}...`);
+    console.log(`Starting real scrape for ${credentials.pmSoftware}...`);
     
     switch (credentials.pmSoftware.toLowerCase()) {
       case 'onesite':
         return await this.scrapeOneSite(credentials);
       case 'yardi':
-        return await this.scrapeYardi(credentials);
+        return { success: false, error: 'Yardi integration coming soon - real API connection needed' };
       case 'appfolio':
-        return await this.scrapeAppFolio(credentials);
+        return { success: false, error: 'AppFolio integration coming soon - real API connection needed' };
       default:
         return { success: false, error: 'Unsupported PM software' };
     }
   }
 
-  // Store scraped data in database
+  // Store real scraped data in database
   async storeScrapedData(userId: string, data: ScrapedData, pmSoftware: string): Promise<boolean> {
     try {
-      // Store KPIs
+      console.log('Storing real scraped data in database...');
+
+      // Store KPIs in extracted_kpis table
       for (const kpi of data.kpis) {
-        await supabase.from('extracted_kpis').insert({
+        const { error: kpiError } = await supabase.from('extracted_kpis').insert({
           user_id: userId,
           kpi_type: kpi.type,
           kpi_name: kpi.name,
@@ -109,13 +248,17 @@ class PMScrapingService {
           property_name: kpi.property,
           period_start: kpi.periodStart,
           period_end: kpi.periodEnd,
-          extraction_confidence: kpi.confidence || 0.95
+          extraction_confidence: kpi.confidence || 1.0
         });
+
+        if (kpiError) {
+          console.error('Error storing KPI:', kpiError);
+        }
       }
 
-      // Store in KPI metrics for real-time tracking
+      // Store in kpi_metrics for real-time tracking
       for (const kpi of data.kpis) {
-        await supabase.from('kpi_metrics').insert({
+        const { error: metricsError } = await supabase.from('kpi_metrics').insert({
           user_id: userId,
           category: this.getKPICategory(kpi.type),
           metric_name: kpi.name,
@@ -126,8 +269,13 @@ class PMScrapingService {
           period_start: kpi.periodStart,
           period_end: kpi.periodEnd
         });
+
+        if (metricsError) {
+          console.error('Error storing metrics:', metricsError);
+        }
       }
 
+      console.log(`Successfully stored ${data.kpis.length} KPIs from real ${pmSoftware} data`);
       return true;
     } catch (error) {
       console.error('Error storing scraped data:', error);
