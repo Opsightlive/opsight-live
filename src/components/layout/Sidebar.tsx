@@ -42,40 +42,43 @@ const Sidebar = () => {
 
   const navigationItems = [
     {
-      title: 'Overview',
+      title: 'Dashboard',
       items: [
-        { name: 'Dashboard', href: '/dashboard', icon: Home },
+        { name: 'Main Dashboard', href: '/dashboard', icon: Home },
         { name: 'Portfolio Overview', href: '/portfolio', icon: Building2 },
-        { name: 'KPI Command Center', href: '/kpi-center', icon: BarChart3 },
+        { name: 'KPI Command Center', href: '/kpi-command-center', icon: BarChart3 },
         { name: 'LP Dashboard', href: '/lp-dashboard', icon: PieChart },
       ]
     },
     {
-      title: 'Alerts & Monitoring',
+      title: 'Risk & Monitoring',
       items: [
         { name: 'Red Flag Alerts', href: '/red-flag-alerts', icon: AlertTriangle },
         { name: 'Predictive Signals', href: '/predictive', icon: TrendingUp },
-        { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
+        { name: 'Risk Core', href: '/risk-core', icon: Shield },
+        { name: 'Forecast Alerts', href: '/forecast-alerts', icon: Clock },
       ]
     },
     {
-      title: 'AI Tools',
+      title: 'AI Intelligence',
       items: [
-        { name: 'AI Intelligence', href: '/ai-tools', icon: Bot },
+        { name: 'AI Intelligence Hub', href: '/ai-tools', icon: Bot },
         { name: 'AI Reader', href: '/ai-reader', icon: FileText },
         { name: 'Deal Vetting Toolkit', href: '/deal-vetting', icon: Target },
+        { name: 'AI Suggestions', href: '/ai-suggestions', icon: Zap },
       ]
     },
     {
       title: 'Communications',
       items: [
+        { name: 'Alerts & Notifications', href: '/notifications', icon: Bell },
         { name: 'Email Automation', href: '/email-automation', icon: Mail },
         { name: 'SMS Automation', href: '/sms-automation', icon: MessageSquare },
         { name: 'PM Engagement Score', href: '/pm-engagement', icon: Users },
       ]
     },
     {
-      title: 'Operations',
+      title: 'Data & Operations',
       items: [
         { name: 'Data Integration', href: '/data-integration', icon: Database },
         { name: 'Integration Status', href: '/integration-status', icon: Activity },
@@ -83,7 +86,7 @@ const Sidebar = () => {
       ]
     },
     {
-      title: 'Reports',
+      title: 'Reports & Insights',
       items: [
         { name: 'LP Report Generator', href: '/lp-reports', icon: FileText },
         { name: 'Red Flag Timeline', href: '/timeline', icon: Clock },
@@ -92,10 +95,10 @@ const Sidebar = () => {
       ]
     },
     {
-      title: 'Settings',
+      title: 'Settings & Support',
       items: [
         { name: 'User Profile', href: '/profile', icon: User },
-        { name: 'Settings', href: '/settings', icon: Settings },
+        { name: 'System Settings', href: '/settings', icon: Settings },
         { name: 'Subscription', href: '/subscription', icon: CreditCard },
         { name: 'Help Center', href: '/help', icon: HelpCircle },
       ]

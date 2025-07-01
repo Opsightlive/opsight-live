@@ -22,6 +22,17 @@ export interface RedFlag {
   status: 'active' | 'acknowledged' | 'in_progress' | 'resolved';
 }
 
+interface TriggerData {
+  description?: string;
+  impact?: string;
+  recommendation?: string;
+  estimatedCost?: number;
+  resolutionSteps?: string[];
+  priority?: number;
+  trend?: string;
+  threshold?: number;
+}
+
 class RedFlagService {
   async analyzeKPIsForRedFlags(userId: string): Promise<RedFlag[]> {
     try {
@@ -217,25 +228,29 @@ class RedFlagService {
 
       if (error) throw error;
 
-      return (alerts || []).map(alert => ({
-        id: alert.id,
-        type: this.mapAlertLevelToType(alert.alert_level),
-        category: alert.kpi_type,
-        title: alert.alert_message,
-        description: alert.trigger_data?.description || '',
-        impact: alert.trigger_data?.impact || '',
-        recommendation: alert.trigger_data?.recommendation || '',
-        property: alert.property_name,
-        kpiValue: alert.kpi_value,
-        threshold: alert.trigger_data?.threshold,
-        trend: alert.trigger_data?.trend || 'stable',
-        priority: alert.trigger_data?.priority || 5,
-        daysActive: Math.floor((new Date().getTime() - new Date(alert.created_at).getTime()) / (1000 * 60 * 60 * 24)),
-        estimatedCost: alert.trigger_data?.estimatedCost,
-        resolutionSteps: alert.trigger_data?.resolutionSteps || [],
-        createdAt: new Date(alert.created_at),
-        status: alert.status as 'active' | 'acknowledged' | 'in_progress' | 'resolved'
-      }));
+      return (alerts || []).map(alert => {
+        const triggerData = alert.trigger_data as TriggerData || {};
+        
+        return {
+          id: alert.id,
+          type: this.mapAlertLevelToType(alert.alert_level),
+          category: alert.kpi_type,
+          title: alert.alert_message,
+          description: triggerData.description || '',
+          impact: triggerData.impact || '',
+          recommendation: triggerData.recommendation || '',
+          property: alert.property_name,
+          kpiValue: alert.kpi_value,
+          threshold: triggerData.threshold,
+          trend: (triggerData.trend as 'improving' | 'declining' | 'stable') || 'stable',
+          priority: triggerData.priority || 5,
+          daysActive: Math.floor((new Date().getTime() - new Date(alert.created_at).getTime()) / (1000 * 60 * 60 * 24)),
+          estimatedCost: triggerData.estimatedCost,
+          resolutionSteps: triggerData.resolutionSteps || [],
+          createdAt: new Date(alert.created_at),
+          status: alert.status as 'active' | 'acknowledged' | 'in_progress' | 'resolved'
+        };
+      });
     } catch (error) {
       console.error('Error fetching red flags:', error);
       return [];
