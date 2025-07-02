@@ -3,12 +3,12 @@ import { useEffect, useCallback } from 'react';
 import { ChangeIsolator, IsolationBoundary } from '@/utils/changeIsolation';
 
 /**
- * Database-enforced hook to manage change isolation for components
+ * Backend hook to register change isolation boundaries (not user-facing)
  */
 export const useChangeIsolation = (moduleId: string, allowedFiles: string[] = []) => {
   
   useEffect(() => {
-    // Register isolation boundary for this component in database
+    // Register isolation boundary for this component in database (backend protection)
     const boundary: IsolationBoundary = {
       moduleId,
       allowedFiles: allowedFiles.length > 0 ? allowedFiles : [`src/components/${moduleId}/**/*`],
@@ -26,9 +26,9 @@ export const useChangeIsolation = (moduleId: string, allowedFiles: string[] = []
     const registerBoundary = async () => {
       try {
         await ChangeIsolator.registerBoundary(boundary);
-        console.log('🔒 DATABASE-ENFORCED ISOLATION BOUNDARY REGISTERED:', moduleId);
+        console.log('🔒 BACKEND ISOLATION BOUNDARY REGISTERED:', moduleId);
       } catch (error) {
-        console.error('🚨 FAILED TO REGISTER DATABASE ISOLATION:', error);
+        console.error('🚨 FAILED TO REGISTER BACKEND ISOLATION:', error);
       }
     };
 
@@ -40,10 +40,10 @@ export const useChangeIsolation = (moduleId: string, allowedFiles: string[] = []
   }, [moduleId, allowedFiles]);
 
   /**
-   * Execute a change within database-enforced isolation
+   * Execute a change within database-enforced isolation (backend protection)
    */
   const executeIsolatedChange = useCallback(async <T>(changeFunction: () => T): Promise<T | null> => {
-    console.log('🛡️ EXECUTING DATABASE-ENFORCED ISOLATED CHANGE FOR:', moduleId);
+    console.log('🛡️ EXECUTING BACKEND-ISOLATED CHANGE FOR:', moduleId);
     
     const sandbox = ChangeIsolator.createSandbox(moduleId);
     return await sandbox.executeChange(changeFunction);

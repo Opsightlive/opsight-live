@@ -13,15 +13,6 @@ export interface IsolationBoundary {
   isolatedScope: string[];
 }
 
-interface DatabaseBoundary {
-  module_id: string;
-  allowed_files: string[];
-  protected_functions: string[];
-  isolation_scope: {
-    isolatedScope: string[];
-  } | null;
-}
-
 export class ChangeIsolator {
   private static isolationBoundaries: Map<string, IsolationBoundary> = new Map();
 
@@ -126,12 +117,26 @@ export class ChangeIsolator {
       }
 
       if (data) {
-        data.forEach((boundary: DatabaseBoundary) => {
+        data.forEach((boundary) => {
+          let isolatedScope: string[] = [];
+          
+          // Safely parse the isolation_scope JSON
+          if (boundary.isolation_scope) {
+            try {
+              const parsed = typeof boundary.isolation_scope === 'string' 
+                ? JSON.parse(boundary.isolation_scope) 
+                : boundary.isolation_scope;
+              isolatedScope = parsed?.isolatedScope || [];
+            } catch (e) {
+              console.warn('Failed to parse isolation_scope for boundary:', boundary.module_id);
+            }
+          }
+
           this.isolationBoundaries.set(boundary.module_id, {
             moduleId: boundary.module_id,
             allowedFiles: boundary.allowed_files,
             protectedFunctions: boundary.protected_functions,
-            isolatedScope: (boundary.isolation_scope as any)?.isolatedScope || []
+            isolatedScope
           });
         });
       }
