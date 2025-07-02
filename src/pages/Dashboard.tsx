@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/layout/Layout';
+import StabilityMonitor from '@/components/monitoring/StabilityMonitor';
 import { 
   Building2, 
   BarChart3,
@@ -14,6 +15,9 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* System Stability Monitor - enforces non-destructive changes */}
+        <StabilityMonitor />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
