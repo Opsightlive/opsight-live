@@ -3,224 +3,203 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Plus, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { CheckCircle, AlertTriangle, Clock, RefreshCw, Database } from 'lucide-react';
 
-interface Integration {
+interface IntegrationStatus {
   id: string;
-  pm_software: string;
-  integration_name: string;
-  sync_status: string;
-  last_sync: string | null;
-  error_log: string | null;
-  sync_frequency: string;
-  created_at: string;
+  name: string;
+  status: 'connected' | 'syncing' | 'error' | 'pending';
+  lastSync: Date;
+  properties: number;
+  dataTypes: string[];
+  healthScore: number;
 }
 
 const PMIntegrationStatus = () => {
-  const { user } = useAuth();
-  const [integrations, setIntegrations] = useState<Integration[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [integrations, setIntegrations] = useState<IntegrationStatus[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchIntegrations = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('pm_integrations')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching integrations:', error);
-        toast.error('Failed to load integrations');
-        return;
-      }
-
-      setIntegrations(data || []);
-    } catch (error) {
-      console.error('Error fetching integrations:', error);
-      toast.error('Failed to load integrations');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refreshIntegrations = async () => {
-    setIsRefreshing(true);
-    await fetchIntegrations();
-    setIsRefreshing(false);
-    toast.success('Integration status refreshed');
-  };
-
   useEffect(() => {
-    fetchIntegrations();
-
-    // Subscribe to real-time updates
-    const subscription = supabase
-      .channel('pm_integrations_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'pm_integrations',
-          filter: `user_id=eq.${user?.id}`
-        },
-        (payload) => {
-          console.log('Integration update received:', payload);
-          fetchIntegrations();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-50 text-green-700 border-green-200';
-      case 'error': return 'bg-red-50 text-red-700 border-red-200';
-      case 'syncing': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'paused': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
+    // Simulate fetching integration status
+    setIntegrations([
+      {
+        id: 'yardi',
+        name: 'Yardi Voyager',
+        status: 'connected',
+        lastSync: new Date(Date.now() - 30 * 60 * 1000),
+        properties: 12,
+        dataTypes: ['Financial', 'Occupancy', 'Maintenance', 'Leasing'],
+        healthScore: 98
+      },
+      {
+        id: 'appfolio',
+        name: 'AppFolio',
+        status: 'syncing',
+        lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        properties: 8,
+        dataTypes: ['Financial', 'Occupancy'],
+        healthScore: 92
+      },
+      {
+        id: 'buildium',
+        name: 'Buildium',
+        status: 'error',
+        lastSync: new Date(Date.now() - 12 * 60 * 60 * 1000),
+        properties: 5,
+        dataTypes: ['Financial'],
+        healthScore: 45
+      }
+    ]);
+  }, []);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <CheckCircle className="h-4 w-4" />;
-      case 'error': return <AlertCircle className="h-4 w-4" />;
-      case 'syncing': return <RefreshCw className="h-4 w-4 animate-spin" />;
-      case 'paused': return <Clock className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'connected': return <CheckCircle className="h-5 w-5 text-green-600" />;
+      case 'syncing': return <RefreshCw className="h-5 w-5 text-blue-600 animate-spin" />;
+      case 'error': return <AlertTriangle className="h-5 w-5 text-red-600" />;
+      case 'pending': return <Clock className="h-5 w-5 text-yellow-600" />;
+      default: return <Database className="h-5 w-5 text-gray-600" />;
     }
   };
 
-  if (isLoading) {
+  const getStatusBadge = (status: string) => {
+    const colors = {
+      connected: 'bg-green-100 text-green-800',
+      syncing: 'bg-blue-100 text-blue-800',
+      error: 'bg-red-100 text-red-800',
+      pending: 'bg-yellow-100 text-yellow-800'
+    };
+    
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Integration Status</h2>
-          <div className="animate-pulse">
-            <div className="h-10 w-32 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-        <div className="grid gap-6">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <Badge className={colors[status as keyof typeof colors]}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
     );
-  }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsRefreshing(false);
+  };
+
+  const totalProperties = integrations.reduce((sum, int) => sum + int.properties, 0);
+  const connectedIntegrations = integrations.filter(int => int.status === 'connected').length;
+  const avgHealthScore = Math.round(integrations.reduce((sum, int) => sum + int.healthScore, 0) / integrations.length);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Integration Status</h2>
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={refreshIntegrations}
+      {/* Overview Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Connected Systems</p>
+                <p className="text-2xl font-bold">{connectedIntegrations}/{integrations.length}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Properties Synced</p>
+                <p className="text-2xl font-bold">{totalProperties}</p>
+              </div>
+              <Database className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Health Score</p>
+                <p className="text-2xl font-bold">{avgHealthScore}%</p>
+              </div>
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                avgHealthScore >= 90 ? 'bg-green-100' : avgHealthScore >= 70 ? 'bg-yellow-100' : 'bg-red-100'
+              }`}>
+                <span className={`text-sm font-bold ${
+                  avgHealthScore >= 90 ? 'text-green-600' : avgHealthScore >= 70 ? 'text-yellow-600' : 'text-red-600'
+                }`}>
+                  {avgHealthScore}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Integration Details */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>PM System Integrations</CardTitle>
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
             disabled={isRefreshing}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button
-            size="sm"
-            onClick={() => window.location.href = '/pm-integration'}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Integration
-          </Button>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {integrations.map((integration) => (
+              <div key={integration.id} className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(integration.status)}
+                    <div>
+                      <h4 className="font-semibold">{integration.name}</h4>
+                      <p className="text-sm text-gray-600">
+                        {integration.properties} properties • Last sync: {integration.lastSync.toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">Health: {integration.healthScore}%</span>
+                    {getStatusBadge(integration.status)}
+                  </div>
+                </div>
 
-      {integrations.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Integrations Found</h3>
-            <p className="text-gray-600 mb-4">
-              Connect your property management system to start syncing data automatically.
-            </p>
-            <Button onClick={() => window.location.href = '/pm-integration'}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Your First Integration
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-6">
-          {integrations.map((integration) => (
-            <Card key={integration.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-3">
-                    <span>{integration.integration_name}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {integration.pm_software}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {integration.dataTypes.map((type) => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {type}
                     </Badge>
-                  </CardTitle>
-                  <Badge 
-                    variant="outline" 
-                    className={`${getStatusColor(integration.sync_status)}`}
-                  >
-                    {getStatusIcon(integration.sync_status)}
-                    <span className="ml-1 capitalize">{integration.sync_status}</span>
-                  </Badge>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-1">Last Sync</h4>
-                    <p className="text-sm text-gray-600">
-                      {integration.last_sync 
-                        ? new Date(integration.last_sync).toLocaleString()
-                        : 'Never synced'
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-1">Sync Frequency</h4>
-                    <p className="text-sm text-gray-600 capitalize">
-                      {integration.sync_frequency}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-1">Created</h4>
-                    <p className="text-sm text-gray-600">
-                      {new Date(integration.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                
-                {integration.error_log && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <h4 className="font-medium text-sm text-red-800 mb-1">Error Details</h4>
-                    <p className="text-sm text-red-700">{integration.error_log}</p>
+
+                {integration.status === 'error' && (
+                  <div className="bg-red-50 border border-red-200 rounded p-3 text-sm">
+                    <p className="text-red-800 font-medium">Connection Error</p>
+                    <p className="text-red-700">Authentication failed. Please check credentials and reconnect.</p>
+                    <Button size="sm" className="mt-2">Reconnect</Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                  <div 
+                    className={`h-2 rounded-full ${
+                      integration.healthScore >= 90 ? 'bg-green-600' : 
+                      integration.healthScore >= 70 ? 'bg-yellow-600' : 'bg-red-600'
+                    }`}
+                    style={{ width: `${integration.healthScore}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -111,9 +111,10 @@ const LandingPage = () => {
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
+              <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
-                <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
               </Link>
             </div>
 
@@ -138,10 +139,11 @@ const LandingPage = () => {
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
+                <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
                   <Link to="/signup">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Try Free</Button>
                   </Link>
                 </div>
               </div>
@@ -152,53 +154,57 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="space-y-4">
-              {/* Trust Badge - Moved much higher and made bolder */}
-              <div className="flex items-center mb-2">
-                <Shield className="h-8 w-8 text-blue-600 mr-3" />
-                <span className="text-blue-600 font-black text-2xl">Trusted by Leading Real Estate Professionals</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              {/* Trust Badge */}
+              <div className="flex items-center">
+                <Shield className="h-6 w-6 text-blue-600 mr-2" />
+                <span className="text-blue-600 font-bold text-lg">Trusted by Leading Real Estate Professionals</span>
               </div>
               
-              {/* Main Headline - Reduced spacing */}
+              {/* Main Headline */}
               <div>
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                   Transform Your 
                   <span className="text-blue-600 block">Portfolio Performance</span>
                 </h1>
-                <p className="text-lg text-gray-600 mb-5 leading-relaxed">
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                   Property management software wasn't built for owners. OPSIGHT flips the power to you - 
                   Real-time red flags, KPI enforcement, and full operational visibility.
                 </p>
               </div>
 
-              {/* Quote Section - Reduced spacing */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-4 rounded-r-lg shadow-sm">
-                <blockquote className="text-base text-gray-700 italic mb-2">
+              {/* Quote Section */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-6 rounded-r-lg shadow-sm">
+                <blockquote className="text-lg text-gray-700 italic mb-4">
                   "You own the property, but they control the data. OPSIGHT puts ownership back in the driver's seat. 
                   Property management software manages units. OPSIGHT manages outcomes."
                 </blockquote>
                 <p className="text-blue-600 font-semibold">- Built for ownership, not operations</p>
               </div>
 
-              {/* CTA Buttons - Reduced spacing */}
+              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/signup">
+                <Link to="/demo">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
-                    Start 14-Day Free Trial
+                    Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/book-demo">
+                <Link to="/signup">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 hover:bg-gray-50">
-                    Book Demo Call
+                    Start Free Trial
                   </Button>
                 </Link>
               </div>
 
-              {/* Trust Indicators - Reduced spacing */}
+              {/* Trust Indicators */}
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  No credit card required
+                </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
                   Setup in minutes
@@ -210,8 +216,8 @@ const LandingPage = () => {
               </div>
             </div>
             
-            {/* Enhanced Live Portfolio Dashboard - Aligned with content */}
-            <div className="relative">
+            {/* Enhanced Live Portfolio Dashboard */}
+            <div className="relative mt-8 lg:mt-0">
               <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 relative overflow-hidden">
                 {/* Animated background gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-indigo-50/20 pointer-events-none"></div>
@@ -337,7 +343,7 @@ const LandingPage = () => {
       </div>
 
       {/* Solutions Section */}
-      <div id="solutions" className="py-16 lg:py-20 bg-white">
+      <div id="solutions" className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -359,7 +365,7 @@ const LandingPage = () => {
                 Real-time KPI tracking, automated reporting, and performance optimization 
                 across your entire portfolio.
               </p>
-              <Link to="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </Link>
             </div>
@@ -373,7 +379,7 @@ const LandingPage = () => {
                 Advanced AI algorithms identify potential issues before they impact 
                 your bottom line, keeping you ahead of problems.
               </p>
-              <Link to="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </Link>
             </div>
@@ -387,7 +393,7 @@ const LandingPage = () => {
                 Intelligent automation and insights that transform how you manage 
                 properties and engage with property managers.
               </p>
-              <Link to="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </Link>
             </div>
@@ -596,7 +602,7 @@ const LandingPage = () => {
             <p className="text-gray-600 mb-4">
               Questions about pricing? Need custom enterprise pricing for large portfolios?
             </p>
-            <Link to="/book-demo">
+            <Link to="/demo">
               <Button variant="outline" size="lg">
                 Contact Sales
               </Button>
@@ -703,7 +709,7 @@ const LandingPage = () => {
               their operations and maximize returns.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/book-demo">
+              <Link to="/demo">
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
                   Schedule Your Demo
                   <ArrowRight className="ml-2 h-5 w-5" />

@@ -13,7 +13,7 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ 
   showBackButton = true, 
   onBack, 
-  className 
+  className = "flex items-center mb-8" 
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,31 +22,25 @@ const Navigation: React.FC<NavigationProps> = ({
     if (onBack) {
       onBack();
     } else {
-      // Check if there's history to go back to
-      if (window.history.length > 1) {
-        navigate(-1);
-      } else {
-        // If no history, go to dashboard
-        navigate('/dashboard');
-      }
+      navigate(-1);
     }
   };
 
-  // Show back button on all pages except the main landing page
-  const hideOnRoutes = ['/'];
+  // Don't show back button on home/landing pages
+  const hideOnRoutes = ['/', '/login', '/signup'];
   const shouldShow = showBackButton && !hideOnRoutes.includes(location.pathname);
 
   if (!shouldShow) return null;
 
   return (
-    <div className={className || "fixed top-4 left-4 z-[99999]"}>
+    <div className={className}>
       <Button
-        variant="outline"
-        size="sm"
+        variant="ghost"
+        size="icon"
         onClick={handleBack}
-        className="bg-white hover:bg-gray-50 border-2 border-gray-400 shadow-2xl h-12 w-12 rounded-full flex items-center justify-center p-0 hover:shadow-3xl transition-all duration-200"
+        className="mr-4 hover:bg-gray-100"
       >
-        <ArrowLeft className="h-5 w-5 text-gray-700" />
+        <ArrowLeft className="h-5 w-5" />
       </Button>
     </div>
   );

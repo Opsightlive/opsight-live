@@ -2,7 +2,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import DemoDataGenerator from '@/components/demo/DemoDataGenerator';
-import Navigation from '@/components/layout/Navigation';
 
 const DemoMode = () => {
   const navigate = useNavigate();
@@ -14,8 +13,7 @@ const DemoMode = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <Navigation />
+    <div className="min-h-screen bg-gray-50">
       <DemoDataGenerator onGenerate={handleDemoGenerated} />
     </div>
   );

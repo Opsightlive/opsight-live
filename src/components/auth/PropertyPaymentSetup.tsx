@@ -1,331 +1,566 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Building2, Plus, CreditCard, DollarSign, FileText, Check, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check, CreditCard, Building2, FileText, Plus, X, ArrowLeft, Zap, Shield, Calendar, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import Navigation from '@/components/layout/Navigation';
+import DataSetup from './DataSetup';
 
 interface PropertyPaymentSetupProps {
   onComplete: () => void;
 }
 
-interface Property {
+interface PaymentMethod {
   id: string;
-  name: string;
-  address: string;
-  units: number;
-  tier: string;
-  cost: number;
-  paymentMethod: string;
-  paymentDetails?: any;
+  type: 'card' | 'ach' | 'invoice';
+  propertyIds: string[];
+  cardLast4?: string;
+  bankName?: string;
+  accountLast4?: string;
+  invoiceEmail?: string;
+  companyName?: string;
+}
+
+interface PropertyTier {
+  propertyIndex: number;
+  tier: 'basic' | 'professional' | 'enterprise';
 }
 
 const PropertyPaymentSetup: React.FC<PropertyPaymentSetupProps> = ({ onComplete }) => {
-  const [step, setStep] = useState(1);
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [currentProperty, setCurrentProperty] = useState({
-    name: '',
-    address: '',
-    units: 0,
-    tier: '',
-    paymentMethod: ''
-  });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showDataSetup, setShowDataSetup] = useState(false);
+  const [registrationData, setRegistrationData] = useState<any>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [propertyTiers, setPropertyTiers] = useState<PropertyTier[]>([]);
+  const [showPricingDetails, setShowPricingDetails] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  const tiers = [
-    { name: 'Basic', price: 3, features: ['Basic KPI Tracking', 'Monthly Reports', 'Email Alerts'] },
-    { name: 'Professional', price: 4, features: ['Advanced Analytics', 'Weekly Reports', 'SMS + Email Alerts', 'Custom Dashboards'] },
-    { name: 'Enterprise', price: 5, features: ['Real-time Monitoring', 'Daily Reports', 'Multi-channel Alerts', 'API Access', 'Priority Support'] }
-  ];
-
-  const paymentMethods = [
-    { id: 'card', name: 'Credit/Debit Card', icon: CreditCard, discount: 10 },
-    { id: 'ach', name: 'ACH Bank Transfer', icon: DollarSign, discount: 10 },
-    { id: 'invoice', name: 'Invoice (Net 30)', icon: FileText, discount: 0 }
-  ];
-
-  const calculateCost = (units: number, tierPrice: number, paymentMethod: string) => {
-    const baseCost = units * tierPrice;
-    const discount = paymentMethods.find(pm => pm.id === paymentMethod)?.discount || 0;
-    return baseCost * (1 - discount / 100);
-  };
-
-  const addProperty = () => {
-    if (currentProperty.name && currentProperty.address && currentProperty.units > 0 && currentProperty.tier && currentProperty.paymentMethod) {
-      const tierPrice = tiers.find(t => t.name === currentProperty.tier)?.price || 3;
-      const cost = calculateCost(currentProperty.units, tierPrice, currentProperty.paymentMethod);
-      
-      const newProperty: Property = {
-        id: Date.now().toString(),
-        ...currentProperty,
-        cost
-      };
-      
-      setProperties([...properties, newProperty]);
-      setCurrentProperty({ name: '', address: '', units: 0, tier: '', paymentMethod: '' });
+  const pricingTiers = [
+    { 
+      id: 'basic', 
+      name: 'Basic', 
+      price: 3, 
+      color: 'blue',
+      features: ['Essential monitoring', 'Basic KPI tracking', 'Standard alerts', 'Monthly reporting', 'Email support']
+    },
+    { 
+      id: 'professional', 
+      name: 'Professional', 
+      price: 4, 
+      color: 'blue',
+      features: ['Everything in Basic', 'Real-time KPI tracking', 'Predictive alerts', 'AI-powered insights', '24/7 support']
+    },
+    { 
+      id: 'enterprise', 
+      name: 'Enterprise', 
+      price: 5, 
+      color: 'blue',
+      features: ['Everything in Professional', 'Advanced analytics', 'Custom integrations', 'Dedicated account manager', 'Priority support']
     }
+  ];
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
-  const removeProperty = (id: string) => {
-    setProperties(properties.filter(p => p.id !== id));
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
-  const handlePaymentSetup = async () => {
+  useEffect(() => {
+    const stored = localStorage.getItem('pendingRegistration');
+    if (stored) {
+      const data = JSON.parse(stored);
+      setRegistrationData(data);
+      
+      if (data.userData?.properties?.length > 0) {
+        // Initialize property tiers with basic tier
+        const initialTiers = data.userData.properties.map((_: any, index: number) => ({
+          propertyIndex: index,
+          tier: 'basic' as const
+        }));
+        setPropertyTiers(initialTiers);
+
+        // Initialize with one payment method per property
+        const initialMethods = data.userData.properties.map((property: any, index: number) => ({
+          id: `property-${index}`,
+          type: 'card' as const,
+          propertyIds: [index.toString()],
+          propertyName: property.name
+        }));
+        setPaymentMethods(initialMethods);
+      }
+    }
+  }, []);
+
+  const updatePropertyTier = (propertyIndex: number, tier: 'basic' | 'professional' | 'enterprise') => {
+    setPropertyTiers(prev => 
+      prev.map(pt => 
+        pt.propertyIndex === propertyIndex ? { ...pt, tier } : pt
+      )
+    );
+  };
+
+  const getPropertyTier = (propertyIndex: number) => {
+    return propertyTiers.find(pt => pt.propertyIndex === propertyIndex)?.tier || 'basic';
+  };
+
+  const calculateTotalCost = () => {
+    if (!registrationData?.userData?.properties) return 0;
+    
+    return registrationData.userData.properties.reduce((total: number, property: any, index: number) => {
+      const tier = getPropertyTier(index);
+      const tierData = pricingTiers.find(t => t.id === tier);
+      const units = parseInt(property.units || '0');
+      return total + (units * (tierData?.price || 3));
+    }, 0);
+  };
+
+  const addPaymentMethod = () => {
+    const newMethod: PaymentMethod = {
+      id: Date.now().toString(),
+      type: 'card',
+      propertyIds: []
+    };
+    setPaymentMethods([...paymentMethods, newMethod]);
+  };
+
+  const removePaymentMethod = (id: string) => {
+    setPaymentMethods(paymentMethods.filter(method => method.id !== id));
+  };
+
+  const updatePaymentMethod = (id: string, updates: Partial<PaymentMethod>) => {
+    setPaymentMethods(paymentMethods.map(method => 
+      method.id === id ? { ...method, ...updates } : method
+    ));
+  };
+
+  const assignPropertyToMethod = (propertyIndex: string, methodId: string) => {
+    setPaymentMethods(paymentMethods.map(method => ({
+      ...method,
+      propertyIds: method.id === methodId 
+        ? [...method.propertyIds.filter(id => id !== propertyIndex), propertyIndex]
+        : method.propertyIds.filter(id => id !== propertyIndex)
+    })));
+  };
+
+  const handlePaymentComplete = async () => {
     setIsProcessing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Save property data to localStorage
-    localStorage.setItem('userProperties', JSON.stringify(properties));
-    localStorage.setItem('onboardingCompleted', 'true');
-    
+    await new Promise(resolve => setTimeout(resolve, 2000));
     setIsProcessing(false);
-    onComplete();
+    setShowDataSetup(true);
   };
 
-  const getTotalCost = () => {
-    return properties.reduce((total, property) => total + property.cost, 0);
-  };
+  if (!registrationData) {
+    return <div>Loading...</div>;
+  }
 
-  if (isProcessing) {
-    return (
-      <div className="min-h-screen bg-gray-50 relative">
-        <Navigation />
-        <div className="max-w-2xl mx-auto p-6 pt-20">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold mb-2">Setting Up Your Account</h3>
-              <p className="text-gray-600 mb-4">Configuring your properties and payment methods...</p>
-              <div className="space-y-2 text-sm text-left max-w-md mx-auto">
-                <div className="flex items-center space-x-2">
-                  <Check className="h-4 w-4 text-green-600" />
-                  <span>Processing payment information</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Check className="h-4 w-4 text-green-600" />
-                  <span>Setting up property profiles</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                  <span>Configuring dashboard and alerts</span>
+  if (showDataSetup) {
+    return <DataSetup onComplete={onComplete} />;
+  }
+
+  const { userData } = registrationData;
+  const properties = userData?.properties || [];
+  const totalUnits = properties.reduce((sum: number, prop: any) => sum + parseInt(prop.units || '0'), 0);
+  const monthlyTotal = calculateTotalCost();
+  
+  // Calculate credit card discount (10% off)
+  const creditCardDiscount = 0.10;
+  const hasAllCardPayments = paymentMethods.every(method => method.type === 'card');
+  const discountAmount = hasAllCardPayments ? Math.round(monthlyTotal * creditCardDiscount) : 0;
+  const finalTotal = monthlyTotal - discountAmount;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Blue Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">Choose Your Plan & Payment</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">
+                Select pricing tiers for your {properties.length} {properties.length === 1 ? 'property' : 'properties'} and configure payment
+              </p>
+              <div className="mt-4 text-blue-100">
+                <p className="text-lg">Total Units: {totalUnits}</p>
+                <p className="text-2xl font-bold">Monthly Cost: {formatCurrency(finalTotal)}</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBackClick}
+              className="text-white hover:bg-blue-600"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Pricing Details Dropdown */}
+        <Card>
+          <CardHeader>
+            <Button
+              variant="ghost"
+              onClick={() => setShowPricingDetails(!showPricingDetails)}
+              className="w-full flex items-center justify-between p-0 h-auto"
+            >
+              <CardTitle>View Pricing Details</CardTitle>
+              {showPricingDetails ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </Button>
+          </CardHeader>
+          {showPricingDetails && (
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-4">
+                {pricingTiers.map((tier) => (
+                  <div key={tier.id} className="border rounded-lg p-4">
+                    <h3 className="font-bold text-lg mb-2">{tier.name}</h3>
+                    <p className="text-2xl font-bold mb-3">${tier.price}/unit/month</p>
+                    <ul className="space-y-2">
+                      {tier.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Property Tier Selection */}
+        <div className="space-y-4">
+          <h3 className="text-2xl font-bold text-gray-900">1. Select Pricing Tier for Each Property</h3>
+          <div className="space-y-4">
+            {properties.map((property: any, index: number) => {
+              const currentTier = getPropertyTier(index);
+              const units = parseInt(property.units || '0');
+              
+              return (
+                <Card key={index} className="border-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl">{property.name}</span>
+                        <span className="text-sm text-gray-600 ml-2">({units} units)</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold">
+                          {formatCurrency(units * (pricingTiers.find(t => t.id === currentTier)?.price || 3))}/month
+                        </p>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {pricingTiers.map((tier) => {
+                        const isSelected = currentTier === tier.id;
+                        return (
+                          <Card 
+                            key={tier.id}
+                            className={`cursor-pointer transition-all duration-200 ${
+                              isSelected 
+                                ? 'border-2 border-blue-600 shadow-lg ring-2 ring-blue-100 bg-blue-50' 
+                                : 'border-2 border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => updatePropertyTier(index, tier.id as any)}
+                          >
+                            <CardHeader className="text-center pb-2">
+                              <CardTitle className="text-lg">{tier.name}</CardTitle>
+                              <div className="text-2xl font-bold text-gray-900">
+                                ${tier.price}/unit
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                Total: {formatCurrency(units * tier.price)}/month
+                              </p>
+                            </CardHeader>
+                            <CardContent className="pt-2">
+                              <Button 
+                                variant={isSelected ? "default" : "outline"}
+                                className={`w-full ${isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updatePropertyTier(index, tier.id as any);
+                                }}
+                              >
+                                {isSelected ? 'Selected' : 'Select Plan'}
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Payment Methods Section */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-bold text-gray-900">2. Configure Payment Methods</h3>
+            <Button onClick={addPaymentMethod} variant="outline">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Payment Method
+            </Button>
+          </div>
+
+          {/* Credit Card Promotion Banner */}
+          <Card className="border-2 border-green-200 bg-green-50">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <Zap className="h-6 w-6 text-green-600 mr-3" />
+                <div>
+                  <h4 className="font-semibold text-green-800">Pay with Credit Card & Save 10%!</h4>
+                  <p className="text-sm text-green-700">
+                    Get instant processing and save money with our credit card discount.
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <Navigation />
-      <div className="max-w-4xl mx-auto p-6 pt-20">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Property & Payment Setup</h1>
-          <p className="text-gray-600">Add your properties and configure payment methods</p>
-        </div>
-
-        {step === 1 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building2 className="h-5 w-5" />
-                <span>Add Property</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Property Name</Label>
-                  <Input
-                    value={currentProperty.name}
-                    onChange={(e) => setCurrentProperty(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g., Sunset Apartments"
-                  />
-                </div>
-                <div>
-                  <Label>Address</Label>
-                  <Input
-                    value={currentProperty.address}
-                    onChange={(e) => setCurrentProperty(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="Property address"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Number of Units</Label>
-                <Input
-                  type="number"
-                  value={currentProperty.units || ''}
-                  onChange={(e) => setCurrentProperty(prev => ({ ...prev, units: parseInt(e.target.value) || 0 }))}
-                  placeholder="Enter number of units"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-3 block">Select Tier</Label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {tiers.map((tier) => (
-                    <div
-                      key={tier.name}
-                      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                        currentProperty.tier === tier.name
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => setCurrentProperty(prev => ({ ...prev, tier: tier.name }))}
+          {paymentMethods.map((method, index) => {
+            const assignedProperties = method.propertyIds.map(id => properties[parseInt(id)]).filter(Boolean);
+            
+            return (
+              <Card key={method.id} className="border-2">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center flex-wrap gap-2">
+                      {method.type === 'card' && <CreditCard className="h-5 w-5 mr-2" />}
+                      {method.type === 'ach' && <Building2 className="h-5 w-5 mr-2" />}
+                      {method.type === 'invoice' && <FileText className="h-5 w-5 mr-2" />}
+                      Payment Method {index + 1}
+                      {assignedProperties.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {assignedProperties.map((property, propIndex) => (
+                            <span key={propIndex} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              {property.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {method.type === 'card' && (
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                          10% DISCOUNT
+                        </span>
+                      )}
+                    </CardTitle>
+                    {paymentMethods.length > 1 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => removePaymentMethod(method.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex space-x-4">
+                    <Button 
+                      variant={method.type === 'card' ? 'default' : 'outline'}
+                      onClick={() => updatePaymentMethod(method.id, { type: 'card' })}
+                      className={method.type === 'card' ? 'bg-green-600 hover:bg-green-700' : ''}
                     >
-                      <div className="text-center mb-3">
-                        <h3 className="font-semibold">{tier.name}</h3>
-                        <div className="text-2xl font-bold text-blue-600">${tier.price}</div>
-                        <div className="text-sm text-gray-500">per unit/month</div>
-                      </div>
-                      <ul className="space-y-1 text-sm">
-                        {tier.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-center space-x-2">
-                            <Check className="h-3 w-3 text-green-600" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Credit Card (10% DISCOUNT)
+                    </Button>
+                    <Button 
+                      variant={method.type === 'ach' ? 'default' : 'outline'}
+                      onClick={() => updatePaymentMethod(method.id, { type: 'ach' })}
+                    >
+                      <Building2 className="h-4 w-4 mr-2" />
+                      ACH/Bank Transfer
+                    </Button>
+                    <Button 
+                      variant={method.type === 'invoice' ? 'default' : 'outline'}
+                      onClick={() => updatePaymentMethod(method.id, { type: 'invoice' })}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Invoice
+                    </Button>
+                  </div>
 
-              {currentProperty.tier && currentProperty.units > 0 && (
-                <div>
-                  <Label className="mb-3 block">Payment Method</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {paymentMethods.map((method) => {
-                      const IconComponent = method.icon;
-                      const cost = calculateCost(currentProperty.units, tiers.find(t => t.name === currentProperty.tier)?.price || 3, method.id);
-                      const originalCost = currentProperty.units * (tiers.find(t => t.name === currentProperty.tier)?.price || 3);
-                      
+                  {method.type === 'card' && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          placeholder="Card Number"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="MM/YY"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="CVC"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Cardholder Name"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {method.type === 'ach' && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          placeholder="Bank Name"
+                          className="p-3 border border-gray-300 rounded-lg"
+                          value={method.bankName || ''}
+                          onChange={(e) => updatePaymentMethod(method.id, { bankName: e.target.value })}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Account Holder Name"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Routing Number"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Account Number"
+                          className="p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {method.type === 'invoice' && (
+                    <div className="space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Company Name"
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                        value={method.companyName || ''}
+                        onChange={(e) => updatePaymentMethod(method.id, { companyName: e.target.value })}
+                      />
+                      <input
+                        type="email"
+                        placeholder="Billing Email"
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                        value={method.invoiceEmail || ''}
+                        onChange={(e) => updatePaymentMethod(method.id, { invoiceEmail: e.target.value })}
+                      />
+                    </div>
+                  )}
+
+                  {properties.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Assign Properties to this Payment Method:
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {properties.map((property: any, propIndex: number) => (
+                          <label key={propIndex} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={method.propertyIds.includes(propIndex.toString())}
+                              onChange={() => assignPropertyToMethod(propIndex.toString(), method.id)}
+                              className="rounded"
+                            />
+                            <span className="text-sm">{property.name} ({property.units} units)</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+
+          {/* Payment Summary */}
+          <Card className="border-2 border-blue-200 bg-blue-50">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <DollarSign className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-blue-800 mb-2">Payment Summary</h3>
+                <div className="bg-white rounded-lg p-4 text-left">
+                  <div className="space-y-2">
+                    {properties.map((property: any, index: number) => {
+                      const tier = getPropertyTier(index);
+                      const tierData = pricingTiers.find(t => t.id === tier);
+                      const units = parseInt(property.units || '0');
+                      const cost = units * (tierData?.price || 3);
                       return (
-                        <div
-                          key={method.id}
-                          className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                            currentProperty.paymentMethod === method.id
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                          onClick={() => setCurrentProperty(prev => ({ ...prev, paymentMethod: method.id }))}
-                        >
-                          <div className="flex items-center space-x-2 mb-2">
-                            <IconComponent className="h-5 w-5" />
-                            <span className="font-medium">{method.name}</span>
-                          </div>
-                          {method.discount > 0 && (
-                            <Badge className="mb-2 bg-green-100 text-green-800">
-                              {method.discount}% discount
-                            </Badge>
-                          )}
-                          <div className="text-sm">
-                            <div className="font-semibold">${cost.toFixed(2)}/month</div>
-                            {method.discount > 0 && (
-                              <div className="text-gray-500 line-through">${originalCost.toFixed(2)}</div>
-                            )}
-                          </div>
+                        <div key={index} className="flex justify-between items-center">
+                          <span>{property.name} ({tierData?.name}):</span>
+                          <span className="font-semibold">{formatCurrency(cost)}</span>
                         </div>
                       );
                     })}
                   </div>
-                </div>
-              )}
-
-              <div className="flex space-x-3">
-                <Button onClick={addProperty} disabled={!currentProperty.name || !currentProperty.address || currentProperty.units === 0 || !currentProperty.tier || !currentProperty.paymentMethod}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Property
-                </Button>
-                {properties.length > 0 && (
-                  <Button onClick={() => setStep(2)} variant="outline">
-                    Continue to Payment ({properties.length} {properties.length === 1 ? 'property' : 'properties'})
-                  </Button>
-                )}
-              </div>
-
-              {properties.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="font-semibold mb-3">Added Properties</h3>
-                  <div className="space-y-2">
-                    {properties.map((property) => (
-                      <div key={property.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <div className="font-medium">{property.name}</div>
-                          <div className="text-sm text-gray-600">
-                            {property.units} units • {property.tier} • ${property.cost.toFixed(2)}/month
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => removeProperty(property.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
+                    <span>Total Units:</span>
+                    <span className="font-semibold">{totalUnits}</span>
+                  </div>
+                  {hasAllCardPayments && discountAmount > 0 && (
+                    <>
+                      <div className="flex justify-between items-center mb-2 text-gray-500">
+                        <span>Subtotal:</span>
+                        <span className="line-through">{formatCurrency(monthlyTotal)}</span>
                       </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                    <div className="font-semibold">Total Monthly Cost: ${getTotalCost().toFixed(2)}</div>
+                      <div className="flex justify-between items-center mb-2 text-green-600">
+                        <span>Credit Card Discount (10%):</span>
+                        <span>-{formatCurrency(discountAmount)}</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex justify-between items-center text-lg font-bold border-t pt-2">
+                    <span>Monthly Total:</span>
+                    <span>{formatCurrency(finalTotal)}</span>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="text-center">
+            <Button 
+              onClick={handlePaymentComplete}
+              disabled={isProcessing}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-medium"
+            >
+              {isProcessing ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                <>
+                  <Shield className="w-4 h-4 mr-2" />
+                  Complete Setup
+                </>
               )}
-            </CardContent>
-          </Card>
-        )}
-
-        {step === 2 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Complete Payment Setup</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-800 mb-2">Order Summary</h3>
-                <div className="space-y-2">
-                  {properties.map((property) => (
-                    <div key={property.id} className="flex justify-between text-sm">
-                      <span>{property.name} ({property.units} units, {property.tier})</span>
-                      <span>${property.cost.toFixed(2)}/month</span>
-                    </div>
-                  ))}
-                  <div className="border-t pt-2 mt-2 font-semibold">
-                    <div className="flex justify-between">
-                      <span>Total Monthly</span>
-                      <span>${getTotalCost().toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-gray-600 mb-4">
-                  Your payment methods and billing will be set up based on your property configurations.
-                </p>
-                <Button onClick={handlePaymentSetup} className="w-full" size="lg">
-                  Complete Setup & Continue to Dashboard
-                </Button>
-              </div>
-
-              <div className="flex justify-center">
-                <Button variant="ghost" onClick={() => setStep(1)}>
-                  Back to Properties
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

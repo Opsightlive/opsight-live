@@ -1,251 +1,211 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap, RefreshCw, Database } from 'lucide-react';
-import { useRealtimeKPIs } from '@/hooks/useRealtimeKPIs';
-import { useAuth } from '@/contexts/AuthContext';
-import { kpiService } from '@/services/kpiService';
-import KPIMetricsGrid from '@/components/kpi/KPIMetricsGrid';
-import KPIChartsSection from '@/components/kpi/KPIChartsSection';
-import PropertyComparisonTable from '@/components/kpi/PropertyComparisonTable';
-import KPILoadingState from '@/components/kpi/KPILoadingState';
-import KPIErrorState from '@/components/kpi/KPIErrorState';
-import KPINoDataState from '@/components/kpi/KPINoDataState';
-import KPIDemoDataGenerator from '@/components/kpi/KPIDemoDataGenerator';
+import { Progress } from '@/components/ui/progress';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, BarChart3, Activity, Zap } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 const KPICommandCenter = () => {
-  const { user } = useAuth();
-  const { metrics, events, loading, error, syncDataSources } = useRealtimeKPIs();
-  const [selectedTimeRange, setSelectedTimeRange] = useState('12m');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [refreshing, setRefreshing] = useState(false);
+  const kpiMetrics = [
+    { name: 'Occupancy Rate', value: '92.5%', change: '+0.8%', trend: 'up' },
+    { name: 'Net Operating Income', value: '$1.25M', change: '+5.2%', trend: 'up' },
+    { name: 'Expense Ratio', value: '45.7%', change: '-1.5%', trend: 'down' },
+    { name: 'Tenant Satisfaction', value: '4.6/5', change: '+0.2', trend: 'up' }
+  ];
 
-  // Transform real-time metrics to display format
-  const transformedMetrics = metrics
-    .filter(metric => selectedCategory === 'all' || metric.category === selectedCategory)
-    .map(metric => ({
-      name: metric.metric_name,
-      value: formatMetricValue(metric.metric_value, metric.metric_unit),
-      change: formatChangeValue(metric.change_percentage),
-      trend: (metric.change_percentage || 0) >= 0 ? 'up' as const : 'down' as const,
-      target: metric.target_value || 100,
-      current: metric.metric_value,
-      zone: metric.performance_zone as 'green' | 'yellow' | 'red'
-    }));
+  const propertyPerformance = [
+    { property: 'Sunset Gardens', occupancy: 94, revenue: 285000, expenses: 150000, noi: 135000 },
+    { property: 'Metro Plaza', occupancy: 91, revenue: 320000, expenses: 170000, noi: 150000 },
+    { property: 'Riverside Towers', occupancy: 88, revenue: 195000, expenses: 110000, noi: 85000 },
+    { property: 'Oak Street Commons', occupancy: 96, revenue: 410000, expenses: 220000, noi: 190000 }
+  ];
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await syncDataSources();
-    setRefreshing(false);
-  };
+  const expenseBreakdown = [
+    { category: 'Maintenance', value: 320000, color: '#3B82F6' },
+    { category: 'Utilities', value: 210000, color: '#10B981' },
+    { category: 'Management Fees', value: 180000, color: '#F59E0B' },
+    { category: 'Insurance', value: 90000, color: '#EF4444' }
+  ];
 
-  const handleManualSync = async () => {
-    if (!user) return;
-    
-    try {
-      await kpiService.syncDataSources(user.id);
-    } catch (error) {
-      console.error('Manual sync failed:', error);
-    }
-  };
-
-  if (loading) return <KPILoadingState />;
-  if (error) return <KPIErrorState error={error} onRetry={handleRefresh} />;
+  const monthlyCashFlow = [
+    { month: 'Jul', revenue: 220000, expenses: 140000, cashFlow: 80000 },
+    { month: 'Aug', revenue: 235000, expenses: 145000, cashFlow: 90000 },
+    { month: 'Sep', revenue: 228000, expenses: 142000, cashFlow: 86000 },
+    { month: 'Oct', revenue: 240000, expenses: 148000, cashFlow: 92000 },
+    { month: 'Nov', revenue: 245000, expenses: 150000, cashFlow: 95000 },
+    { month: 'Dec', revenue: 250000, expenses: 152000, cashFlow: 98000 }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
+        {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-4">KPI Command Center</h1>
               <p className="text-xl text-blue-100 max-w-3xl">
-                Real-time performance monitoring powered by live data integration
+                Real-time performance monitoring and key performance indicators dashboard
               </p>
               <div className="flex items-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  <span>Live Metrics</span>
+                  <span>Performance Tracking</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Real-time Analytics</span>
+                  <span>Analytics Engine</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
-                  <span>Event Streaming</span>
+                  <span>Real-time Monitoring</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
-                  <span>Data Integration</span>
+                  <Zap className="h-5 w-5" />
+                  <span>Automated Alerts</span>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-                <SelectTrigger className="w-32 bg-white/10 border-white/20 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1m">1 Month</SelectItem>
-                  <SelectItem value="3m">3 Months</SelectItem>
-                  <SelectItem value="6m">6 Months</SelectItem>
-                  <SelectItem value="12m">12 Months</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleManualSync}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <Database className="h-4 w-4 mr-2" />
-                Sync Data
-              </Button>
             </div>
           </div>
         </div>
 
-        {/* Real-time Status */}
+        {/* Key Performance Indicators */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {kpiMetrics.map((kpi, index) => (
+            <Card key={index}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{kpi.name}</p>
+                    <p className="text-2xl font-bold">{kpi.value}</p>
+                    <div className={`flex items-center text-sm ${kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {kpi.trend === 'up' ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
+                      {kpi.change}
+                    </div>
+                  </div>
+                  <Target className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts and Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Cash Flow</CardTitle>
+              <CardDescription>Net cash flow trend over the last six months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={monthlyCashFlow}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="cashFlow" stroke="#3B82F6" strokeWidth={2} name="Cash Flow" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Expense Breakdown</CardTitle>
+              <CardDescription>Distribution of expenses by category</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={expenseBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ category, value }) => `${category}: $${value.toLocaleString()}`}
+                  >
+                    {expenseBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Property Performance Table */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">Live Data Feed Active</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Last Update:</span>
-                  <span className="text-sm font-mono">
-                    {metrics.length > 0 ? new Date(metrics[0].created_at).toLocaleTimeString() : 'No data'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="leasing">Leasing</SelectItem>
-                    <SelectItem value="revenue">Revenue</SelectItem>
-                    <SelectItem value="staffing">Staffing</SelectItem>
-                    <SelectItem value="financials">Financials</SelectItem>
-                    <SelectItem value="risk">Risk Management</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Badge variant="outline" className="text-sm">
-                  {transformedMetrics.length} Live Metrics
-                </Badge>
-              </div>
+          <CardHeader>
+            <CardTitle>Property Performance Overview</CardTitle>
+            <CardDescription>Key financial metrics for each property</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Occupancy</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expenses</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NOI</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {propertyPerformance.map((property, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap">{property.property}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{property.occupancy}%</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.revenue.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.expenses.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${property.noi.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
 
-        {/* Demo Data Generator - Show when no data */}
-        {transformedMetrics.length === 0 && (
-          <KPIDemoDataGenerator />
-        )}
-
-        {/* Recent Events */}
-        {events.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent KPI Events</CardTitle>
-              <CardDescription>Real-time alerts and metric changes</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {events.slice(0, 10).map((event) => (
-                  <div key={event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`h-2 w-2 rounded-full ${
-                        event.alert_level === 'critical' ? 'bg-red-500' :
-                        event.alert_level === 'high' ? 'bg-orange-500' :
-                        event.alert_level === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                      }`} />
-                      <span className="font-medium">{event.metric_name}</span>
-                      <span className="text-sm text-gray-600">{event.event_type.replace('_', ' ')}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-mono">
-                        {event.old_value} → {event.new_value}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(event.created_at).toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+        {/* Actionable Insights */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Actionable Insights</CardTitle>
+            <CardDescription>AI-driven recommendations for portfolio optimization</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Optimize Rent Strategy</h3>
+                <p className="text-sm text-gray-600">Increase revenue by adjusting rental rates based on market trends</p>
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* KPI Metrics Grid */}
-        {transformedMetrics.length > 0 && (
-          <KPIMetricsGrid metrics={transformedMetrics} />
-        )}
-
-        {/* Charts and Analytics */}
-        {transformedMetrics.length > 0 && (
-          <KPIChartsSection 
-            timeRange={selectedTimeRange}
-            category={selectedCategory}
-            realTimeData={metrics}
-          />
-        )}
-
-        {/* Property Comparison */}
-        {transformedMetrics.length > 0 && (
-          <PropertyComparisonTable />
-        )}
-
-        {/* No Data State */}
-        {transformedMetrics.length === 0 && selectedCategory !== 'all' && (
-          <KPINoDataState 
-            category={selectedCategory}
-            onReset={() => setSelectedCategory('all')}
-          />
-        )}
+              <Button variant="outline">Analyze</Button>
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Reduce Operating Expenses</h3>
+                <p className="text-sm text-gray-600">Identify areas to cut costs and improve efficiency</p>
+              </div>
+              <Button variant="outline">Explore</Button>
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h3 className="font-semibold">Improve Tenant Retention</h3>
+                <p className="text-sm text-gray-600">Implement strategies to increase tenant satisfaction and reduce turnover</p>
+              </div>
+              <Button variant="outline">Implement</Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 };
-
-// Helper functions
-function formatMetricValue(value: number, unit?: string): string {
-  if (unit === '$') {
-    return `$${(value / 1000000).toFixed(1)}M`;
-  } else if (unit === '%') {
-    return `${value.toFixed(1)}%`;
-  } else if (unit === 'days') {
-    return Math.round(value).toString();
-  }
-  return value.toLocaleString();
-}
-
-function formatChangeValue(changePercentage?: number): string {
-  if (!changePercentage) return '+0%';
-  const sign = changePercentage >= 0 ? '+' : '';
-  return `${sign}${changePercentage.toFixed(1)}%`;
-}
 
 export default KPICommandCenter;
