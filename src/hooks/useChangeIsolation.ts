@@ -3,12 +3,12 @@ import { useEffect, useCallback } from 'react';
 import { ChangeIsolator, IsolationBoundary } from '@/utils/changeIsolation';
 
 /**
- * Hook to manage change isolation for components
+ * Database-enforced hook to manage change isolation for components
  */
 export const useChangeIsolation = (moduleId: string, allowedFiles: string[] = []) => {
   
   useEffect(() => {
-    // Register isolation boundary for this component
+    // Register isolation boundary for this component in database
     const boundary: IsolationBoundary = {
       moduleId,
       allowedFiles: allowedFiles.length > 0 ? allowedFiles : [`src/components/${moduleId}/**/*`],
@@ -23,29 +23,37 @@ export const useChangeIsolation = (moduleId: string, allowedFiles: string[] = []
       isolatedScope: [moduleId]
     };
 
-    ChangeIsolator.registerBoundary(boundary);
-    console.log('🔒 ISOLATION BOUNDARY REGISTERED:', moduleId);
+    const registerBoundary = async () => {
+      try {
+        await ChangeIsolator.registerBoundary(boundary);
+        console.log('🔒 DATABASE-ENFORCED ISOLATION BOUNDARY REGISTERED:', moduleId);
+      } catch (error) {
+        console.error('🚨 FAILED TO REGISTER DATABASE ISOLATION:', error);
+      }
+    };
+
+    registerBoundary();
 
     return () => {
-      console.log('🔓 ISOLATION BOUNDARY REMOVED:', moduleId);
+      console.log('🔓 ISOLATION BOUNDARY CLEANUP:', moduleId);
     };
   }, [moduleId, allowedFiles]);
 
   /**
-   * Execute a change within isolation
+   * Execute a change within database-enforced isolation
    */
-  const executeIsolatedChange = useCallback(<T>(changeFunction: () => T): T | null => {
-    console.log('🛡️ EXECUTING ISOLATED CHANGE FOR:', moduleId);
+  const executeIsolatedChange = useCallback(async <T>(changeFunction: () => T): Promise<T | null> => {
+    console.log('🛡️ EXECUTING DATABASE-ENFORCED ISOLATED CHANGE FOR:', moduleId);
     
     const sandbox = ChangeIsolator.createSandbox(moduleId);
-    return sandbox.executeChange(changeFunction);
+    return await sandbox.executeChange(changeFunction);
   }, [moduleId]);
 
   /**
-   * Verify that a proposed change won't affect other modules
+   * Verify that a proposed change won't affect other modules using database
    */
-  const verifyChangeIsolation = useCallback((target: string, affectedFiles: string[]): boolean => {
-    return ChangeIsolator.enforceIsolation(target, affectedFiles);
+  const verifyChangeIsolation = useCallback(async (target: string, affectedFiles: string[]): Promise<boolean> => {
+    return await ChangeIsolator.enforceIsolation(target, affectedFiles);
   }, []);
 
   return {

@@ -291,6 +291,75 @@ export type Database = {
         }
         Relationships: []
       }
+      change_execution_log: {
+        Row: {
+          affected_files: string[]
+          change_description: string
+          error_details: string | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          isolation_verified: boolean | null
+          rollback_data: Json | null
+          validation_status: string
+        }
+        Insert: {
+          affected_files: string[]
+          change_description: string
+          error_details?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          isolation_verified?: boolean | null
+          rollback_data?: Json | null
+          validation_status: string
+        }
+        Update: {
+          affected_files?: string[]
+          change_description?: string
+          error_details?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          isolation_verified?: boolean | null
+          rollback_data?: Json | null
+          validation_status?: string
+        }
+        Relationships: []
+      }
+      change_validation_rules: {
+        Row: {
+          affected_modules: string[]
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          isolation_boundaries: Json
+          rule_name: string
+          rule_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          affected_modules: string[]
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          isolation_boundaries: Json
+          rule_name: string
+          rule_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          affected_modules?: string[]
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          isolation_boundaries?: Json
+          rule_name?: string
+          rule_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       consistency_rules: {
         Row: {
           affected_modules: string[]
@@ -1093,6 +1162,36 @@ export type Database = {
           source_module?: string
           target_module?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      module_isolation_boundaries: {
+        Row: {
+          allowed_files: string[]
+          created_at: string | null
+          id: string
+          isolation_scope: Json
+          module_id: string
+          protected_functions: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_files: string[]
+          created_at?: string | null
+          id?: string
+          isolation_scope: Json
+          module_id: string
+          protected_functions: string[]
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_files?: string[]
+          created_at?: string | null
+          id?: string
+          isolation_scope?: Json
+          module_id?: string
+          protected_functions?: string[]
+          updated_at?: string | null
         }
         Relationships: []
       }
