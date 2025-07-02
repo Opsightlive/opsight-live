@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from 'react';
 import { ChangeValidator } from '@/utils/changeValidation';
+import { useChangeIsolation } from './useChangeIsolation';
 
 /**
- * Hook to monitor system stability and prevent destructive changes
+ * Enhanced hook to monitor system stability with complete isolation
  */
 export const useSystemStability = () => {
   const [isStable, setIsStable] = useState(true);
@@ -16,16 +17,30 @@ export const useSystemStability = () => {
     'Real-time Updates'
   ]);
 
+  // Initialize change isolation for the stability system
+  const { verifyChangeIsolation } = useChangeIsolation('SystemStability', [
+    'src/hooks/useSystemStability.ts',
+    'src/utils/changeValidation.ts',
+    'src/utils/changeIsolation.ts'
+  ]);
+
   useEffect(() => {
-    // Monitor critical functionality
+    // Monitor critical functionality with isolation verification
     const validateStability = () => {
-      console.log('🔍 SYSTEM STABILITY CHECK');
-      const stable = ChangeValidator.verifyNoRegression(criticalFeatures);
-      setIsStable(stable);
+      console.log('🔍 ENHANCED SYSTEM STABILITY CHECK WITH ISOLATION');
       
-      if (!stable) {
-        console.error('🚨 SYSTEM INSTABILITY DETECTED');
-        console.error('One or more critical features may be broken');
+      // Verify all critical features are isolated and working
+      const stable = ChangeValidator.verifyNoRegression(criticalFeatures);
+      const isolationIntact = verifyChangeIsolation('SystemStability', []);
+      
+      const systemStable = stable && isolationIntact;
+      setIsStable(systemStable);
+      
+      if (!systemStable) {
+        console.error('🚨 SYSTEM INSTABILITY OR ISOLATION BREACH DETECTED');
+        console.error('One or more critical features may be broken or isolation compromised');
+      } else {
+        console.log('✅ SYSTEM STABLE AND COMPLETELY ISOLATED');
       }
     };
 
@@ -36,12 +51,14 @@ export const useSystemStability = () => {
     validateStability();
 
     return () => clearInterval(interval);
-  }, [criticalFeatures]);
+  }, [criticalFeatures, verifyChangeIsolation]);
 
   return {
     isStable,
     criticalFeatures,
-    validateChange: (description: string, files: string[]) => 
-      ChangeValidator.analyzeImpact(description, files)
+    validateChange: (description: string, files: string[]) => {
+      const analysis = ChangeValidator.analyzeImpact(description, files);
+      return analysis.isolationStatus === 'ISOLATED';
+    }
   };
 };
