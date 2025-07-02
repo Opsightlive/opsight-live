@@ -13,6 +13,15 @@ export interface IsolationBoundary {
   isolatedScope: string[];
 }
 
+interface DatabaseBoundary {
+  module_id: string;
+  allowed_files: string[];
+  protected_functions: string[];
+  isolation_scope: {
+    isolatedScope: string[];
+  } | null;
+}
+
 export class ChangeIsolator {
   private static isolationBoundaries: Map<string, IsolationBoundary> = new Map();
 
@@ -116,14 +125,16 @@ export class ChangeIsolator {
         return;
       }
 
-      data?.forEach(boundary => {
-        this.isolationBoundaries.set(boundary.module_id, {
-          moduleId: boundary.module_id,
-          allowedFiles: boundary.allowed_files,
-          protectedFunctions: boundary.protected_functions,
-          isolatedScope: boundary.isolation_scope?.isolatedScope || []
+      if (data) {
+        data.forEach((boundary: DatabaseBoundary) => {
+          this.isolationBoundaries.set(boundary.module_id, {
+            moduleId: boundary.module_id,
+            allowedFiles: boundary.allowed_files,
+            protectedFunctions: boundary.protected_functions,
+            isolatedScope: (boundary.isolation_scope as any)?.isolatedScope || []
+          });
         });
-      });
+      }
 
       console.log('✅ LOADED ISOLATION BOUNDARIES FROM DATABASE');
     } catch (error) {
