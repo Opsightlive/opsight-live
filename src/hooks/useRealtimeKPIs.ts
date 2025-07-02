@@ -93,8 +93,12 @@ export const useRealtimeKPIs = () => {
 
   return {
     kpiData,
+    metrics: kpiData,
+    events: [], // No events for now since we removed fake data
     isLoading,
+    loading: isLoading,
     error,
-    refreshData
+    refreshData,
+    syncDataSources: refreshData
   };
 };

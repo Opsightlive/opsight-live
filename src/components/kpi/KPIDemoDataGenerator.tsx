@@ -9,18 +9,13 @@ import { useRealtimeKPIs } from '@/hooks/useRealtimeKPIs';
 
 const KPIDemoDataGenerator = () => {
   const { user } = useAuth();
-  const { generateSampleData } = useRealtimeKPIs();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerateSampleData = async () => {
     if (!user) return;
-
+    // No demo data generation - only real data from integrations
     setIsGenerating(true);
-    try {
-      await generateSampleData();
-    } finally {
-      setIsGenerating(false);
-    }
+    setTimeout(() => setIsGenerating(false), 1000);
   };
 
   return (
