@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { 
   insertUserProfileSchema, 
   insertUserPreferencesSchema, 
@@ -17,8 +18,62 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // User Profile Routes
-  app.get("/api/user-profile/:id", async (req, res) => {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Calendly integration routes
+  app.get("/api/calendly/booking-url", isAuthenticated, async (req: any, res) => {
+    try {
+      // Return the provided Calendly URL
+      const calendlyUrl = "https://www.opsight.live/";
+      res.json({ bookingUrl: calendlyUrl });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get booking URL" });
+    }
+  });
+
+  app.post("/api/calendly/book", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { meetingType, dateTime, email, notes } = req.body;
+      
+      // Log the booking attempt
+      await storage.createUserActivityLog({
+        userId,
+        actionType: "calendly_booking",
+        actionDetails: {
+          meetingType,
+          dateTime,
+          email,
+          notes,
+          calendlyUrl: "https://www.opsight.live/"
+        },
+        success: true
+      });
+
+      res.json({
+        success: true,
+        message: "Booking logged successfully",
+        redirectUrl: "https://www.opsight.live/"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to process booking" });
+    }
+  });
+  // User Profile Routes (Protected)
+  app.get("/api/user-profile/:id", isAuthenticated, async (req, res) => {
     try {
       const profile = await storage.getUserProfile(req.params.id);
       if (!profile) {
@@ -30,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/user-profile/by-email/:email", async (req, res) => {
+  app.get("/api/user-profile/by-email/:email", isAuthenticated, async (req, res) => {
     try {
       const profile = await storage.getUserProfileByEmail(req.params.email);
       if (!profile) {
@@ -42,7 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/user-profile", async (req, res) => {
+  app.post("/api/user-profile", isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertUserProfileSchema.parse(req.body);
       const profile = await storage.createUserProfile(validatedData);
@@ -52,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/user-profile/:id", async (req, res) => {
+  app.put("/api/user-profile/:id", isAuthenticated, async (req, res) => {
     try {
       const profile = await storage.updateUserProfile(req.params.id, req.body);
       res.json(profile);

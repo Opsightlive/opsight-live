@@ -2,6 +2,7 @@ import { eq, desc, and } from "drizzle-orm";
 import { db } from "./db";
 import { 
   users, 
+  legacyUsers,
   userProfiles, 
   userPreferences, 
   userProperties, 
@@ -15,7 +16,9 @@ import {
   integrations,
   reports,
   type User, 
-  type InsertUser,
+  type UpsertUser,
+  type LegacyUser,
+  type InsertLegacyUser,
   type UserProfile,
   type InsertUserProfile,
   type UserPreferences,
@@ -43,10 +46,14 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
+  // User operations (IMPORTANT) these user operations are mandatory for Replit Auth.
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
   // Legacy user methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getLegacyUser(id: number): Promise<LegacyUser | undefined>;
+  getLegacyUserByUsername(username: string): Promise<LegacyUser | undefined>;
+  createLegacyUser(user: InsertLegacyUser): Promise<LegacyUser>;
   
   // User profile methods
   getUserProfile(id: string): Promise<UserProfile | undefined>;
@@ -110,19 +117,40 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // Legacy user methods
-  async getUser(id: number): Promise<User | undefined> {
+  // User operations (IMPORTANT) these user operations are mandatory for Replit Auth.
+  async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id));
     return result[0];
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.username, username));
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const result = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(insertUser).returning();
+  // Legacy user methods
+  async getLegacyUser(id: number): Promise<LegacyUser | undefined> {
+    const result = await db.select().from(legacyUsers).where(eq(legacyUsers.id, id));
+    return result[0];
+  }
+
+  async getLegacyUserByUsername(username: string): Promise<LegacyUser | undefined> {
+    const result = await db.select().from(legacyUsers).where(eq(legacyUsers.username, username));
+    return result[0];
+  }
+
+  async createLegacyUser(insertUser: InsertLegacyUser): Promise<LegacyUser> {
+    const result = await db.insert(legacyUsers).values(insertUser).returning();
     return result[0];
   }
 
@@ -411,7 +439,8 @@ export class DatabaseStorage implements IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
+  private legacyUsers: Map<number, LegacyUser>;
   private userProfiles: Map<string, UserProfile>;
   private userPreferences: Map<string, UserPreferences>;
   private userProperties: Map<string, UserProperty[]>;
@@ -422,6 +451,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.users = new Map();
+    this.legacyUsers = new Map();
     this.userProfiles = new Map();
     this.userPreferences = new Map();
     this.userProperties = new Map();
@@ -431,21 +461,43 @@ export class MemStorage implements IStorage {
     this.currentId = 1;
   }
 
-  // Legacy user methods
-  async getUser(id: number): Promise<User | undefined> {
+  // User operations (IMPORTANT) these user operations are mandatory for Replit Auth.
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = this.users.get(userData.id!);
+    const user: User = {
+      ...existingUser,
+      ...userData,
+      id: userData.id!,
+      email: userData.email ?? null,
+      firstName: userData.firstName ?? null,
+      lastName: userData.lastName ?? null,
+      profileImageUrl: userData.profileImageUrl ?? null,
+      createdAt: existingUser?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(userData.id!, user);
+    return user;
+  }
+
+  // Legacy user methods
+  async getLegacyUser(id: number): Promise<LegacyUser | undefined> {
+    return this.legacyUsers.get(id);
+  }
+
+  async getLegacyUserByUsername(username: string): Promise<LegacyUser | undefined> {
+    return Array.from(this.legacyUsers.values()).find(
       (user) => user.username === username,
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createLegacyUser(insertUser: InsertLegacyUser): Promise<LegacyUser> {
     const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const user: LegacyUser = { ...insertUser, id };
+    this.legacyUsers.set(id, user);
     return user;
   }
 

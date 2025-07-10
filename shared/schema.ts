@@ -168,8 +168,34 @@ export const reports = pgTable("reports", {
   completedAt: timestamp("completed_at"),
 });
 
-// Legacy users table for backward compatibility
+// Session storage table.
+// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: text("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+);
+
+// User storage table.
+// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 export const users = pgTable("users", {
+  id: text("id").primaryKey().notNull(),
+  email: text("email").unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type UpsertUser = typeof users.$inferInsert;
+export type User = typeof users.$inferSelect;
+
+// Legacy users table for backward compatibility
+export const legacyUsers = pgTable("legacy_users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
@@ -232,7 +258,7 @@ export const insertUserActivityLogSchema = createInsertSchema(userActivityLogs).
   errorMessage: true,
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
+export const insertUserSchema = createInsertSchema(legacyUsers).pick({
   username: true,
   password: true,
 });
@@ -313,8 +339,8 @@ export type KpiUpdate = typeof kpiUpdates.$inferSelect;
 export type InsertUserActivityLog = z.infer<typeof insertUserActivityLogSchema>;
 export type UserActivityLog = typeof userActivityLogs.$inferSelect;
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type InsertLegacyUser = z.infer<typeof insertUserSchema>;
+export type LegacyUser = typeof legacyUsers.$inferSelect;
 
 export type InsertPropertyMetric = z.infer<typeof insertPropertyMetricSchema>;
 export type PropertyMetric = typeof propertyMetrics.$inferSelect;
