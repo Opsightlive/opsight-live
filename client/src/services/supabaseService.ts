@@ -1,4 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Property {
@@ -22,27 +21,25 @@ export interface OnboardingData {
   payment_completed?: boolean;
 }
 
-class SupabaseService {
+class DatabaseService {
   // User Properties Management
   async getUserProperties(userId: string): Promise<Property[]> {
     try {
-      const { data, error } = await supabase
-        .from('user_properties')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching properties:', error);
-        toast.error('Failed to load properties');
-        return [];
+      const response = await fetch(`/api/user-properties/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
       }
-
-      // Properly cast the tier to the correct type
-      return (data || []).map(item => ({
-        ...item,
+      
+      const data = await response.json();
+      return (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        address: item.address,
+        units: item.units,
         tier: item.tier as 'basic' | 'professional' | 'enterprise',
-        payment_method: item.payment_method as 'card' | 'ach'
+        pm_software: item.pmSoftware,
+        payment_method: item.paymentMethod as 'card' | 'ach',
+        monthly_cost: item.monthlyCost ? parseFloat(item.monthlyCost) : undefined
       }));
     } catch (error) {
       console.error('Error fetching properties:', error);
@@ -54,30 +51,29 @@ class SupabaseService {
   async saveUserProperty(userId: string, property: Property): Promise<boolean> {
     try {
       const propertyData = {
-        user_id: userId,
+        userId: userId,
         name: property.name,
         address: property.address,
         units: property.units,
         tier: property.tier,
-        pm_software: property.pm_software,
-        payment_method: property.payment_method,
-        monthly_cost: property.monthly_cost
+        pmSoftware: property.pm_software,
+        paymentMethod: property.payment_method,
+        monthlyCost: property.monthly_cost?.toString()
       };
 
-      const { error } = property.id
-        ? await supabase
-            .from('user_properties')
-            .update(propertyData)
-            .eq('id', property.id)
-            .eq('user_id', userId)
-        : await supabase
-            .from('user_properties')
-            .insert(propertyData);
+      const url = property.id ? `/api/user-properties/${property.id}` : '/api/user-properties';
+      const method = property.id ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(propertyData),
+      });
 
-      if (error) {
-        console.error('Error saving property:', error);
-        toast.error('Failed to save property');
-        return false;
+      if (!response.ok) {
+        throw new Error('Failed to save property');
       }
 
       toast.success(property.id ? 'Property updated successfully' : 'Property added successfully');
@@ -91,16 +87,12 @@ class SupabaseService {
 
   async deleteUserProperty(userId: string, propertyId: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('user_properties')
-        .delete()
-        .eq('id', propertyId)
-        .eq('user_id', userId);
+      const response = await fetch(`/api/user-properties/${propertyId}`, {
+        method: 'DELETE',
+      });
 
-      if (error) {
-        console.error('Error deleting property:', error);
-        toast.error('Failed to delete property');
-        return false;
+      if (!response.ok) {
+        throw new Error('Failed to delete property');
       }
 
       toast.success('Property deleted successfully');
@@ -115,17 +107,32 @@ class SupabaseService {
   // Onboarding Data Management
   async saveOnboardingData(userId: string, data: OnboardingData): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('onboarding_data')
-        .upsert({
-          user_id: userId,
-          ...data
-        });
+      const onboardingData = {
+        userId: userId,
+        companyName: data.company_name,
+        role: data.role,
+        dataSource: data.data_source,
+        totalCost: data.total_cost?.toString(),
+        discount: data.discount?.toString(),
+        setupCompleted: data.setup_completed,
+        paymentCompleted: data.payment_completed
+      };
 
-      if (error) {
-        console.error('Error saving onboarding data:', error);
-        toast.error('Failed to save setup data');
-        return false;
+      // Try to get existing data first
+      const getResponse = await fetch(`/api/onboarding-data/${userId}`);
+      const method = getResponse.ok ? 'PUT' : 'POST';
+      const url = getResponse.ok ? `/api/onboarding-data/${userId}` : '/api/onboarding-data';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(onboardingData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save onboarding data');
       }
 
       toast.success('Setup data saved successfully');
@@ -139,20 +146,24 @@ class SupabaseService {
 
   async getOnboardingData(userId: string): Promise<OnboardingData | null> {
     try {
-      const { data, error } = await supabase
-        .from('onboarding_data')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        if (error.code !== 'PGRST116') { // Not found error is OK
-          console.error('Error fetching onboarding data:', error);
+      const response = await fetch(`/api/onboarding-data/${userId}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null; // Not found is OK
         }
-        return null;
+        throw new Error('Failed to fetch onboarding data');
       }
-
-      return data;
+      
+      const data = await response.json();
+      return {
+        company_name: data.companyName,
+        role: data.role,
+        data_source: data.dataSource,
+        total_cost: data.totalCost ? parseFloat(data.totalCost) : undefined,
+        discount: data.discount ? parseFloat(data.discount) : undefined,
+        setup_completed: data.setupCompleted,
+        payment_completed: data.paymentCompleted
+      };
     } catch (error) {
       console.error('Error fetching onboarding data:', error);
       return null;
@@ -173,21 +184,26 @@ class SupabaseService {
         ? ((currentValue - previousValue) / previousValue) * 100 
         : 0;
 
-      const { error } = await supabase
-        .from('kpi_updates')
-        .insert({
-          user_id: userId,
-          property_id: propertyId,
-          kpi_type: kpiType,
-          current_value: currentValue,
-          previous_value: previousValue,
-          change_percentage: changePercentage,
-          alert_level: alertLevel
-        });
+      const kpiData = {
+        userId: userId,
+        propertyId: propertyId,
+        kpiType: kpiType,
+        currentValue: currentValue.toString(),
+        previousValue: previousValue.toString(),
+        changePercentage: changePercentage.toString(),
+        alertLevel: alertLevel
+      };
 
-      if (error) {
-        console.error('Error creating KPI update:', error);
-        return false;
+      const response = await fetch('/api/kpi-updates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(kpiData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create KPI update');
       }
 
       return true;
@@ -206,15 +222,21 @@ class SupabaseService {
     errorMessage?: string
   ): Promise<void> {
     try {
-      await supabase
-        .from('user_activity_logs')
-        .insert({
-          user_id: userId,
-          action_type: actionType,
-          action_details: actionDetails,
-          success,
-          error_message: errorMessage
-        });
+      const logData = {
+        userId: userId,
+        actionType: actionType,
+        actionDetails: actionDetails,
+        success: success,
+        errorMessage: errorMessage
+      };
+
+      await fetch('/api/user-activity-logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(logData),
+      });
     } catch (error) {
       console.error('Error logging activity:', error);
     }
@@ -223,25 +245,12 @@ class SupabaseService {
   // Batch Operations
   async saveMultipleProperties(userId: string, properties: Property[]): Promise<boolean> {
     try {
-      const propertiesData = properties.map(property => ({
-        user_id: userId,
-        name: property.name,
-        address: property.address,
-        units: property.units,
-        tier: property.tier,
-        pm_software: property.pm_software,
-        payment_method: property.payment_method,
-        monthly_cost: property.monthly_cost
-      }));
-
-      const { error } = await supabase
-        .from('user_properties')
-        .insert(propertiesData);
-
-      if (error) {
-        console.error('Error saving multiple properties:', error);
-        toast.error('Failed to save properties');
-        return false;
+      // Save properties one by one since we don't have a batch endpoint
+      for (const property of properties) {
+        const success = await this.saveUserProperty(userId, property);
+        if (!success) {
+          throw new Error('Failed to save one or more properties');
+        }
       }
 
       toast.success(`${properties.length} properties saved successfully`);
@@ -256,12 +265,8 @@ class SupabaseService {
   // Health Check
   async healthCheck(): Promise<boolean> {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('id')
-        .limit(1);
-
-      return !error;
+      const response = await fetch('/api/health');
+      return response.ok;
     } catch (error) {
       console.error('Health check failed:', error);
       return false;
@@ -269,4 +274,4 @@ class SupabaseService {
   }
 }
 
-export const supabaseService = new SupabaseService();
+export const supabaseService = new DatabaseService();
