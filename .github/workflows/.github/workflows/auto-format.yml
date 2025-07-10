@@ -1,0 +1,28 @@
+name: "Auto Format"
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 1 * * *" # Every day at 01:00 UTC
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Prettier
+        run: npm install --save-dev prettier
+      - name: Run Prettier
+        run: npx prettier --write .
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: automated code formatting" || echo "Nothing to commit"
+          git push
