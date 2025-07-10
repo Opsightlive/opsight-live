@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { useAuth } from '@/hooks/useAuth';
 
 // Page imports
-import Landing from '@/pages/Landing';
+import LandingPage from '@/pages/LandingPage';
 import Home from '@/pages/Home';
 import KPICommandCenter from '@/pages/KPICommandCenter';
 import AIIntelligence from '@/pages/AIIntelligence';
@@ -24,7 +24,7 @@ function AppRouter() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <Route path="/" component={LandingPage} />
       ) : (
         <>
           <Route path="/" component={Home} />
