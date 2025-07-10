@@ -111,7 +111,7 @@ const LandingPage = () => {
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <Link href="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
               <a href="/help" className="text-gray-600 hover:text-gray-900">Resources</a>
-              <a href="https://calendly.com/opsight-demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
+              <a href="https://calendly.com/opsightlive" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
               <a href="/api/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
               <a href="/api/login">
                 <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
@@ -139,7 +139,7 @@ const LandingPage = () => {
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <Link href="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
                 <a href="/help" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
-                <a href="https://calendly.com/opsight-demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
+                <a href="https://calendly.com/opsightlive" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
                 <a href="/api/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</a>
                 <div className="px-3 py-2">
                   <a href="/api/login">
@@ -186,7 +186,7 @@ const LandingPage = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="https://calendly.com/opsight-demo">
+                <a href="https://calendly.com/opsightlive">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
                     Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -365,7 +365,7 @@ const LandingPage = () => {
                 Real-time KPI tracking, automated reporting, and performance optimization 
                 across your entire portfolio.
               </p>
-              <a href="https://calendly.com/opsight-demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </a>
             </div>
@@ -379,7 +379,7 @@ const LandingPage = () => {
                 Advanced AI algorithms identify potential issues before they impact 
                 your bottom line, keeping you ahead of problems.
               </p>
-              <a href="https://calendly.com/opsight-demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </a>
             </div>
@@ -393,7 +393,7 @@ const LandingPage = () => {
                 Intelligent automation and insights that transform how you manage 
                 properties and engage with property managers.
               </p>
-              <a href="https://calendly.com/opsight-demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
               </a>
             </div>

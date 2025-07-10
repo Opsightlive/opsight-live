@@ -15,11 +15,11 @@ import {
   Clock,
   Users
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
 const HelpCenter = () => {
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
 
   const helpCategories = [
@@ -79,9 +79,9 @@ const HelpCenter = () => {
 
   const handleCategoryClick = (category: string) => {
     if (category === 'Getting Started') {
-      navigate('/help/getting-started');
+      setLocation('/help/getting-started');
     } else if (category === 'User Management') {
-      navigate('/help/user-management');
+      setLocation('/help/user-management');
     } else {
       toast({
         title: `${category} Help`,
