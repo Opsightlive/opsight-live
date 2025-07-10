@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db } from "./db";
 import { 
   users, 
@@ -8,6 +8,12 @@ import {
   onboardingData,
   kpiUpdates,
   userActivityLogs,
+  propertyMetrics,
+  alerts,
+  aiInsights,
+  marketData,
+  integrations,
+  reports,
   type User, 
   type InsertUser,
   type UserProfile,
@@ -21,7 +27,19 @@ import {
   type KpiUpdate,
   type InsertKpiUpdate,
   type UserActivityLog,
-  type InsertUserActivityLog
+  type InsertUserActivityLog,
+  type PropertyMetric,
+  type InsertPropertyMetric,
+  type Alert,
+  type InsertAlert,
+  type AiInsight,
+  type InsertAiInsight,
+  type MarketData,
+  type InsertMarketData,
+  type Integration,
+  type InsertIntegration,
+  type Report,
+  type InsertReport
 } from "@shared/schema";
 
 export interface IStorage {
@@ -59,6 +77,36 @@ export interface IStorage {
   // User activity logs methods
   getUserActivityLogs(userId: string): Promise<UserActivityLog[]>;
   createUserActivityLog(log: InsertUserActivityLog): Promise<UserActivityLog>;
+  
+  // Property metrics methods
+  getPropertyMetrics(propertyId: string, metricType?: string): Promise<PropertyMetric[]>;
+  createPropertyMetric(metric: InsertPropertyMetric): Promise<PropertyMetric>;
+  getMetricsSummary(userId: string): Promise<any>;
+  
+  // Alerts methods
+  getAlerts(userId: string, unreadOnly?: boolean): Promise<Alert[]>;
+  createAlert(alert: InsertAlert): Promise<Alert>;
+  markAlertAsRead(alertId: string): Promise<void>;
+  resolveAlert(alertId: string, resolvedBy: string): Promise<void>;
+  
+  // AI insights methods
+  getAiInsights(userId: string, propertyId?: string): Promise<AiInsight[]>;
+  createAiInsight(insight: InsertAiInsight): Promise<AiInsight>;
+  markInsightAsImplemented(insightId: string): Promise<void>;
+  
+  // Market data methods
+  getMarketData(area: string, dataType?: string): Promise<MarketData[]>;
+  createMarketData(data: InsertMarketData): Promise<MarketData>;
+  
+  // Integrations methods
+  getIntegrations(userId: string): Promise<Integration[]>;
+  createIntegration(integration: InsertIntegration): Promise<Integration>;
+  updateIntegration(id: string, updates: Partial<Integration>): Promise<Integration>;
+  
+  // Reports methods
+  getReports(userId: string): Promise<Report[]>;
+  createReport(report: InsertReport): Promise<Report>;
+  updateReport(id: string, updates: Partial<Report>): Promise<Report>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -179,6 +227,185 @@ export class DatabaseStorage implements IStorage {
 
   async createUserActivityLog(log: InsertUserActivityLog): Promise<UserActivityLog> {
     const result = await db.insert(userActivityLogs).values(log).returning();
+    return result[0];
+  }
+
+  // Property metrics methods
+  async getPropertyMetrics(propertyId: string, metricType?: string): Promise<PropertyMetric[]> {
+    if (metricType) {
+      return await db.select().from(propertyMetrics)
+        .where(and(eq(propertyMetrics.propertyId, propertyId), eq(propertyMetrics.metricType, metricType)))
+        .orderBy(desc(propertyMetrics.date));
+    }
+    
+    return await db.select().from(propertyMetrics)
+      .where(eq(propertyMetrics.propertyId, propertyId))
+      .orderBy(desc(propertyMetrics.date));
+  }
+
+  async createPropertyMetric(metric: InsertPropertyMetric): Promise<PropertyMetric> {
+    const result = await db.insert(propertyMetrics).values(metric).returning();
+    return result[0];
+  }
+
+  async getMetricsSummary(userId: string): Promise<any> {
+    // Get user's properties first
+    const userProps = await this.getUserProperties(userId);
+    const propertyIds = userProps.map(p => p.id);
+    
+    if (propertyIds.length === 0) {
+      return {
+        totalProperties: 0,
+        totalUnits: 0,
+        totalRevenue: 0,
+        averageOccupancy: 0,
+        metrics: []
+      };
+    }
+
+    // Calculate summary metrics
+    const totalUnits = userProps.reduce((sum, prop) => sum + prop.units, 0);
+    
+    return {
+      totalProperties: userProps.length,
+      totalUnits,
+      totalRevenue: totalUnits * 1500, // Mock calculation
+      averageOccupancy: 92.5, // Mock calculation
+      metrics: [
+        {
+          type: 'occupancy',
+          value: 92.5,
+          change: +2.3,
+          trend: 'up'
+        },
+        {
+          type: 'revenue',
+          value: totalUnits * 1500,
+          change: +5.2,
+          trend: 'up'
+        },
+        {
+          type: 'noi',
+          value: totalUnits * 850,
+          change: +3.1,
+          trend: 'up'
+        }
+      ]
+    };
+  }
+
+  // Alerts methods
+  async getAlerts(userId: string, unreadOnly?: boolean): Promise<Alert[]> {
+    if (unreadOnly) {
+      return await db.select().from(alerts)
+        .where(and(eq(alerts.userId, userId), eq(alerts.isRead, false)))
+        .orderBy(desc(alerts.createdAt));
+    }
+    
+    return await db.select().from(alerts)
+      .where(eq(alerts.userId, userId))
+      .orderBy(desc(alerts.createdAt));
+  }
+
+  async createAlert(alert: InsertAlert): Promise<Alert> {
+    const result = await db.insert(alerts).values(alert).returning();
+    return result[0];
+  }
+
+  async markAlertAsRead(alertId: string): Promise<void> {
+    await db.update(alerts)
+      .set({ isRead: true })
+      .where(eq(alerts.id, alertId));
+  }
+
+  async resolveAlert(alertId: string, resolvedBy: string): Promise<void> {
+    await db.update(alerts)
+      .set({ 
+        isResolved: true, 
+        resolvedAt: new Date(),
+        resolvedBy: resolvedBy 
+      })
+      .where(eq(alerts.id, alertId));
+  }
+
+  // AI insights methods
+  async getAiInsights(userId: string, propertyId?: string): Promise<AiInsight[]> {
+    if (propertyId) {
+      return await db.select().from(aiInsights)
+        .where(and(eq(aiInsights.userId, userId), eq(aiInsights.propertyId, propertyId)))
+        .orderBy(desc(aiInsights.createdAt));
+    }
+    
+    return await db.select().from(aiInsights)
+      .where(eq(aiInsights.userId, userId))
+      .orderBy(desc(aiInsights.createdAt));
+  }
+
+  async createAiInsight(insight: InsertAiInsight): Promise<AiInsight> {
+    const result = await db.insert(aiInsights).values(insight).returning();
+    return result[0];
+  }
+
+  async markInsightAsImplemented(insightId: string): Promise<void> {
+    await db.update(aiInsights)
+      .set({ 
+        isImplemented: true,
+        implementedAt: new Date()
+      })
+      .where(eq(aiInsights.id, insightId));
+  }
+
+  // Market data methods
+  async getMarketData(area: string, dataType?: string): Promise<MarketData[]> {
+    if (dataType) {
+      return await db.select().from(marketData)
+        .where(and(eq(marketData.area, area), eq(marketData.dataType, dataType)))
+        .orderBy(desc(marketData.period));
+    }
+    
+    return await db.select().from(marketData)
+      .where(eq(marketData.area, area))
+      .orderBy(desc(marketData.period));
+  }
+
+  async createMarketData(data: InsertMarketData): Promise<MarketData> {
+    const result = await db.insert(marketData).values(data).returning();
+    return result[0];
+  }
+
+  // Integrations methods
+  async getIntegrations(userId: string): Promise<Integration[]> {
+    return await db.select().from(integrations).where(eq(integrations.userId, userId));
+  }
+
+  async createIntegration(integration: InsertIntegration): Promise<Integration> {
+    const result = await db.insert(integrations).values(integration).returning();
+    return result[0];
+  }
+
+  async updateIntegration(id: string, updates: Partial<Integration>): Promise<Integration> {
+    const result = await db.update(integrations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(integrations.id, id))
+      .returning();
+    return result[0];
+  }
+
+  // Reports methods
+  async getReports(userId: string): Promise<Report[]> {
+    return await db.select().from(reports).where(eq(reports.userId, userId));
+  }
+
+  async createReport(report: InsertReport): Promise<Report> {
+    const result = await db.insert(reports).values(report).returning();
+    return result[0];
+  }
+
+  async updateReport(id: string, updates: Partial<Report>): Promise<Report> {
+    const result = await db.update(reports)
+      .set(updates)
+      .where(eq(reports.id, id))
+      .returning();
     return result[0];
   }
 }
@@ -413,6 +640,85 @@ export class MemStorage implements IStorage {
     const existing = this.userActivityLogs.get(log.userId!) || [];
     this.userActivityLogs.set(log.userId!, [...existing, activityLog]);
     return activityLog;
+  }
+
+  // Business Intelligence methods - simplified for MemStorage
+  async getPropertyMetrics(propertyId: string, metricType?: string): Promise<PropertyMetric[]> {
+    return []; // Mock implementation
+  }
+
+  async createPropertyMetric(metric: InsertPropertyMetric): Promise<PropertyMetric> {
+    return { ...metric, id: crypto.randomUUID(), createdAt: new Date() } as PropertyMetric;
+  }
+
+  async getMetricsSummary(userId: string): Promise<any> {
+    return {
+      totalProperties: 0,
+      totalUnits: 0,
+      totalRevenue: 0,
+      averageOccupancy: 0,
+      metrics: []
+    };
+  }
+
+  async getAlerts(userId: string, unreadOnly?: boolean): Promise<Alert[]> {
+    return [];
+  }
+
+  async createAlert(alert: InsertAlert): Promise<Alert> {
+    return { ...alert, id: crypto.randomUUID(), isRead: false, isResolved: false, resolvedAt: null, resolvedBy: null, createdAt: new Date() } as Alert;
+  }
+
+  async markAlertAsRead(alertId: string): Promise<void> {
+    // No-op for MemStorage
+  }
+
+  async resolveAlert(alertId: string, resolvedBy: string): Promise<void> {
+    // No-op for MemStorage
+  }
+
+  async getAiInsights(userId: string, propertyId?: string): Promise<AiInsight[]> {
+    return [];
+  }
+
+  async createAiInsight(insight: InsertAiInsight): Promise<AiInsight> {
+    return { ...insight, id: crypto.randomUUID(), isImplemented: false, implementedAt: null, createdAt: new Date() } as AiInsight;
+  }
+
+  async markInsightAsImplemented(insightId: string): Promise<void> {
+    // No-op for MemStorage
+  }
+
+  async getMarketData(area: string, dataType?: string): Promise<MarketData[]> {
+    return [];
+  }
+
+  async createMarketData(data: InsertMarketData): Promise<MarketData> {
+    return { ...data, id: crypto.randomUUID(), createdAt: new Date() } as MarketData;
+  }
+
+  async getIntegrations(userId: string): Promise<Integration[]> {
+    return [];
+  }
+
+  async createIntegration(integration: InsertIntegration): Promise<Integration> {
+    return { ...integration, id: crypto.randomUUID(), lastSync: null, errorMessage: null, createdAt: new Date(), updatedAt: new Date() } as Integration;
+  }
+
+  async updateIntegration(id: string, updates: Partial<Integration>): Promise<Integration> {
+    return { id, ...updates, updatedAt: new Date() } as Integration;
+  }
+
+  async getReports(userId: string): Promise<Report[]> {
+    return [];
+  }
+
+  async createReport(report: InsertReport): Promise<Report> {
+    return { ...report, id: crypto.randomUUID(), data: {}, status: 'pending', filePath: null, createdAt: new Date(), completedAt: null } as Report;
+  }
+
+  async updateReport(id: string, updates: Partial<Report>): Promise<Report> {
+    return { id, ...updates } as Report;
   }
 }
 

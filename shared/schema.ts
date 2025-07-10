@@ -80,6 +80,94 @@ export const userActivityLogs = pgTable("user_activity_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Property metrics table for real-time KPI tracking
+export const propertyMetrics = pgTable("property_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  propertyId: uuid("property_id").references(() => userProperties.id, { onDelete: "cascade" }),
+  metricType: text("metric_type").notNull(), // 'occupancy', 'revenue', 'noi', 'expenses', etc.
+  value: decimal("value", { precision: 15, scale: 2 }),
+  period: text("period"), // 'daily', 'weekly', 'monthly', 'quarterly', 'annual'
+  date: timestamp("date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Alerts and notifications table
+export const alerts = pgTable("alerts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => userProfiles.id, { onDelete: "cascade" }),
+  propertyId: uuid("property_id").references(() => userProperties.id, { onDelete: "cascade" }),
+  alertType: text("alert_type").notNull(), // 'threshold', 'anomaly', 'predictive', 'maintenance'
+  severity: text("severity").notNull(), // 'low', 'medium', 'high', 'critical'
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  data: jsonb("data").default({}),
+  isRead: boolean("is_read").default(false),
+  isResolved: boolean("is_resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  resolvedBy: uuid("resolved_by").references(() => userProfiles.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// AI insights and recommendations table
+export const aiInsights = pgTable("ai_insights", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => userProfiles.id, { onDelete: "cascade" }),
+  propertyId: uuid("property_id").references(() => userProperties.id, { onDelete: "cascade" }),
+  insightType: text("insight_type").notNull(), // 'performance', 'market', 'risk', 'opportunity'
+  category: text("category").notNull(), // 'financial', 'operational', 'market', 'maintenance'
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  recommendation: text("recommendation"),
+  confidence: decimal("confidence", { precision: 5, scale: 2 }), // 0-100
+  impact: text("impact"), // 'low', 'medium', 'high'
+  data: jsonb("data").default({}),
+  isImplemented: boolean("is_implemented").default(false),
+  implementedAt: timestamp("implemented_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Market data table for predictive analytics
+export const marketData = pgTable("market_data", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  area: text("area").notNull(), // zip code, city, or market area
+  dataType: text("data_type").notNull(), // 'rent', 'vacancy', 'absorption', 'supply'
+  value: decimal("value", { precision: 15, scale: 2 }),
+  period: timestamp("period").notNull(),
+  source: text("source"), // 'costar', 'reis', 'axiometrics', etc.
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Property management integrations table
+export const integrations = pgTable("integrations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => userProfiles.id, { onDelete: "cascade" }),
+  propertyId: uuid("property_id").references(() => userProperties.id, { onDelete: "cascade" }),
+  integrationType: text("integration_type").notNull(), // 'yardi', 'appfolio', 'buildium', etc.
+  status: text("status").notNull(), // 'connected', 'disconnected', 'error', 'syncing'
+  lastSync: timestamp("last_sync"),
+  config: jsonb("config").default({}),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Reports table for generated reports
+export const reports = pgTable("reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => userProfiles.id, { onDelete: "cascade" }),
+  reportType: text("report_type").notNull(), // 'kpi', 'performance', 'financial', 'market'
+  title: text("title").notNull(),
+  description: text("description"),
+  parameters: jsonb("parameters").default({}),
+  data: jsonb("data").default({}),
+  format: text("format").default('json'), // 'json', 'pdf', 'excel'
+  status: text("status").default('pending'), // 'pending', 'generating', 'completed', 'failed'
+  filePath: text("file_path"),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
 // Legacy users table for backward compatibility
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -149,6 +237,63 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+export const insertPropertyMetricSchema = createInsertSchema(propertyMetrics).pick({
+  propertyId: true,
+  metricType: true,
+  value: true,
+  period: true,
+  date: true,
+});
+
+export const insertAlertSchema = createInsertSchema(alerts).pick({
+  userId: true,
+  propertyId: true,
+  alertType: true,
+  severity: true,
+  title: true,
+  message: true,
+  data: true,
+});
+
+export const insertAiInsightSchema = createInsertSchema(aiInsights).pick({
+  userId: true,
+  propertyId: true,
+  insightType: true,
+  category: true,
+  title: true,
+  description: true,
+  recommendation: true,
+  confidence: true,
+  impact: true,
+  data: true,
+});
+
+export const insertMarketDataSchema = createInsertSchema(marketData).pick({
+  area: true,
+  dataType: true,
+  value: true,
+  period: true,
+  source: true,
+  metadata: true,
+});
+
+export const insertIntegrationSchema = createInsertSchema(integrations).pick({
+  userId: true,
+  propertyId: true,
+  integrationType: true,
+  status: true,
+  config: true,
+});
+
+export const insertReportSchema = createInsertSchema(reports).pick({
+  userId: true,
+  reportType: true,
+  title: true,
+  description: true,
+  parameters: true,
+  format: true,
+});
+
 // Types
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
 export type UserProfile = typeof userProfiles.$inferSelect;
@@ -170,3 +315,21 @@ export type UserActivityLog = typeof userActivityLogs.$inferSelect;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export type InsertPropertyMetric = z.infer<typeof insertPropertyMetricSchema>;
+export type PropertyMetric = typeof propertyMetrics.$inferSelect;
+
+export type InsertAlert = z.infer<typeof insertAlertSchema>;
+export type Alert = typeof alerts.$inferSelect;
+
+export type InsertAiInsight = z.infer<typeof insertAiInsightSchema>;
+export type AiInsight = typeof aiInsights.$inferSelect;
+
+export type InsertMarketData = z.infer<typeof insertMarketDataSchema>;
+export type MarketData = typeof marketData.$inferSelect;
+
+export type InsertIntegration = z.infer<typeof insertIntegrationSchema>;
+export type Integration = typeof integrations.$inferSelect;
+
+export type InsertReport = z.infer<typeof insertReportSchema>;
+export type Report = typeof reports.$inferSelect;
