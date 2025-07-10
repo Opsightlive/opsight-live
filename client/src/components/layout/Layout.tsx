@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+// Layout component for authenticated pages
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
-            {children || <Outlet />}
+            {children}
           </div>
         </main>
       </div>
