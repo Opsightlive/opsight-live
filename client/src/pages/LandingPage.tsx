@@ -109,8 +109,8 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
-              <Link href="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
-              <a href="/help" className="text-gray-600 hover:text-gray-900">Resources</a>
+              <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
+              <Link to="/help" className="text-gray-600 hover:text-gray-900">Resources</Link>
               <a href="https://calendly.com/opsightlive" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
               <a href="/api/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
               <a href="/api/login">
@@ -137,8 +137,8 @@ const LandingPage = () => {
                 <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
-                <Link href="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
-                <a href="/help" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
+                <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
+                <Link to="/help" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</Link>
                 <a href="https://calendly.com/opsightlive" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
                 <a href="/api/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</a>
                 <div className="px-3 py-2">

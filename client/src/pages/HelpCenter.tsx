@@ -107,11 +107,22 @@ const HelpCenter = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Blue Header */}
+        {/* Blue Header with Back Button */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
-          <div>
-            <h1 className="text-4xl font-bold mb-4">Help Center</h1>
-            <p className="text-xl text-blue-100 max-w-3xl">Find answers, tutorials, and support to get the most out of OPSIGHT</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center mb-4">
+                <button 
+                  onClick={() => setLocation('/')}
+                  className="flex items-center text-blue-100 hover:text-white mr-4 transition-colors"
+                >
+                  <ArrowRight className="h-5 w-5 mr-2 transform rotate-180" />
+                  Back to Home
+                </button>
+              </div>
+              <h1 className="text-4xl font-bold mb-4">Help Center</h1>
+              <p className="text-xl text-blue-100 max-w-3xl">Find answers, tutorials, and support to get the most out of OPSIGHT</p>
+            </div>
           </div>
         </div>
 
@@ -133,9 +144,9 @@ const HelpCenter = () => {
                 <CardDescription>{category.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm">
+                <span className="text-sm">
                   {category.articles} articles <ArrowRight className="inline-block h-4 w-4 ml-1" />
-                </p>
+                </span>
               </CardContent>
             </Card>
           ))}
@@ -160,9 +171,9 @@ const HelpCenter = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600">
                     {article.views} views
-                  </p>
+                  </span>
                 </CardContent>
               </Card>
             ))}
