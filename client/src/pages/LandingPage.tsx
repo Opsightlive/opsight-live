@@ -95,9 +95,11 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="w-8 h-8 mr-3 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">O</span>
-              </div>
+              <img 
+                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
+                alt="OPSIGHT" 
+                className="h-8 w-8 mr-3"
+              />
               <span className="text-2xl font-bold text-black">OPSIGHT</span>
             </div>
             
