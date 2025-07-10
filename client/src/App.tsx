@@ -8,6 +8,8 @@ import Home from '@/pages/Home';
 import KPICommandCenter from '@/pages/KPICommandCenter';
 import AIIntelligence from '@/pages/AIIntelligence';
 import AlertsNotifications from '@/pages/AlertsNotifications';
+import CompanyPage from '@/pages/CompanyPage';
+import HelpCenter from '@/pages/HelpCenter';
 import NotFound from '@/pages/NotFound';
 
 function AppRouter() {
@@ -24,13 +26,19 @@ function AppRouter() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        <Route path="/" component={LandingPage} />
+        <>
+          <Route path="/" component={LandingPage} />
+          <Route path="/company" component={CompanyPage} />
+          <Route path="/help" component={HelpCenter} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
           <Route path="/kpi-command-center" component={KPICommandCenter} />
           <Route path="/ai-intelligence" component={AIIntelligence} />
           <Route path="/alerts-notifications" component={AlertsNotifications} />
+          <Route path="/company" component={CompanyPage} />
+          <Route path="/help" component={HelpCenter} />
         </>
       )}
       <Route component={NotFound} />

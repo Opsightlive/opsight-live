@@ -196,12 +196,8 @@ const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="w-full max-w-7xl">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4">
-            <img 
-              src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-              alt="OPSIGHT Logo" 
-              className="w-full h-full object-contain"
-            />
+          <div className="w-16 h-16 mx-auto mb-4 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">O</span>
           </div>
           <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
           <p className="text-blue-600 text-lg mb-4">OPERATIONAL INSIGHT</p>

@@ -20,11 +20,9 @@ const CompanyPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
-              <img 
-                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-                alt="OPSIGHT" 
-                className="h-8 w-8 mr-3"
-              />
+              <div className="w-8 h-8 mr-3 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">O</span>
+              </div>
               <span className="text-2xl font-bold text-black">OPSIGHT</span>
             </Link>
             
@@ -69,11 +67,14 @@ const CompanyPage = () => {
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl shadow-2xl overflow-hidden">
               <div className="lg:flex">
                 <div className="lg:w-2/5">
-                  <img 
-                    src="/lovable-uploads/126f59a2-9c39-4959-8839-f7491c94712a.png" 
-                    alt="CEO & Founder" 
-                    className="w-full h-64 lg:h-96 object-cover object-top"
-                  />
+                  <div className="w-full h-64 lg:h-96 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-32 h-32 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span className="text-white font-bold text-4xl">CEO</span>
+                      </div>
+                      <p className="text-gray-600 font-medium">Chief Executive Officer</p>
+                    </div>
+                  </div>
                 </div>
                 <div className="lg:w-3/5 p-8 lg:p-12">
                   <div className="flex items-center mb-6">

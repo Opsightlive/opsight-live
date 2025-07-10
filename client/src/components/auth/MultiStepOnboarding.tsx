@@ -524,12 +524,8 @@ const MultiStepOnboarding: React.FC<MultiStepOnboardingProps> = ({ onComplete })
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4">
-            <img 
-              src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-              alt="OPSIGHT Logo" 
-              className="w-full h-full object-contain"
-            />
+          <div className="w-16 h-16 mx-auto mb-4 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">O</span>
           </div>
           <h1 className="text-4xl font-bold text-black mb-2">OPSIGHT</h1>
           <p className="text-blue-600 text-lg">OPERATIONAL INSIGHT</p>

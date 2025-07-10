@@ -220,12 +220,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
         
         <div className="text-center relative z-10">
           <div className="mb-8 animate-fade-in">
-            <div className="w-64 h-40 mx-auto">
-              <img 
-                src="/lovable-uploads/1b9e258c-4380-4c9d-87a5-88ee69196380.png" 
-                alt="OPSIGHT Logo" 
-                className="w-full h-full object-contain drop-shadow-2xl"
-              />
+            <div className="w-64 h-40 mx-auto flex items-center justify-center">
+              <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center shadow-2xl">
+                <span className="text-blue-600 font-bold text-4xl">O</span>
+              </div>
             </div>
           </div>
           <h1 className="text-8xl font-bold text-white mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent animate-fade-in">
