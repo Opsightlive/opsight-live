@@ -104,17 +104,17 @@ const LandingPage = () => {
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</a>
-              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
-              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
-              <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
-              <Link to="/help" className="text-gray-600 hover:text-gray-900">Resources</Link>
-              <a href="https://calendly.com/opsightlive" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
-              <a href="/api/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
+            <div className="hidden md:flex items-center space-x-6">
+              <a href="#solutions" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Solutions</a>
+              <a href="#features" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Platform</a>
+              <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Pricing</a>
+              <a href="#customers" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Customers</a>
+              <Link to="/company" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Company</Link>
+              <Link to="/help" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Resources</Link>
+              <a href="https://calendly.com/opsightlive" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">Get Demo</a>
+              <a href="/api/login" className="text-gray-700 hover:text-blue-600 font-semibold transition-colors">Sign In</a>
               <a href="/api/login">
-                <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 font-semibold px-6 py-2">Try Free</Button>
               </a>
             </div>
 
