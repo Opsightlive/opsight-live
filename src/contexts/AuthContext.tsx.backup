@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-import { EmailService } from '@/services/email/emailService';
 
 interface UserProfile {
   id: string;
@@ -12,11 +11,6 @@ interface UserProfile {
   role: string | null;
   phone: string | null;
   avatar_url?: string;
-  created_at?: string;
-  updated_at?: string;
-  subscription_status?: string;
-  trial_end?: string;
-  onboarding_completed?: boolean;
 }
 
 interface AuthUser extends User {
@@ -41,7 +35,6 @@ interface AuthContextType {
   completeRegistration: (userData: any) => Promise<boolean>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
-  resetPassword: (email: string) => Promise<boolean>;
   isLoading: boolean;
   isCompanyUser: boolean;
 }
@@ -66,8 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         action_type: actionType,
         action_details: actionDetails,
         success,
-        error_message: errorMessage,
-        created_at: new Date().toISOString()
+        error_message: errorMessage
       });
     } catch (error) {
       console.error('Failed to log activity:', error);
@@ -109,8 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       phone: profileData?.phone,
       bio: '', // Default empty bio
       subscription: {
-        status: profileData?.subscription_status || 'trial',
-        trialEnd: profileData?.trial_end || '2025-01-29'
+        status: 'trial',
+        trialEnd: '2025-01-29'
       }
     };
   };
@@ -212,19 +204,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const redirectUrl = `${window.location.origin}/dashboard`;
+      const redirectUrl = `${window.location.origin}/`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: email.split('@')[0],
-            company_name: null,
-            role: 'User',
-            phone: null
-          }
+          emailRedirectTo: redirectUrl
         }
       });
 
@@ -237,36 +223,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        // Create user profile in database
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            full_name: email.split('@')[0],
-            company_name: null,
-            role: 'User',
-            phone: null,
-            subscription_status: 'trial',
-            trial_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days trial
-            onboarding_completed: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
-
-        // Send welcome email
-        const userName = email.split('@')[0];
-        await EmailService.sendWelcomeEmail(email, userName);
-
-        // Send onboarding reminder after 24 hours
-        setTimeout(async () => {
-          await EmailService.sendOnboardingReminder(email, userName);
-        }, 24 * 60 * 60 * 1000);
-
         toast.success('Registration successful! Please check your email for verification.');
         await logActivity('sign_up_success', { email });
         setIsLoading(false);
@@ -284,32 +240,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const resetPassword = async (email: string): Promise<boolean> => {
-    try {
-      const redirectUrl = `${window.location.origin}/reset-password`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl
-      });
-
-      if (error) {
-        console.error('Password reset error:', error);
-        toast.error(error.message || 'Password reset failed');
-        return false;
-      }
-
-      // Send password reset email
-      await EmailService.sendPasswordResetEmail(email, redirectUrl);
-
-      toast.success('Password reset email sent! Please check your inbox.');
-      return true;
-    } catch (error: any) {
-      console.error('Password reset error:', error);
-      toast.error('An unexpected error occurred');
-      return false;
-    }
-  };
-
   const completeRegistration = async (userData: any): Promise<boolean> => {
     if (!user) return false;
     
@@ -323,9 +253,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           full_name: userData.name || user.email?.split('@')[0],
           company_name: userData.company,
           role: userData.role,
-          phone: userData.phone,
-          onboarding_completed: true,
-          updated_at: new Date().toISOString()
+          phone: userData.phone
         })
         .eq('id', user.id);
 
@@ -352,8 +280,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             total_cost: data.totalCost,
             discount: data.discount,
             setup_completed: true,
-            payment_completed: true,
-            created_at: new Date().toISOString()
+            payment_completed: true
           });
 
         if (onboardingError) {
@@ -370,8 +297,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             tier: prop.tier,
             pm_software: prop.pmSoftware,
             payment_method: prop.paymentMethod,
-            monthly_cost: parseFloat(prop.monthlyCost || '0'),
-            created_at: new Date().toISOString()
+            monthly_cost: parseFloat(prop.monthlyCost || '0')
           }));
 
           const { error: propertiesError } = await supabase
@@ -410,10 +336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { error } = await supabase
         .from('user_profiles')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
+        .update(updates)
         .eq('id', user.id);
 
       if (error) {
@@ -469,7 +392,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     completeRegistration,
-    resetPassword,
     logout,
     updateProfile,
     isLoading,
