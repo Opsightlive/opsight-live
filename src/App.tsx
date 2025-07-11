@@ -248,7 +248,7 @@ function App() {
                   </Layout>
                 </AuthWrapper>
               } />
-              <Route path="/help" element={<HelpCenter />} />
+             <Route path="/help" element={<HelpCenter />} />
               <Route path="/data-setup" element={
                 </AuthWrapper>
             </Routes>
