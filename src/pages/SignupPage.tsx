@@ -19,7 +19,7 @@ const SignupPage = () => {
               <span className="text-2xl font-bold text-white">OPSIGHT</span>
             </Link>
             <Link to="/" className="text-blue-200 hover:text-white transition-colors">
-              ← Back to Home
+              Back to Home →
             </Link>
           </div>
         </div>
