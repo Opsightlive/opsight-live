@@ -343,7 +343,7 @@ const LandingPage = () => {
       </div>
 
       {/* Solutions Section */}
-      <div id="solutions" className="py-16 lg:py-24 bg-white">
+      <div id="solutions" className="py-16 lg:py-24 bg-red-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -459,7 +459,7 @@ const LandingPage = () => {
       </div>
 
       {/* Pricing Section */}
-      <div id="pricing" className="py-16 lg:py-24 bg-white">
+      <div id="pricing" className="py-16 lg:py-24 bg-red-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -663,7 +663,7 @@ const LandingPage = () => {
       </div>
 
       {/* What is OPSIGHT Video Section */}
-      <div className="py-16 lg:py-24 bg-white">
+      <div className="py-16 lg:py-24 bg-red-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
