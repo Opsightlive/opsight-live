@@ -109,13 +109,13 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
-              <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
+              <a to="/company" className="text-gray-600 hover:text-gray-900">Company</a>
               <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
-              <Link to="/demo" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
-              <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
-              <Link to="/signup">
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
+              <a to="/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
+              <a to="/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
-              </Link>
+              </a>
             </div>
 
             {/* Mobile menu button */}
@@ -137,14 +137,14 @@ const LandingPage = () => {
                 <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
-                <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
+                <a to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</a>
                 <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
-                <Link to="/demo" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
-                <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
+                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
+                <a to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</a>
                 <div className="px-3 py-2">
-                  <Link to="/signup">
+                  <a to="/signup">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">Try Free</Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
@@ -186,17 +186,17 @@ const LandingPage = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/demo">
+                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
                     Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
-                </Link>
-                <Link to="/signup">
+                </a>
+                <a to="/signup">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 hover:bg-gray-50">
                     Start Free Trial
                   </Button>
-                </Link>
+                </a>
               </div>
 
               {/* Trust Indicators */}
@@ -365,9 +365,9 @@ const LandingPage = () => {
                 Real-time KPI tracking, automated reporting, and performance optimization 
                 across your entire portfolio.
               </p>
-              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </Link>
+              </a>
             </div>
 
             <div className="bg-gradient-to-br from-red-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
@@ -379,9 +379,9 @@ const LandingPage = () => {
                 Advanced AI algorithms identify potential issues before they impact 
                 your bottom line, keeping you ahead of problems.
               </p>
-              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </Link>
+              </a>
             </div>
 
             <div className="bg-gradient-to-br from-green-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
@@ -393,9 +393,9 @@ const LandingPage = () => {
                 Intelligent automation and insights that transform how you manage 
                 properties and engage with property managers.
               </p>
-              <Link to="/demo" className="text-blue-600 font-medium hover:text-blue-700">
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -502,11 +502,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <Link to="/signup">
+              <a to="/signup">
                 <Button variant="outline" className="w-full">
                   Start Basic Plan
                 </Button>
-              </Link>
+              </a>
             </div>
 
             {/* Professional Plan */}
@@ -549,11 +549,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <Link to="/signup">
+              <a to="/signup">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
                   Start Professional Plan
                 </Button>
-              </Link>
+              </a>
             </div>
 
             {/* Enterprise Plan */}
@@ -590,11 +590,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <Link to="/signup">
+              <a to="/signup">
                 <Button variant="outline" className="w-full">
                   Start Enterprise Plan
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -602,11 +602,11 @@ const LandingPage = () => {
             <p className="text-gray-600 mb-4">
               Questions about pricing? Need custom enterprise pricing for large portfolios?
             </p>
-            <Link to="/demo">
+            <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="lg">
                 Contact Sales
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
@@ -709,17 +709,17 @@ const LandingPage = () => {
               their operations and maximize returns.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/demo">
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer">
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
                   Schedule Your Demo
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </Link>
-              <Link to="/signup">
+              </a>
+              <a to="/signup">
                 <Button size="lg" className="text-lg px-8 py-4 bg-white text-blue-600 border-white hover:bg-gray-100 hover:text-blue-700">
                   Start Free Trial
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -767,7 +767,7 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/company" className="hover:text-white">About</Link></li>
+                <li><a to="/company" className="hover:text-white">About</a></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
                 <li><a href="#" className="hover:text-white">Support</a></li>
                 <li><a href="#" className="hover:text-white">Privacy</a></li>
