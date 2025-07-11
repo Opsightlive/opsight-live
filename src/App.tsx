@@ -248,18 +248,9 @@ function App() {
                   </Layout>
                 </AuthWrapper>
               } />
-              <Route path="/help" element={
-                <AuthWrapper>
-                  <Layout>
-                    <HelpCenter />
-                  </Layout>
-                </AuthWrapper>
-              } />
+              <Route path="/help" element={<HelpCenter />} />
               <Route path="/data-setup" element={
-                <AuthWrapper>
-                   <DataSetup onComplete={() => {}} />
                 </AuthWrapper>
-              } />
             </Routes>
           </div>
         </AuthProvider>
