@@ -115,7 +115,6 @@ const HelpCenter = () => {
             className="flex items-center gap-2 hover:bg-gray-100"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
-            Back to Home
           </Button>
         </div>
         {/* Back Button */}
