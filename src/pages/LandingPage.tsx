@@ -110,7 +110,7 @@ const LandingPage = () => {
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
-              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
+              <Link to="/help" className="text-gray-600 hover:text-gray-900">Help Center</Link>
               <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
@@ -138,7 +138,7 @@ const LandingPage = () => {
                 <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
                 <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
-                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
+                <Link to="/help" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Help Center</Link>
                 <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
@@ -769,7 +769,7 @@ const LandingPage = () => {
               <ul className="space-y-2 text-gray-400">
                 <li><Link to="/company" className="hover:text-white">About</Link></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
-                <li><a href="#" className="hover:text-white">Support</a></li>
+                <li><Link to="/help" className="hover:text-white">Help Center</Link></li>
                 <li><a href="#" className="hover:text-white">Privacy</a></li>
               </ul>
             </div>
