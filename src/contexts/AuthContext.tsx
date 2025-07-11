@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from "react-router-dom";import { useNavigate } from "react-router-dom";import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { EmailService } from '@/services/email/emailService';
@@ -43,17 +43,7 @@ interface AuthContextType {
   updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
   isLoading: boolean;
-  updateProfile,
-    isLoading,
-    isCompanyUser,
-    enableMFA,
-    disableMFA,
-    verifyMFA,
-    isMFAEnabled: boolean;
-  enableMFA: () => Promise<boolean>;
-  disableMFA: () => Promise<boolean>;
-  verifyMFA: (token: string) => Promise<boolean>;
-  isMFAEnabled: boolean;
+  isCompanyUser: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,13 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateProfile,
-    isLoading,
-    isCompanyUser,
-    enableMFA,
-    disableMFA,
-    verifyMFA,
-    isMFAEnabled = profile?.role === 'Company Admin';
+  const isCompanyUser = profile?.role === 'Company Admin';
 
   // Log activity to database
   const logActivity = async (actionType: string, actionDetails: any = {}, success: boolean = true, errorMessage?: string) => {
@@ -158,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUser(null);
           setProfile(null);
+      navigate("/", { replace: true });
       navigate("/", { replace: true });
           if (event === 'SIGNED_OUT') {
             toast.success('Successfully signed out');
@@ -475,77 +460,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(null);
       setProfile(null);
       navigate("/", { replace: true });
+      navigate("/", { replace: true });
     } catch (error: any) {
       console.error('Logout error:', error);
       toast.error('Failed to sign out');
     }
   };
 
-  // 2FA Functions
-  const enableMFA = async (): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: "totp"
-      });
-      
-      if (error) {
-        console.error("MFA enrollment error:", error);
-        toast.error(error.message || "Failed to enable 2FA");
-        return false;
-      }
-      
-      toast.success("2FA enabled successfully! Please save your recovery codes.");
-      return true;
-    } catch (error: any) {
-      console.error("MFA enrollment error:", error);
-      toast.error("Failed to enable 2FA");
-      return false;
-    }
-  };
-  
-  const disableMFA = async (): Promise<boolean> => {
-    try {
-      const { error } = await supabase.auth.mfa.unenroll({
-        factorId: "totp"
-      });
-      
-      if (error) {
-        console.error("MFA unenrollment error:", error);
-        toast.error(error.message || "Failed to disable 2FA");
-        return false;
-      }
-      
-      setIsMFAEnabled(false);
-      toast.success("2FA disabled successfully");
-      return true;
-    } catch (error: any) {
-      console.error("MFA unenrollment error:", error);
-      toast.error("Failed to disable 2FA");
-      return false;
-    }
-  };
-  
-  const verifyMFA = async (token: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase.auth.mfa.verify({
-        factorId: "totp",
-        challengeId: token
-      });
-      
-      if (error) {
-        console.error("MFA verification error:", error);
-        toast.error(error.message || "Invalid 2FA code");
-        return false;
-      }
-      
-      toast.success("2FA verification successful");
-      return true;
-    } catch (error: any) {
-      console.error("MFA verification error:", error);
-      toast.error("Invalid 2FA code");
-      return false;
-    }
-  };
   const value = {
     user,
     profile,
@@ -557,13 +478,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     updateProfile,
     isLoading,
-    updateProfile,
-    isLoading,
-    isCompanyUser,
-    enableMFA,
-    disableMFA,
-    verifyMFA,
-    isMFAEnabled
+    isCompanyUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
