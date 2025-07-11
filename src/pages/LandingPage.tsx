@@ -105,13 +105,13 @@ const LandingPage = () => {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</Link>
-              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</Link>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
-              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</Link>
+              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</a>
+              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
+              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
+              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
               <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
-              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</Link>
-              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
+              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
               <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
               <Link to="/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
@@ -133,13 +133,13 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200">
               <div className="px-2 pt-2 pb-3 space-y-1">
-                <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</Link>
-                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</Link>
-                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</Link>
-                <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</Link>
+                <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</a>
+                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
+                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
+                <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
                 <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
-                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</Link>
-                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
+                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
+                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
                 <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
                   <Link to="/signup">
@@ -749,18 +749,18 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Solutions</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Portfolio Management</Link></li>
-                <li><a href="#" className="hover:text-white">Risk Intelligence</Link></li>
-                <li><a href="#" className="hover:text-white">Performance Analytics</Link></li>
+                <li><a href="#" className="hover:text-white">Portfolio Management</a></li>
+                <li><a href="#" className="hover:text-white">Risk Intelligence</a></li>
+                <li><a href="#" className="hover:text-white">Performance Analytics</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white">Features</Link></li>
-                <li><a href="#" className="hover:text-white">Integrations</Link></li>
-                <li><a href="#" className="hover:text-white">Security</Link></li>
+                <li><a href="#features" className="hover:text-white">Features</a></li>
+                <li><a href="#" className="hover:text-white">Integrations</a></li>
+                <li><a href="#" className="hover:text-white">Security</a></li>
               </ul>
             </div>
             
@@ -768,9 +768,9 @@ const LandingPage = () => {
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><Link to="/company" className="hover:text-white">About</Link></li>
-                <li><a href="#" className="hover:text-white">Contact</Link></li>
-                <li><a href="#" className="hover:text-white">Support</Link></li>
-                <li><a href="#" className="hover:text-white">Privacy</Link></li>
+                <li><a href="#" className="hover:text-white">Contact</a></li>
+                <li><a href="#" className="hover:text-white">Support</a></li>
+                <li><a href="#" className="hover:text-white">Privacy</a></li>
               </ul>
             </div>
           </div>
