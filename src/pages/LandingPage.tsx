@@ -105,17 +105,17 @@ const LandingPage = () => {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</a>
-              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
-              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</a>
-              <a to="/company" className="text-gray-600 hover:text-gray-900">Company</a>
-              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</a>
-              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
-              <a to="/login" className="text-gray-600 hover:text-gray-900">Sign In</a>
-              <a to="/signup">
+              <a href="#solutions" className="text-gray-600 hover:text-gray-900">Solutions</Link>
+              <a href="#features" className="text-gray-600 hover:text-gray-900">Platform</Link>
+              <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
+              <a href="#customers" className="text-gray-600 hover:text-gray-900">Customers</Link>
+              <Link to="/company" className="text-gray-600 hover:text-gray-900">Company</Link>
+              <a href="#resources" className="text-gray-600 hover:text-gray-900">Resources</Link>
+              <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900">Sign In</Link>
+              <Link to="/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700">Try Free</Button>
-              </a>
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -133,18 +133,18 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200">
               <div className="px-2 pt-2 pb-3 space-y-1">
-                <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</a>
-                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</a>
-                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</a>
-                <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</a>
-                <a to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</a>
-                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</a>
-                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</a>
-                <a to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</a>
+                <a href="#solutions" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Solutions</Link>
+                <a href="#features" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Platform</Link>
+                <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Pricing</Link>
+                <a href="#customers" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Customers</Link>
+                <Link to="/company" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Company</Link>
+                <a href="#resources" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Resources</Link>
+                <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-blue-600 hover:text-blue-700 font-medium">Get Demo</Link>
+                <Link to="/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">Sign In</Link>
                 <div className="px-3 py-2">
-                  <a to="/signup">
+                  <Link to="/signup">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">Try Free</Button>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -191,12 +191,12 @@ const LandingPage = () => {
                     Get Your Demo
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
-                </a>
-                <a to="/signup">
+                </Link>
+                <Link to="/signup">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 hover:bg-gray-50">
                     Start Free Trial
                   </Button>
-                </a>
+                </Link>
               </div>
 
               {/* Trust Indicators */}
@@ -367,7 +367,7 @@ const LandingPage = () => {
               </p>
               <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </a>
+              </Link>
             </div>
 
             <div className="bg-gradient-to-br from-red-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
@@ -381,7 +381,7 @@ const LandingPage = () => {
               </p>
               <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </a>
+              </Link>
             </div>
 
             <div className="bg-gradient-to-br from-green-50 to-white p-8 rounded-lg border hover:shadow-lg transition-shadow">
@@ -395,7 +395,7 @@ const LandingPage = () => {
               </p>
               <a href="https://calendly.com/opsightlive" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-medium hover:text-blue-700">
                 Learn more →
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -502,11 +502,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <a to="/signup">
+              <Link to="/signup">
                 <Button variant="outline" className="w-full">
                   Start Basic Plan
                 </Button>
-              </a>
+              </Link>
             </div>
 
             {/* Professional Plan */}
@@ -549,11 +549,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <a to="/signup">
+              <Link to="/signup">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
                   Start Professional Plan
                 </Button>
-              </a>
+              </Link>
             </div>
 
             {/* Enterprise Plan */}
@@ -590,11 +590,11 @@ const LandingPage = () => {
                 </li>
               </ul>
               
-              <a to="/signup">
+              <Link to="/signup">
                 <Button variant="outline" className="w-full">
                   Start Enterprise Plan
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -606,7 +606,7 @@ const LandingPage = () => {
               <Button variant="outline" size="lg">
                 Contact Sales
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -714,12 +714,12 @@ const LandingPage = () => {
                   Schedule Your Demo
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </a>
-              <a to="/signup">
+              </Link>
+              <Link to="/signup">
                 <Button size="lg" className="text-lg px-8 py-4 bg-white text-blue-600 border-white hover:bg-gray-100 hover:text-blue-700">
                   Start Free Trial
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -749,28 +749,28 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Solutions</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Portfolio Management</a></li>
-                <li><a href="#" className="hover:text-white">Risk Intelligence</a></li>
-                <li><a href="#" className="hover:text-white">Performance Analytics</a></li>
+                <li><a href="#" className="hover:text-white">Portfolio Management</Link></li>
+                <li><a href="#" className="hover:text-white">Risk Intelligence</Link></li>
+                <li><a href="#" className="hover:text-white">Performance Analytics</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white">Features</a></li>
-                <li><a href="#" className="hover:text-white">Integrations</a></li>
-                <li><a href="#" className="hover:text-white">Security</a></li>
+                <li><a href="#features" className="hover:text-white">Features</Link></li>
+                <li><a href="#" className="hover:text-white">Integrations</Link></li>
+                <li><a href="#" className="hover:text-white">Security</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a to="/company" className="hover:text-white">About</a></li>
-                <li><a href="#" className="hover:text-white">Contact</a></li>
-                <li><a href="#" className="hover:text-white">Support</a></li>
-                <li><a href="#" className="hover:text-white">Privacy</a></li>
+                <li><Link to="/company" className="hover:text-white">About</Link></li>
+                <li><a href="#" className="hover:text-white">Contact</Link></li>
+                <li><a href="#" className="hover:text-white">Support</Link></li>
+                <li><a href="#" className="hover:text-white">Privacy</Link></li>
               </ul>
             </div>
           </div>
