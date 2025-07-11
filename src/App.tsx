@@ -250,7 +250,10 @@ function App() {
               } />
              <Route path="/help" element={<HelpCenter />} />
               <Route path="/data-setup" element={
+                <AuthWrapper>
+                   <DataSetup onComplete={() => {}} />
                 </AuthWrapper>
+              } />
             </Routes>
           </div>
         </AuthProvider>
