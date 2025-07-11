@@ -215,7 +215,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const redirectUrl = `${window.location.origin}/dashboard`;
+      const redirectUrl = `${window.location.origin}/verify-email`;
       
       const { data, error } = await supabase.auth.signUp({
         email,

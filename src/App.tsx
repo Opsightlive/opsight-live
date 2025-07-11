@@ -12,7 +12,7 @@ import LandingPage from '@/pages/LandingPage';
 import CompanyPage from '@/pages/CompanyPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
-import DemoPage from '@/pages/DemoPage';
+import EmailVerification from "@/pages/EmailVerification";import DemoPage from '@/pages/DemoPage';
 import DemoMode from '@/pages/DemoMode';
 import Index from '@/pages/Index';
 import PortfolioOverview from '@/pages/PortfolioOverview';
@@ -249,7 +249,7 @@ function App() {
                 </AuthWrapper>
               } />
              <Route path="/help" element={<HelpCenter />} />
-              <Route path="/data-setup" element={
+              <Route path="/verify-email" element={<EmailVerification />} />              <Route path="/data-setup" element={
                 <AuthWrapper>
                    <DataSetup onComplete={() => {}} />
                 </AuthWrapper>
