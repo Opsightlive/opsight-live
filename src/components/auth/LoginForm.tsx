@@ -215,9 +215,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
                 <p className="text-blue-800 text-sm flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong>
-                </p>
-              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -389,9 +386,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
                 <p className="text-blue-800 flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong>
-                </p>
-              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
