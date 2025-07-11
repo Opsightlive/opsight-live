@@ -8,7 +8,7 @@ import AuthWrapper from '@/components/auth/AuthWrapper';
 import Layout from '@/components/layout/Layout';
 
 // Page imports
-import LandingPage from '@/pages/LandingPage';
+import LandingPage from '@/pages/TestPage';
 import CompanyPage from '@/pages/CompanyPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
