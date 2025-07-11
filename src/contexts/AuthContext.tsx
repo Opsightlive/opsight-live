@@ -50,7 +50,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const navigate = useNavigate();  const [session, setSession] = useState<Session | null>(null);
+  const navigate = useNavigate();
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -174,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // For company login, check if it's the specific company email
       if (isCompanyLogin && email !== 'opsightlive@gmail.com') {
-        toast.error('Invalid company credentials. Use opsightlive@gmail.com');
+        toast.error('Invalid company credentials.');
         setIsLoading(false);
         return false;
       }
