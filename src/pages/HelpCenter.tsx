@@ -10,7 +10,6 @@ import {
   MessageCircle, 
   Video, 
   FileText,
-  ArrowRight,
   Star,
   Clock,
   Users
@@ -108,23 +107,23 @@ const HelpCenter = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Back Button */}
-        <div className="mb-4">
+        <div className="mb-4 flex justify-end">
           <Button
             variant="outline"
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:bg-gray-100"
+            className="hover:bg-gray-100"
           >
-            <ArrowRight className="h-4 w-4 rotate-180" />
+            
           </Button>
         </div>
         {/* Back Button */}
-        <div className="mb-4">
+        <div className="mb-4 flex justify-end">
           <Button
             variant="outline"
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:bg-gray-100"
+            className="hover:bg-gray-100"
           >
-            <ArrowRight className="h-4 w-4 rotate-180" />
+            
             Back to Home
           </Button>
         </div>
@@ -155,7 +154,7 @@ const HelpCenter = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  {category.articles} articles <ArrowRight className="inline-block h-4 w-4 ml-1" />
+                  {category.articles} articles 
                 </p>
               </CardContent>
             </Card>
