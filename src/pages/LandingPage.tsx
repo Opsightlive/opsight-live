@@ -153,7 +153,7 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <div className="bg-red-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -343,7 +343,7 @@ const LandingPage = () => {
       </div>
 
       {/* Solutions Section */}
-      <div id="solutions" className="py-16 lg:py-24 bg-red-500">
+      <div id="solutions" className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -459,7 +459,7 @@ const LandingPage = () => {
       </div>
 
       {/* Pricing Section */}
-      <div id="pricing" className="py-16 lg:py-24 bg-red-500">
+      <div id="pricing" className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -663,7 +663,7 @@ const LandingPage = () => {
       </div>
 
       {/* What is OPSIGHT Video Section */}
-      <div className="py-16 lg:py-24 bg-red-500">
+      <div className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
