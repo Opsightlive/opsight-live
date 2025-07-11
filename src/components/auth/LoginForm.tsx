@@ -109,7 +109,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
       navigate('/dashboard');
     } else {
       if (isCompanyLogin) {
-        setError('Invalid company credentials. Use opsightlive@gmail.com');
+        setError('Invalid company credentials.');
       } else {
         setError('Invalid email or password');
       }
@@ -215,7 +215,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
                 <p className="text-blue-800 text-sm flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong> Use opsightlive@gmail.com
+                  <strong>Company Access:</strong>
                 </p>
               </div>
             )}
@@ -389,7 +389,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
               <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl animate-fade-in">
                 <p className="text-blue-800 flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  <strong>Company Access:</strong> Use opsightlive@gmail.com
+                  <strong>Company Access:</strong>
                 </p>
               </div>
             )}
