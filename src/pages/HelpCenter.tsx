@@ -107,6 +107,28 @@ const HelpCenter = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Back Button */}
+        <div className="mb-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 hover:bg-gray-100"
+          >
+            <ArrowRight className="h-4 w-4 rotate-180" />
+            Back to Home
+          </Button>
+        </div>
+        {/* Back Button */}
+        <div className="mb-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 hover:bg-gray-100"
+          >
+            <ArrowRight className="h-4 w-4 rotate-180" />
+            Back to Home
+          </Button>
+        </div>
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
           <div>
