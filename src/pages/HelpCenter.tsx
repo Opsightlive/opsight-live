@@ -1,5 +1,6 @@
 import React from 'react';
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -108,24 +109,9 @@ const HelpCenter = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Back Button */}
         <div className="mb-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => { const { user } = useAuth(); if (user) { navigate("/dashboard"); } else { navigate("/"); } }}
-            className="hover:bg-gray-100"
-          >
-            
-          </Button>
         </div>
         {/* Back Button */}
         <div className="mb-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => { const { user } = useAuth(); if (user) { navigate("/dashboard"); } else { navigate("/"); } }}
-            className="hover:bg-gray-100"
-          >
-            
-            Back to Home
-          </Button>
         </div>
         {/* Blue Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg">
@@ -193,10 +179,6 @@ const HelpCenter = () => {
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">Need More Help?</h2>
           <p className="text-gray-600 mb-6">Contact our support team for personalized assistance</p>
-          <Button onClick={handleContactSupport} className="bg-blue-600 hover:bg-blue-700">
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Contact Support
-          </Button>
         </div>
       </div>
     </div>
