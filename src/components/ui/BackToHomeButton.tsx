@@ -18,13 +18,7 @@ export const BackToHomeButton: React.FC<BackToHomeButtonProps> = ({
   const { user } = useAuth();
 
   const handleClick = () => {
-    // if (user) {
-      // If user is logged in, go to dashboard
-      // navigate.*dashboard.*replace.*true.*;
-    // } else {
-      // If user is not logged in, go to landing page
-      navigate('/', { replace: true });
-    }
+    navigate('/', { replace: true });
   };
 
   return (

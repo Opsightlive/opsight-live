@@ -39,7 +39,7 @@ import UserManagement from '@/components/users/UserManagement';
 import OwnerOnboardingPage from '@/pages/OwnerOnboarding';
 import Settings from '@/pages/Settings';
 import HelpCenter from '@/pages/HelpCenter';
-import DataSetup from '@/components/auth/DataSetup';
+import PricingPage from "@/pages/PricingPage";import DataSetup from '@/components/auth/DataSetup';
 import SubscriptionSettings from '@/pages/SubscriptionSettings';
 import UserProfile from '@/pages/UserProfile';
 
@@ -249,7 +249,7 @@ function App() {
                 </AuthWrapper>
               } />
              <Route path="/help" element={<HelpCenter />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
+              <Route path="/pricing" element={<PricingPage />} />              <Route path="/verify-email" element={<EmailVerification />} />
               <Route path="/data-setup" element={
                 <AuthWrapper>
                    <DataSetup onComplete={() => {}} />
