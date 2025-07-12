@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { Link } from 'react-router-dom';
 import RegisterForm from '@/components/auth/RegisterForm';
 
 const SignupPage = () => {
