@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
