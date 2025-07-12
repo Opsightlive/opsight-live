@@ -249,7 +249,8 @@ function App() {
                 </AuthWrapper>
               } />
              <Route path="/help" element={<HelpCenter />} />
-              <Route path="/verify-email" element={<EmailVerification />} />              <Route path="/data-setup" element={
+              <Route path="/verify-email" element={<EmailVerification />} />
+              <Route path="/data-setup" element={
                 <AuthWrapper>
                    <DataSetup onComplete={() => {}} />
                 </AuthWrapper>
