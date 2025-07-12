@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { BackToHomeButton } from "@/components/ui/BackToHomeButton";import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -110,7 +110,7 @@ const HelpCenter = () => {
         <div className="mb-4 flex justify-end">
           <Button
             variant="outline"
-            onClick={() => navigate("/")}
+            onClick={() => { const { user } = useAuth(); if (user) { navigate("/dashboard"); } else { navigate("/"); } }}
             className="hover:bg-gray-100"
           >
             
@@ -120,7 +120,7 @@ const HelpCenter = () => {
         <div className="mb-4 flex justify-end">
           <Button
             variant="outline"
-            onClick={() => navigate("/")}
+            onClick={() => { const { user } = useAuth(); if (user) { navigate("/dashboard"); } else { navigate("/"); } }}
             className="hover:bg-gray-100"
           >
             
